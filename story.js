@@ -46,7 +46,7 @@ const storyScript = {
         name: "Creator",
         text: "ไงพวกเองคนตกคณิตใช่ไหมละ...ถึงได้มาเล่นเกมนี้\n(ไม่มี save นะ) ",
         bg: "https://images.unsplash.com/photo-1500673922987-e212871fec22?auto=format&fit=crop&w=1200",
-        sprite: "https://media.canva.com/v2/image-resize/format:PNG/height:588/quality:100/uri:ifs%3A%2F%2FM%2F254b41d1-effd-46b3-9c5b-ab3e4b856298/watermark:F/width:735?csig=AAAAAAAAAAAAAAAAAAAAACuQaxG92kw3cWpOi7prDesabldPE76YPBid1YBqOKMP&exp=1778434773&osig=AAAAAAAAAAAAAAAAAAAAAB7yqWiY76Q2BcsvxEtzg35vjczrk6DY6VzAcFAXytEa&signer=media-rpc&x-canva-quality=screen_3x",
+        sprite: "image/creator.png",
         position: "center",          // ✅ ตัวละครอยู่ซ้าย
         speaking: true,            // ✅ เด้งตอนพูด
         typeSpeed: 35,             // ✅ ความเร็วพิมพ์
@@ -56,7 +56,7 @@ const storyScript = {
     "Ready?": {
         name: "Creator",
         text: "แล้วคิดว่า เองพร้อมจะเล่นเกมนี้ยัง...",
-        sprite: "https://media.canva.com/v2/image-resize/format:PNG/height:588/quality:100/uri:ifs%3A%2F%2FM%2F254b41d1-effd-46b3-9c5b-ab3e4b856298/watermark:F/width:735?csig=AAAAAAAAAAAAAAAAAAAAACuQaxG92kw3cWpOi7prDesabldPE76YPBid1YBqOKMP&exp=1778434773&osig=AAAAAAAAAAAAAAAAAAAAAB7yqWiY76Q2BcsvxEtzg35vjczrk6DY6VzAcFAXytEa&signer=media-rpc&x-canva-quality=screen_3x",
+        sprite: "image/creator.png",
         position: "left",
         typeSpeed: 30,
         choices: [
@@ -69,7 +69,7 @@ const storyScript = {
     "2": {
         name: "Creator",
         text: "เองพร้อมแล้วเพราะฉนั้นขอทวนก่อนเรื่องหนึ่ง",
-        sprite: "https://media.canva.com/v2/image-resize/format:PNG/height:588/quality:100/uri:ifs%3A%2F%2FM%2F254b41d1-effd-46b3-9c5b-ab3e4b856298/watermark:F/width:735?csig=AAAAAAAAAAAAAAAAAAAAACuQaxG92kw3cWpOi7prDesabldPE76YPBid1YBqOKMP&exp=1778434773&osig=AAAAAAAAAAAAAAAAAAAAAB7yqWiY76Q2BcsvxEtzg35vjczrk6DY6VzAcFAXytEa&signer=media-rpc&x-canva-quality=screen_3x",
+        sprite: "image/creator.png",
         position: "center",
         speaking: true,    // ✅ ย้ายไปขวา (เปลี่ยนตำแหน่งได้!)
         typeSpeed: 30,
@@ -79,7 +79,7 @@ const storyScript = {
     "3": {
         name: "Creator",
         text: "เกมนี้้มีจำนวณทั้งหมด 50 ข้อในการทำให้เสร็จ\nและมีความลับหามันให้เจอละ",
-        sprite: "https://media.canva.com/v2/image-resize/format:PNG/height:588/quality:100/uri:ifs%3A%2F%2FM%2F254b41d1-effd-46b3-9c5b-ab3e4b856298/watermark:F/width:735?csig=AAAAAAAAAAAAAAAAAAAAACuQaxG92kw3cWpOi7prDesabldPE76YPBid1YBqOKMP&exp=1778434773&osig=AAAAAAAAAAAAAAAAAAAAAB7yqWiY76Q2BcsvxEtzg35vjczrk6DY6VzAcFAXytEa&signer=media-rpc&x-canva-quality=screen_3x",
+        sprite: "image/creator.png",
         position: "center",
         speaking: true,
         typeSpeed: 35,     // ✅ อยู่ตรงกลาง
@@ -103,7 +103,7 @@ const storyScript = {
     "s1": {
         name: "???",
         text: "เอ๊ะ... เองเจอมาได้ยังไง?",
-        sprite: "https://media.canva.com/v2/image-resize/format:PNG/height:588/quality:100/uri:ifs%3A%2F%2FM%2F254b41d1-effd-46b3-9c5b-ab3e4b856298/watermark:F/width:735?csig=AAAAAAAAAAAAAAAAAAAAACuQaxG92kw3cWpOi7prDesabldPE76YPBid1YBqOKMP&exp=1778434773&osig=AAAAAAAAAAAAAAAAAAAAAB7yqWiY76Q2BcsvxEtzg35vjczrk6DY6VzAcFAXytEa&signer=media-rpc&x-canva-quality=screen_3x",
+        sprite: "image/creator.png",
         position: "center",
         speaking: true,
         typeSpeed: 50,
