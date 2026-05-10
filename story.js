@@ -32,7 +32,7 @@ const storyScript = {
     // ============================================
     "start": {
         name: "",
-        text: "กดเพื่อเล่นใหม่",
+        text: "กดเพื่อเริ่มเล่น",
         bg: "null",
         sprite: "null",
         speaking: false,
