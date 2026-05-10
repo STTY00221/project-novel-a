@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Game Math</title>
+    <link rel="icon" type="image/png" href="image/icon.png">
+    <!-- นำเข้า Font สวยๆ จาก Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;500&display=swap" rel="stylesheet">
+    <style>
+        /* ============================================
+           🎨 Design Tokens
+           ============================================ */
+        :root {
+            --primary-color: #3b3b3b;
+            --box-bg: rgba(0, 0, 0, 0.85);
+            --text-color: #ffffff;
+        }
+
+        /* ============================================
+           📐 Base Layout
+           ============================================ */
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #000;
+            font-family: 'Prompt', 'Segoe UI', Tahoma, sans-serif;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh; /* ใช้ dvh เพื่อแก้ปัญหา address bar บนมือถือ */
+            background-size: cover;
+            background-position: center;
+            transition: background-image 0.8s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            /* ป้องกัน pull-to-refresh และ overscroll บนมือถือ */
+            overscroll-behavior: none;
+            touch-action: manipulation;
+        }
+
+        /* Overlay สำหรับทำให้พื้นหลังมืดลงเล็กน้อยเวลาคุย */
+        #game-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, transparent 60%, rgba(0, 0, 0, 0.4));
+            pointer-events: none;
+        }
+
+        /* ============================================
+           🧍 Character Sprite — Position System
+           ============================================ */
+        #character-sprite {
+            position: absolute;
+            bottom: 10%;
+            height: 50%;
+            z-index: 2;
+            cursor: pointer;
+            /* transition สำหรับเปลี่ยนตำแหน่ง + fade */
+            transition: left 0.6s ease, right 0.6s ease, opacity 0.4s ease, transform 0.6s ease;
+        }
+
+        /* ตำแหน่ง: ซ้าย */
+        #character-sprite.pos-left {
+            left: 10%;
+            right: auto;
+            transform: translateX(0);
+        }
+
+        /* ตำแหน่ง: กลาง */
+        #character-sprite.pos-center {
+            left: 50%;
+            right: auto;
+            transform: translateX(-50%);
+        }
+
+        /* ตำแหน่ง: ขวา */
+        #character-sprite.pos-right {
+            left: auto;
+            right: 10%;
+            transform: translateX(0);
+        }
+
+        /* ============================================
+           💬 Speaking Animation — เด้งขึ้นลงตอนพูด
+           ============================================ */
+        @keyframes speaking-bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        /* ต้อง override transform ตาม position ด้วย */
+        #character-sprite.pos-left.speaking {
+            animation: speaking-bounce-left 0.6s ease-in-out infinite;
+        }
+
+        #character-sprite.pos-center.speaking {
+            animation: speaking-bounce-center 0.6s ease-in-out infinite;
+        }
+
+        #character-sprite.pos-right.speaking {
+            animation: speaking-bounce-right 0.6s ease-in-out infinite;
+        }
+
+        @keyframes speaking-bounce-left {
+
+            0%,
+            100% {
+                transform: translateX(0) translateY(0);
+            }
+
+            50% {
+                transform: translateX(0) translateY(-8px);
+            }
+        }
+
+        @keyframes speaking-bounce-center {
+
+            0%,
+            100% {
+                transform: translateX(-50%) translateY(0);
+            }
+
+            50% {
+                transform: translateX(-50%) translateY(-8px);
+            }
+        }
+
+        @keyframes speaking-bounce-right {
+
+            0%,
+            100% {
+                transform: translateX(0) translateY(0);
+            }
+
+            50% {
+                transform: translateX(0) translateY(-8px);
+            }
+        }
+
+        /* ============================================
+           💬 Dialogue Box
+           ============================================ */
+        #dialogue-box {
+            position: relative;
+            width: 90%;
+            max-width: 900px;
+            min-height: 140px;
+            background: var(--box-bg);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            margin-bottom: max(20px, env(safe-area-inset-bottom)); /* safe area สำหรับ notch */
+            padding: 25px;
+            box-sizing: border-box;
+            cursor: pointer;
+            z-index: 10;
+            backdrop-filter: blur(5px);
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #name-tag {
+            position: absolute;
+            top: -20px;
+            left: 30px;
+            background: var(--primary-color);
+            color: rgb(255, 255, 255);
+            padding: 5px 25px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        #text-content {
+            color: var(--text-color);
+            font-size: 1.2rem;
+            line-height: 1.6;
+            min-height: 1.6em;
+            white-space: pre-wrap;
+        }
+
+        /* Typewriter cursor กระพริบ */
+        #text-content.typing::after {
+            content: "▌";
+            animation: cursor-blink 0.6s step-end infinite;
+            color: rgba(255, 255, 255, 0.7);
+            margin-left: 2px;
+        }
+
+        @keyframes cursor-blink {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        /* ============================================
+           🔘 Choices
+           ============================================ */
+        #choice-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+            /* ซ่อนไว้ก่อน */
+            flex-direction: column;
+            gap: 15px;
+            width: 300px;
+            z-index: 100;
+        }
+
+        .choice-button {
+            background: var(--box-bg);
+            color: rgb(255, 255, 255);
+            border: 1px solid var(--primary-color);
+            padding: 15px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            font-size: 1rem;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .choice-button:hover {
+            background: var(--primary-color);
+            transform: scale(1.05);
+        }
+
+        /* ============================================
+           📱 Responsive — โทรศัพท์แนวตั้ง (Portrait)
+           ============================================ */
+        @media screen and (max-width: 480px) {
+
+            /* ตัวละครใหญ่ขึ้นหน่อย + ปรับตำแหน่ง */
+            #character-sprite {
+                height: 40%;
+                bottom: 22%;
+            }
+
+            #character-sprite.pos-left {
+                left: 2%;
+            }
+
+            #character-sprite.pos-right {
+                right: 2%;
+            }
+
+            /* Dialogue box ปรับให้พอดีกับหน้าจอเล็ก */
+            #dialogue-box {
+                width: 94%;
+                min-height: 120px;
+                padding: 18px 15px;
+                margin-bottom: max(12px, env(safe-area-inset-bottom));
+                border-radius: 8px;
+            }
+
+            #name-tag {
+                top: -16px;
+                left: 15px;
+                padding: 4px 16px;
+                font-size: 0.9rem;
+            }
+
+            #text-content {
+                font-size: 0.95rem;
+                line-height: 1.5;
+            }
+
+            .click-hint {
+                font-size: 0.7rem;
+                bottom: 6px;
+                right: 12px;
+            }
+
+            /* Choices ปรับ width ให้พอดีจอ */
+            #choice-container {
+                width: 85%;
+                gap: 10px;
+            }
+
+            .choice-button {
+                padding: 12px 15px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* ============================================
+           📱 Responsive — โทรศัพท์แนวตั้งเล็กมาก
+           ============================================ */
+        @media screen and (max-width: 360px) {
+            #character-sprite {
+                height: 35%;
+                bottom: 24%;
+            }
+
+            #dialogue-box {
+                min-height: 100px;
+                padding: 15px 12px;
+            }
+
+            #text-content {
+                font-size: 0.85rem;
+            }
+
+            .choice-button {
+                padding: 10px 12px;
+                font-size: 0.85rem;
+            }
+        }
+
+        /* ============================================
+           📱 Responsive — โทรศัพท์แนวนอน (Landscape)
+           ============================================ */
+        @media screen and (max-height: 500px) and (orientation: landscape) {
+            #character-sprite {
+                height: 60%;
+                bottom: 25%;
+            }
+
+            #dialogue-box {
+                min-height: 90px;
+                padding: 15px 20px;
+                margin-bottom: max(8px, env(safe-area-inset-bottom));
+            }
+
+            #name-tag {
+                top: -14px;
+                font-size: 0.85rem;
+                padding: 3px 15px;
+            }
+
+            #text-content {
+                font-size: 0.9rem;
+                line-height: 1.4;
+            }
+
+            .click-hint {
+                font-size: 0.65rem;
+                bottom: 4px;
+            }
+
+            #choice-container {
+                flex-direction: row;
+                flex-wrap: wrap;
+                width: 80%;
+                justify-content: center;
+                gap: 8px;
+            }
+
+            .choice-button {
+                padding: 8px 15px;
+                font-size: 0.85rem;
+                flex: 1 1 auto;
+                min-width: 120px;
+            }
+        }
+
+        /* ============================================
+           📱 Responsive — Tablet / iPad
+           ============================================ */
+        @media screen and (min-width: 481px) and (max-width: 1024px) {
+            #character-sprite {
+                height: 48%;
+            }
+
+            #dialogue-box {
+                width: 85%;
+                min-height: 130px;
+                padding: 22px;
+            }
+
+            #text-content {
+                font-size: 1.1rem;
+            }
+
+            #choice-container {
+                width: 350px;
+            }
+
+            .choice-button {
+                padding: 14px 20px;
+                font-size: 1rem;
+            }
+        }
+
+        /* ============================================
+           📱 Responsive — iPad แนวตั้ง (Portrait)
+           ============================================ */
+        @media screen and (min-width: 600px) and (max-width: 1024px) and (orientation: portrait) {
+            #character-sprite {
+                height: 40%;
+                bottom: 18%;
+            }
+
+            #dialogue-box {
+                margin-bottom: 30px;
+            }
+        }
+
+        /* ============================================
+           ✨ Hints & Misc
+           ============================================ */
+        .click-hint {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            color: #888;
+            font-size: 0.8rem;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="game-container"
+        style="background-image: url('https://images.unsplash.com/photo-1500673922987-e212871fec22?auto=format&fit=crop&w=1200');">
+
+        <img id="character-sprite" class="pos-center" onclick="handleSpriteClick(event)">
+
+        <div id="choice-container"></div>
+
+        <div id="dialogue-box" onclick="handleInput()">
+            <div id="name-tag">ระบบ</div>
+            <div id="text-content">กดเพื่อเริ่มเกม...</div>
+            <div class="click-hint">กด คลิก ที่กล่องข้อความเพื่อไปต่อ</div>
+        </div>
+    </div>
+
+    <script src="story.js"></script>
+    <script>
+        /* ============================================
+           🎮 Visual Novel Engine
+           ============================================ */
+
+        // ----- ค่า Default (ใช้ถ้าไม่ได้ตั้งค่าใน story config) -----
+        const DEFAULTS = {
+            position: "center",   // "left" | "center" | "right"
+            speaking: true,       // animation เด้งตอนพูด
+            typeSpeed: 40,        // ms ต่อตัวอักษร
+        };
+
+        // ----- State -----
+        let currentSceneId = "start";
+        let isWaitingForChoice = false;
+        let isTyping = false;
+        let typewriterInterval = null;
+        let currentFullText = "";
+
+        // ----- ฉากลับ: นับจำนวนคลิกที่ตัวละคร -----
+        let secretClickCount = 0;
+        const SECRET_CLICKS_NEEDED = 10;  // จำนวนคลิกที่ต้องกด
+        const SECRET_TRIGGER_SCENE = "1"; // scene ที่ trigger ฉากลับได้
+        const SECRET_TARGET_SCENE = "s1"; // scene ที่จะไปเมื่อกดครบ
+
+        // ----- DOM Elements -----
+        const $container = document.getElementById('game-container');
+        const $sprite = document.getElementById('character-sprite');
+        const $nameTag = document.getElementById('name-tag');
+        const $textContent = document.getElementById('text-content');
+        const $choiceContainer = document.getElementById('choice-container');
+        const $clickHint = document.querySelector('.click-hint');
+
+        /* ============================================
+           📖 Render Scene
+           ============================================ */
+        function renderScene(sceneId) {
+            const scene = storyScript[sceneId];
+            if (!scene) return;
+
+            // อ่านค่า config + ใช้ default ถ้าไม่มี
+            const position = scene.position || DEFAULTS.position;
+            const speaking = scene.speaking !== undefined ? scene.speaking : DEFAULTS.speaking;
+            const typeSpeed = scene.typeSpeed !== undefined ? scene.typeSpeed : DEFAULTS.typeSpeed;
+
+            // --- ชื่อตัวละคร ---
+            $nameTag.innerText = scene.name || "";
+
+            // --- Background ---
+            if (scene.bg && scene.bg !== "null") {
+                $container.style.backgroundImage = `url('${scene.bg}')`;
+            }
+
+            // --- Character Sprite ---
+            if (scene.sprite && scene.sprite !== "null") {
+                // ลบ class position เก่า
+                $sprite.classList.remove('pos-left', 'pos-center', 'pos-right', 'speaking');
+                $sprite.style.opacity = 0;
+
+                setTimeout(() => {
+                    $sprite.src = scene.sprite;
+                    $sprite.classList.add(`pos-${position}`);
+                    $sprite.style.opacity = 1;
+
+                    // เริ่ม speaking animation ถ้าเปิด
+                    if (speaking) {
+                        $sprite.classList.add('speaking');
+                    }
+                }, 200);
+            } else if (scene.sprite === "null") {
+                // ซ่อน sprite ถ้าตั้งค่าเป็น "null"
+                $sprite.style.opacity = 0;
+                $sprite.classList.remove('speaking');
+            }
+
+            // --- Choices ---
+            if (scene.choices) {
+                isWaitingForChoice = true;
+                $choiceContainer.innerHTML = '';
+                $choiceContainer.style.display = 'flex';
+
+                scene.choices.forEach(choice => {
+                    const btn = document.createElement('div');
+                    btn.className = 'choice-button';
+                    btn.innerText = choice.text;
+                    btn.onclick = () => selectChoice(choice.nextId);
+                    $choiceContainer.appendChild(btn);
+                });
+
+                // ซ่อน click hint ตอนมี choices
+                $clickHint.style.display = 'none';
+            } else {
+                isWaitingForChoice = false;
+                $choiceContainer.style.display = 'none';
+                $clickHint.style.display = 'block';
+            }
+
+            // --- Typewriter Effect ---
+            startTypewriter(scene.text || "", typeSpeed, speaking);
+        }
+
+        /* ============================================
+           ⌨️ Typewriter System
+           ============================================ */
+        function startTypewriter(text, speed, speakingEnabled) {
+            // หยุด typewriter เก่า (ถ้ามี)
+            stopTypewriter();
+
+            currentFullText = text;
+            isTyping = true;
+            $textContent.textContent = "";
+            $textContent.classList.add('typing');
+
+            let charIndex = 0;
+
+            typewriterInterval = setInterval(() => {
+                if (charIndex < currentFullText.length) {
+                    $textContent.textContent += currentFullText[charIndex];
+                    charIndex++;
+                } else {
+                    // พิมพ์เสร็จแล้ว!
+                    finishTypewriter();
+                }
+            }, speed);
+        }
+
+        function skipTypewriter() {
+            // แสดงข้อความทั้งหมดทันที
+            stopTypewriter();
+            $textContent.textContent = currentFullText;
+            finishTypewriter();
+        }
+
+        function stopTypewriter() {
+            if (typewriterInterval) {
+                clearInterval(typewriterInterval);
+                typewriterInterval = null;
+            }
+        }
+
+        function finishTypewriter() {
+            stopTypewriter();
+            isTyping = false;
+            $textContent.classList.remove('typing');
+
+            // หยุด speaking animation เมื่อพิมพ์เสร็จ
+            $sprite.classList.remove('speaking');
+        }
+
+        /* ============================================
+           🖱️ Input Handler
+           ============================================ */
+        function handleInput() {
+            // ถ้ากำลังพิมพ์อยู่ → Skip!
+            if (isTyping) {
+                skipTypewriter();
+                return;
+            }
+
+            // ถ้ามีตัวเลือก → ไม่ทำอะไร (รอเลือก)
+            if (isWaitingForChoice) return;
+
+            // ไป scene ถัดไป
+            const currentScene = storyScript[currentSceneId];
+            if (currentScene && currentScene.next) {
+                currentSceneId = currentScene.next;
+                renderScene(currentSceneId);
+            } else if (currentScene && currentScene.next === null) {
+                // จบเรื่อง — ไม่ทำอะไร หรือจะ reset ก็ได้
+            }
+        }
+
+        function selectChoice(nextId) {
+            currentSceneId = nextId;
+            isWaitingForChoice = false;
+            $choiceContainer.style.display = 'none';
+            $clickHint.style.display = 'block';
+            renderScene(currentSceneId);
+        }
+
+        /* ============================================
+           ⌨️ Keyboard Support
+           ============================================ */
+        window.addEventListener('keydown', (e) => {
+            if (e.code === "Space" || e.code === "Enter") {
+                e.preventDefault();
+                handleInput();
+            }
+        });
+
+        /* ============================================
+           🔒 Secret Scene — คลิกที่ตัวละครเพื่อเข้าฉากลับ
+           ============================================ */
+        function handleSpriteClick(event) {
+            // ไม่ให้ event ลงไปที่ dialogue box
+            event.stopPropagation();
+
+            // เช็คว่าอยู่ scene ที่ trigger ได้ไหม
+            if (currentSceneId !== SECRET_TRIGGER_SCENE) {
+                secretClickCount = 0;
+                return;
+            }
+
+            secretClickCount++;
+
+            // feedback เล็กๆ ตอนกด (ตัวละครสั่นนิดหน่อย)
+            $sprite.style.filter = `brightness(${1 + secretClickCount * 0.1})`;
+            setTimeout(() => {
+                $sprite.style.filter = 'brightness(1)';
+            }, 150);
+
+            // กดครบ → เข้าฉากลับ!
+            if (secretClickCount >= SECRET_CLICKS_NEEDED) {
+                secretClickCount = 0;
+                currentSceneId = SECRET_TARGET_SCENE;
+                renderScene(currentSceneId);
+            }
+        }
+
+        /* ============================================
+           🚀 Init — เริ่มจาก scene "start"
+           ============================================ */
+        renderScene("start");
+
+    </script>
+
+</body>
+
+</html>
