@@ -36,7 +36,8 @@
             position: relative;
             width: 100vw;
             height: 100vh;
-            height: 100dvh; /* ใช้ dvh เพื่อแก้ปัญหา address bar บนมือถือ */
+            height: 100dvh;
+            /* ใช้ dvh เพื่อแก้ปัญหา address bar บนมือถือ */
             background-size: cover;
             background-position: center;
             transition: background-image 0.8s ease-in-out;
@@ -171,7 +172,8 @@
             border: 2px solid rgba(255, 255, 255, 0.3);
             border-radius: 10px;
             margin-bottom: 20px;
-            margin-bottom: max(20px, env(safe-area-inset-bottom)); /* safe area สำหรับ notch */
+            margin-bottom: max(20px, env(safe-area-inset-bottom));
+            /* safe area สำหรับ notch */
             padding: 25px;
             box-sizing: border-box;
             cursor: pointer;
@@ -444,8 +446,7 @@
 
 <body>
 
-    <div id="game-container"
-        style="background-image: url('https://images.unsplash.com/photo-1500673922987-e212871fec22?auto=format&fit=crop&w=1200');">
+    <div id="game-container" style="background-image: url('image/bg.png');">
 
         <img id="character-sprite" class="pos-center" onclick="handleSpriteClick(event)">
 

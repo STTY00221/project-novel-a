@@ -32,7 +32,7 @@ const storyScript = {
     // ============================================
     "start": {
         name: "",
-        text: "กดเพื่อเริ่มเล่น",
+        text: "กดเพื่อเล่นใหม่",
         bg: "null",
         sprite: "null",
         speaking: false,
@@ -45,7 +45,7 @@ const storyScript = {
     "1": {
         name: "Creator",
         text: "ไงพวกเองคนตกคณิตใช่ไหมละ...ถึงได้มาเล่นเกมนี้\n(ไม่มี save นะ) ",
-        bg: "https://images.unsplash.com/photo-1500673922987-e212871fec22?auto=format&fit=crop&w=1200",
+        bg: "image/bg.png",
         sprite: "image/creator.png",
         position: "center",          // ✅ ตัวละครอยู่ซ้าย
         speaking: true,            // ✅ เด้งตอนพูด
