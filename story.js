@@ -225,11 +225,19 @@ const storyScript = {
     },
 
     "c6": {
-        name: "",
-        text: "",
-        position: "center",
+        name: "Mr.EAKAPOT",
+        text: "การเก็บข้อมูลมีประโยชน์อย่างไร",
+        bg: "image/bg.png",
+        sprite: "image/creator.png",
+        position: "left",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "ทำให้เสียเวลา", nextId: "lose" },
+            { text: "ใช้ในการวิเคราะห์", nextId: "random" },
+            { text: "ใช้ตกแต่งเอกสาร", nextId: "lose" },
+            { text: "ใช้แทนการคำนวณ", nextId: "lose" },
+        ]
     },
 
     "c7": {
