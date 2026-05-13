@@ -449,11 +449,19 @@ const storyScript = {
     },
 
     "c20": {
-        name: "",
-        text: "",
-        position: "center",
+        name: "Mr.EAKAPOT",
+        text: "ข้อใดไม่ใช่ข้อมูลเชิงปริมาณ",
+        bg: "image/bg1.png",
+        sprite: "image/creator.png",
+        position: "left",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "ส่วนสูง", nextId: "lose" },
+            { text: "น้ำหนัก", nextId: "lose" },
+            { text: "สีผม", nextId: "random" },
+            { text: "อายุ", nextId: "lose" },
+        ]
     },
 
     "c21": {
