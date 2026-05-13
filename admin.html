@@ -265,6 +265,10 @@ function serialize(){
       lines.push("        choices: [");
       s.choices.forEach(c=>lines.push(`            { text: "${esc(c.text||"")}", nextId: "${esc(c.nextId||"")}" },`));
       lines.push("        ],");
+    } else if(Array.isArray(s.random) && s.random.length){
+      lines.push("        random: [");
+      s.random.forEach(r=>lines.push(`            { nextId: "${esc(r.nextId||"")}", weight: ${Number(r.weight)||1} },`));
+      lines.push("        ],");
     } else {
       const n = s.next===null ? "null" : (s.next===undefined||s.next==="" ? null : `"${esc(s.next)}"`);
       if(n!==null && n!==undefined) push("next",n);
@@ -348,6 +352,7 @@ function renderEditor(){
   }
   const s = story[currentId];
   const hasChoices = Array.isArray(s.choices) && s.choices.length>0;
+  const hasRandom  = Array.isArray(s.random)  && s.random.length>0;
   ed.innerHTML = `
     <div class="row" style="justify-content:space-between;margin-bottom:10px">
       <div class="row">
@@ -396,10 +401,18 @@ function renderEditor(){
 
     <h2 class="section-title">Flow</h2>
     <div class="row" style="gap:14px;flex-wrap:wrap">
-      <label class="switch"><input id="fUseChoices" type="checkbox" ${hasChoices?"checked":""}><span>Use choices (instead of next)</span></label>
+      <div class="field" style="min-width:220px">
+        <label>Flow type</label>
+        <select id="fFlow">
+          <option value="next" ${!hasChoices && !hasRandom ? "selected":""}>➡️ Next (single)</option>
+          <option value="choices" ${hasChoices ? "selected":""}>🔀 Choices (player picks)</option>
+          <option value="random" ${hasRandom ? "selected":""}>🎲 Random (auto-pick)</option>
+        </select>
+        <div class="hint">เลือกรูปแบบการไป scene ถัดไป</div>
+      </div>
     </div>
 
-    <div id="nextBlock" style="margin-top:10px" ${hasChoices?'hidden':''}>
+    <div id="nextBlock" style="margin-top:10px" ${(hasChoices||hasRandom)?'hidden':''}>
       <div class="field">
         <label>Next scene id (blank = none, "null" literal = end)</label>
         <input id="fNext" value="${s.next===null?'null':(s.next??'')}" list="sceneOpts">
@@ -410,6 +423,12 @@ function renderEditor(){
     <div id="choicesBlock" style="margin-top:10px" ${hasChoices?'':'hidden'}>
       <div class="choices" id="choicesList"></div>
       <button class="btn sm" id="btnAddChoice" style="margin-top:8px">+ Add choice</button>
+    </div>
+
+    <div id="randomBlock" style="margin-top:10px" ${hasRandom?'':'hidden'}>
+      <div class="muted" style="margin-bottom:6px">🎲 เมื่อถึง scene นี้ ระบบจะสุ่มเลือก nextId จากรายการด้านล่าง (weight ยิ่งมาก โอกาสยิ่งสูง)</div>
+      <div class="choices" id="randomList"></div>
+      <button class="btn sm" id="btnAddRandom" style="margin-top:8px">+ Add random target</button>
     </div>
   `;
 
@@ -430,12 +449,19 @@ function renderEditor(){
     renderRaw();
   });
 
-  bind("#fUseChoices","change",e=>{
-    if(e.target.checked){
-      s.choices = s.choices && s.choices.length ? s.choices : [{text:"",nextId:""}];
+  bind("#fFlow","change",e=>{
+    const mode = e.target.value;
+    if(mode==="choices"){
+      s.choices = (s.choices && s.choices.length) ? s.choices : [{text:"",nextId:""}];
+      delete s.random;
+      delete s.next;
+    } else if(mode==="random"){
+      s.random = (s.random && s.random.length) ? s.random : [{nextId:"",weight:1}];
+      delete s.choices;
       delete s.next;
     } else {
       delete s.choices;
+      delete s.random;
       s.next = s.next ?? "";
     }
     renderEditor(); renderRaw(); renderPreview();
@@ -471,6 +497,46 @@ function renderEditor(){
     s.choices = s.choices || [];
     s.choices.push({text:"",nextId:""});
     renderChoices(); renderRaw(); renderPreview();
+  });
+
+  renderRandomList();
+  bind("#btnAddRandom","click",()=>{
+    s.random = s.random || [];
+    s.random.push({nextId:"",weight:1});
+    renderRandomList(); renderRaw(); renderPreview();
+  });
+}
+
+function renderRandomList(){
+  const s = story[currentId]; if(!s) return;
+  const list = $("#randomList"); if(!list) return;
+  list.innerHTML = "";
+  const totalW = (s.random||[]).reduce((a,b)=>a+(Number(b.weight)||1),0) || 1;
+  (s.random||[]).forEach((r,i)=>{
+    const w = Number(r.weight)||1;
+    const pct = ((w/totalW)*100).toFixed(1);
+    const row = document.createElement("div");
+    row.className = "choice";
+    row.style.gridTemplateColumns = "1fr 90px 60px auto";
+    row.innerHTML = `
+      <input data-k="nextId" placeholder="nextId (target scene)" list="sceneOpts" value="${(r.nextId||'').replace(/"/g,'&quot;')}">
+      <input data-k="weight" type="number" min="1" step="1" placeholder="weight" value="${w}">
+      <span class="pill" title="โอกาสที่จะถูกสุ่มเลือก">${pct}%</span>
+      <button class="btn sm danger">✕</button>`;
+    row.querySelectorAll("input").forEach(inp=>{
+      inp.addEventListener("input",e=>{
+        const k = e.target.dataset.k;
+        r[k] = k==="weight" ? (Number(e.target.value)||1) : e.target.value;
+        renderRandomList(); renderRaw(); renderPreview();
+      });
+    });
+    row.querySelector("button").onclick=()=>{
+      s.random.splice(i,1);
+      if(!s.random.length){ delete s.random; s.next=""; renderEditor(); }
+      else renderRandomList();
+      renderRaw(); renderPreview();
+    };
+    list.appendChild(row);
   });
 }
 
@@ -518,6 +584,15 @@ function renderPreview(){
     const d=document.createElement("div"); d.className="cp"; d.textContent=`▸ ${c.text||"(empty)"} → ${c.nextId||"?"}`;
     cp.appendChild(d);
   });
+  if(Array.isArray(s.random) && s.random.length){
+    const totalW = s.random.reduce((a,b)=>a+(Number(b.weight)||1),0)||1;
+    s.random.forEach(r=>{
+      const w = Number(r.weight)||1;
+      const d=document.createElement("div"); d.className="cp";
+      d.textContent=`🎲 ${((w/totalW)*100).toFixed(1)}% → ${r.nextId||"?"}`;
+      cp.appendChild(d);
+    });
+  }
 }
 
 function renderRaw(){ $("#rawOutput").value = serialize(); }

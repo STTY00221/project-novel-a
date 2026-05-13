@@ -649,12 +649,43 @@
 
             // ไป scene ถัดไป
             const currentScene = storyScript[currentSceneId];
-            if (currentScene && currentScene.next) {
+            if (!currentScene) return;
+
+            // 🎲 ถ้ามี random list → สุ่มเลือก next scene
+            if (Array.isArray(currentScene.random) && currentScene.random.length) {
+                const nextId = pickRandomNext(currentScene.random);
+                if (nextId) {
+                    currentSceneId = nextId;
+                    renderScene(currentSceneId);
+                }
+                return;
+            }
+
+            if (currentScene.next) {
                 currentSceneId = currentScene.next;
                 renderScene(currentSceneId);
-            } else if (currentScene && currentScene.next === null) {
+            } else if (currentScene.next === null) {
                 // จบเรื่อง — ไม่ทำอะไร หรือจะ reset ก็ได้
             }
+        }
+
+        /* ============================================
+           🎲 Random Next — รองรับรูปแบบ string หรือ {nextId, weight}
+           ============================================ */
+        function pickRandomNext(list) {
+            const items = list
+                .map(x => typeof x === "string"
+                    ? { nextId: x, weight: 1 }
+                    : { nextId: x.nextId, weight: Number(x.weight) || 1 })
+                .filter(it => it.nextId);
+            if (!items.length) return null;
+            const total = items.reduce((s, i) => s + i.weight, 0);
+            let r = Math.random() * total;
+            for (const it of items) {
+                r -= it.weight;
+                if (r <= 0) return it.nextId;
+            }
+            return items[items.length - 1].nextId;
         }
 
         function selectChoice(nextId) {
