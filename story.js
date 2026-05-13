@@ -145,27 +145,35 @@ const storyScript = {
     },
 
     "c1": {
-        name: "Mr",
+        name: "Mr.EAKAPOT",
         text: "ข้อใดคือความหมายของสถิติศาสตร์",
         bg: "image/bg.png",
         sprite: "image/creator.png",
-        position: "center",
+        position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "การวาดภาพ", nextId: "" },
-            { text: "การรวบรวมและวิเคราะห์ข้อมูล", nextId: "c2" },
-            { text: "การทดลองวิทยาศาสตร์", nextId: "" },
-            { text: "การเขียนโปรแกรม", nextId: "" },
+            { text: "การวาดภาพ", nextId: "lose" },
+            { text: "การรวบรวมและวิเคราะห์ข้อมูล", nextId: "random" },
+            { text: "การทดลองวิทยาศาสตร์", nextId: "lose" },
+            { text: "การเขียนโปรแกรม", nextId: "lose" },
         ]
     },
 
     "c2": {
-        name: "",
-        text: "",
-        position: "center",
+        name: "Mr.EAKAPOT",
+        text: "ข้อมูลหมายถึงอะไร",
+        bg: "image/bg.png",
+        sprite: "image/creator.png",
+        position: "left",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "เรื่องราวในนิยาย", nextId: "lose" },
+            { text: "ข้อเท็จจริงที่รวบรวมไว้", nextId: "random" },
+            { text: "เพลงที่ฟัง", nextId: "lose" },
+            { text: "รูปภาพตกแต่ง", nextId: "lose" },
+        ]
     },
 
     "c3": {
