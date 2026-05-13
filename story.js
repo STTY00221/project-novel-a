@@ -417,11 +417,19 @@ const storyScript = {
     },
 
     "c18": {
-        name: "",
-        text: "",
-        position: "center",
+        name: "Mr.EAKAPOT",
+        text: "ข้อมูลอายุของนักเรียนเป็นข้อมูลแบบใด",
+        bg: "image/bg1.png",
+        sprite: "image/creator.png",
+        position: "left",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "เชิงปริมาณ", nextId: "random" },
+            { text: " เชิงคุณภาพ", nextId: "lose" },
+            { text: "เชิงข้อความ", nextId: "lose" },
+            { text: "เชิงรูปภาพ", nextId: "lose" },
+        ]
     },
 
     "c19": {
