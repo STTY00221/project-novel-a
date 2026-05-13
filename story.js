@@ -469,7 +469,13 @@ const storyScript = {
         text: "",
         position: "center",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+        ]
     },
 
     "c22": {
@@ -477,7 +483,13 @@ const storyScript = {
         text: "",
         position: "center",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+        ]
     },
 
     "c23": {
@@ -485,7 +497,13 @@ const storyScript = {
         text: "",
         position: "center",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+        ]
     },
 
     "c24": {
@@ -493,7 +511,13 @@ const storyScript = {
         text: "",
         position: "center",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+        ]
     },
 
     "c25": {
@@ -501,7 +525,13 @@ const storyScript = {
         text: "",
         position: "center",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+        ]
     },
 
     "c26": {
@@ -509,7 +539,13 @@ const storyScript = {
         text: "",
         position: "center",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+        ]
     },
 
     "c27": {
@@ -517,7 +553,13 @@ const storyScript = {
         text: "",
         position: "center",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+        ]
     },
 
     "c28": {
@@ -525,7 +567,13 @@ const storyScript = {
         text: "",
         position: "center",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+        ]
     },
 
     "c29": {
@@ -533,7 +581,13 @@ const storyScript = {
         text: "",
         position: "center",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+        ]
     },
 
     "c30": {
@@ -541,7 +595,13 @@ const storyScript = {
         text: "",
         position: "center",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+        ]
     },
 
     "c31": {
@@ -549,7 +609,13 @@ const storyScript = {
         text: "",
         position: "center",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+        ]
     },
 
     "c32": {
@@ -557,7 +623,13 @@ const storyScript = {
         text: "",
         position: "center",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+        ]
     },
 
     "c33": {
@@ -565,7 +637,13 @@ const storyScript = {
         text: "",
         position: "center",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+        ]
     },
 
     "c34": {
@@ -573,7 +651,13 @@ const storyScript = {
         text: "",
         position: "center",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+        ]
     },
 
     "c35": {
@@ -581,7 +665,13 @@ const storyScript = {
         text: "",
         position: "center",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+        ]
     },
 
     "c36": {
@@ -589,7 +679,13 @@ const storyScript = {
         text: "",
         position: "center",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+        ]
     },
 
     "c37": {
@@ -597,7 +693,13 @@ const storyScript = {
         text: "",
         position: "center",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+        ]
     },
 
     "c38": {
@@ -605,7 +707,13 @@ const storyScript = {
         text: "",
         position: "center",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+        ]
     },
 
     "c39": {
@@ -613,7 +721,13 @@ const storyScript = {
         text: "",
         position: "center",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+        ]
     },
 
     "c40": {
@@ -621,7 +735,13 @@ const storyScript = {
         text: "",
         position: "center",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+        ]
     },
 
     "c41": {
@@ -629,7 +749,13 @@ const storyScript = {
         text: "",
         position: "center",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+        ]
     },
 
     "c42": {
@@ -637,7 +763,13 @@ const storyScript = {
         text: "",
         position: "center",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+        ]
     },
 
     "c43": {
@@ -645,7 +777,13 @@ const storyScript = {
         text: "",
         position: "center",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+        ]
     },
 
     "c44": {
@@ -653,7 +791,13 @@ const storyScript = {
         text: "",
         position: "center",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+        ]
     },
 
     "c45": {
@@ -661,7 +805,13 @@ const storyScript = {
         text: "",
         position: "center",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+        ]
     },
 
     "c46": {
@@ -669,7 +819,13 @@ const storyScript = {
         text: "",
         position: "center",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+        ]
     },
 
     "c47": {
@@ -677,7 +833,13 @@ const storyScript = {
         text: "",
         position: "center",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+        ]
     },
 
     "c48": {
@@ -685,7 +847,13 @@ const storyScript = {
         text: "",
         position: "center",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+        ]
     },
 
     "c49": {
@@ -693,7 +861,13 @@ const storyScript = {
         text: "",
         position: "center",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+        ]
     },
 
     "c50": {
@@ -701,7 +875,13 @@ const storyScript = {
         text: "",
         position: "center",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+            { text: "", nextId: "" },
+        ]
     },
 
     "lose": {
@@ -717,8 +897,8 @@ const storyScript = {
 
     "win": {
         name: "Creator",
-        text: "ยินดีด้วยยย!! 🎉\nเองตอบครบทั้ง 50 ข้อแล้ว เห็นแล้วว่าไม่ตกคณิตจริงๆ!\nสุดยอดไปเลย ✨",
-        bg: "image/bg.png",
+        text: "Woww.... ทำได้ไงครบ 50 ข้อโดยไม่ผิดเนี่ย ยังไงผมเชื่อว่าต้องมีทำหลายๆรอบจนถูกนั้นละ\\n\nถ้าใครทำได้ตั้งครบ 50 ข้อตั้งแต่รอบแรก ผมขอนับถือจริง 5555",
+        bg: "none",
         sprite: "image/creator-1.png",
         position: "center",
         speaking: true,
