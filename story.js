@@ -946,7 +946,7 @@ const storyScript = {
 
     "lose": {
         name: "Creator",
-        text: "Woww... ไปทำมาใหม่",
+        text: "Woww... ไปทำมาใหม่นะ..",
         bg: "none",
         sprite: "image/creator-1.png",
         position: "center",
@@ -957,7 +957,7 @@ const storyScript = {
 
     "win": {
         name: "Creator",
-        text: "Woww.... ทำได้ไงครบ 50 ข้อโดยไม่ผิดเนี่ย ยังไงผมเชื่อว่าต้องมีทำหลายๆรอบจนถูกนั้นละ\\n\nถ้าใครทำได้ตั้งครบ 50 ข้อตั้งแต่รอบแรก ผมขอนับถือจริง 5555",
+        text: "Woww.... ทำได้ไงครบ 50 ข้อโดยไม่ผิดเนี่ย ยังไงผมเชื่อว่าต้องมีทำหลายๆรอบจนถูกนั้นละ\\n\nถ้าใครทำได้ตั้งครบ 50 ข้อตั้งแต่รอบแรก ผมขอนับถือจริงๆ 5555",
         bg: "none",
         sprite: "image/creator-1.png",
         position: "center",
