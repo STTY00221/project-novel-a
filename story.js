@@ -73,7 +73,7 @@ const storyScript = {
         name: "Creator",
         text: "แล้วคิดว่า เองพร้อมจะเล่นเกมนี้ยัง...",
         bg: "image/bg.png",
-        sprite: "image/creator.png",
+        sprite: "image/creator-1.png",
         position: "left",
         typeSpeed: 30,
         choices: [
