@@ -177,19 +177,35 @@ const storyScript = {
     },
 
     "c3": {
-        name: "",
-        text: "",
-        position: "center",
+        name: "Mr.EAKAPOT",
+        text: "สถิติศาสตร์ช่วยในเรื่องใดมากที่สุด",
+        bg: "image/bg.png",
+        sprite: "image/creator.png",
+        position: "left",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "การเดาสุ่ม", nextId: "lose" },
+            { text: "การตัดสินใจจากข้อมูล", nextId: "random" },
+            { text: "การเล่นกีฬา", nextId: "lose" },
+            { text: "การร้องเพลง", nextId: "lose" },
+        ]
     },
 
     "c4": {
-        name: "",
-        text: "",
-        position: "center",
+        name: "Mr.EAKAPOT",
+        text: "ข้อใดเป็นตัวอย่างของข้อมูลเชิงปริมาณ",
+        bg: "image/bg.png",
+        sprite: "image/creator.png",
+        position: "left",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "สีเสื้อ", nextId: "lose" },
+            { text: "เพศ", nextId: "lose" },
+            { text: "น้ำหนัก", nextId: "random" },
+            { text: "ศาสนา", nextId: "lose" },
+        ]
     },
 
     "c5": {
