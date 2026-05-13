@@ -504,6 +504,9 @@
         let typewriterInterval = null;
         let currentFullText = "";
 
+        // ----- 🎲 ประวัติการสุ่ม: จำว่า scene ไหนสุ่มไปยัง nextId ไหนแล้วบ้าง (ไม่ซ้ำ) -----
+        const randomHistory = {};   // { sceneId: Set<nextId> }
+
         // ----- ฉากลับ: นับจำนวนคลิกที่ตัวละคร -----
         let secretClickCount = 0;
         const SECRET_CLICKS_NEEDED = 10;  // จำนวนคลิกที่ต้องกด
@@ -524,6 +527,9 @@
         function renderScene(sceneId) {
             const scene = storyScript[sceneId];
             if (!scene) return;
+
+            // 🔄 รีเซ็ตประวัติการสุ่ม เมื่อกลับมาที่หน้า start (เล่นใหม่)
+            if (sceneId === "start") resetRandomHistory();
 
             // อ่านค่า config + ใช้ default ถ้าไม่มี
             const position = scene.position || DEFAULTS.position;
@@ -651,9 +657,9 @@
             const currentScene = storyScript[currentSceneId];
             if (!currentScene) return;
 
-            // 🎲 ถ้ามี random list → สุ่มเลือก next scene
+            // 🎲 ถ้ามี random list → สุ่มเลือก next scene (ไม่ซ้ำของเดิม)
             if (Array.isArray(currentScene.random) && currentScene.random.length) {
-                const nextId = pickRandomNext(currentScene.random);
+                const nextId = pickRandomNext(currentScene.random, currentSceneId);
                 if (nextId) {
                     currentSceneId = nextId;
                     renderScene(currentSceneId);
@@ -670,22 +676,43 @@
         }
 
         /* ============================================
-           🎲 Random Next — รองรับรูปแบบ string หรือ {nextId, weight}
+           🎲 Random Next — รองรับ string หรือ {nextId, weight}
+           ✨ ไม่ซ้ำของเดิม: จำว่าเคยสุ่มอะไรไปแล้วจาก scene นี้ (randomHistory)
+           - ถ้าหมดตัวเลือก → fallback ไป scene.next (ถ้ามี) ไม่งั้นรีเซ็ตแล้วสุ่มใหม่
            ============================================ */
-        function pickRandomNext(list) {
+        function pickRandomNext(list, sceneId) {
             const items = list
                 .map(x => typeof x === "string"
                     ? { nextId: x, weight: 1 }
                     : { nextId: x.nextId, weight: Number(x.weight) || 1 })
                 .filter(it => it.nextId);
             if (!items.length) return null;
-            const total = items.reduce((s, i) => s + i.weight, 0);
-            let r = Math.random() * total;
-            for (const it of items) {
-                r -= it.weight;
-                if (r <= 0) return it.nextId;
+
+            const used = randomHistory[sceneId] || (randomHistory[sceneId] = new Set());
+            let pool = items.filter(it => !used.has(it.nextId));
+
+            // หมดทุกตัวเลือกแล้ว
+            if (!pool.length) {
+                const fallback = storyScript[sceneId] && storyScript[sceneId].next;
+                if (fallback) return fallback;          // ออกไป scene.next
+                used.clear();                            // ไม่งั้น reset แล้วเริ่มสุ่มใหม่
+                pool = items;
             }
-            return items[items.length - 1].nextId;
+
+            const total = pool.reduce((s, i) => s + i.weight, 0);
+            let r = Math.random() * total;
+            let picked = pool[pool.length - 1].nextId;
+            for (const it of pool) {
+                r -= it.weight;
+                if (r <= 0) { picked = it.nextId; break; }
+            }
+            used.add(picked);
+            return picked;
+        }
+
+        // รีเซ็ตประวัติการสุ่มทั้งหมด (เรียกเมื่อเริ่มเกมใหม่)
+        function resetRandomHistory() {
+            for (const k in randomHistory) delete randomHistory[k];
         }
 
         function selectChoice(nextId) {

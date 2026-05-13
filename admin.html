@@ -426,7 +426,9 @@ function renderEditor(){
     </div>
 
     <div id="randomBlock" style="margin-top:10px" ${hasRandom?'':'hidden'}>
-      <div class="muted" style="margin-bottom:6px">🎲 เมื่อถึง scene นี้ ระบบจะสุ่มเลือก nextId จากรายการด้านล่าง (weight ยิ่งมาก โอกาสยิ่งสูง)</div>
+      <div class="muted" style="margin-bottom:6px">🎲 เมื่อถึง scene นี้ ระบบจะสุ่มเลือก nextId จากรายการด้านล่าง (weight ยิ่งมาก โอกาสยิ่งสูง)<br>
+      ✨ <b>ไม่ซ้ำของเดิม:</b> ตัวที่สุ่มไปแล้วจะไม่ถูกเลือกอีก หมดแล้วจะ fallback ไป <code>next</code> (ถ้ามี) หรือเริ่มสุ่มใหม่<br>
+      🔄 ประวัติการสุ่มจะถูกรีเซ็ตเมื่อกลับไปหน้า <code>start</code></div>
       <div class="choices" id="randomList"></div>
       <button class="btn sm" id="btnAddRandom" style="margin-top:8px">+ Add random target</button>
     </div>
