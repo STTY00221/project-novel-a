@@ -786,161 +786,161 @@ const storyScript = {
 
     "c41": {
         name: "Mr.EAKAPOT",
-        text: "",
+        text: "ข้อใดเป็นข้อมูลเชิงปริมาณ",
         bg: "image/bg4.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
+            { text: "สีรถ", nextId: "lose" },
+            { text: "ยี่ห้อโทรศัพท์", nextId: "lose" },
+            { text: "ความสูงของต้นไม้", nextId: "random" },
+            { text: "อาชีพ", nextId: "lose" },
         ]
     },
 
     "c42": {
         name: "Mr.EAKAPOT",
-        text: "",
+        text: "สถิติศาสตร์เกี่ยวข้องกับการทำงานขั้นใด",
         bg: "image/bg4.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
+            { text: "รวบรวมข้อมูล", nextId: "lose" },
+            { text: "วิเคราะห์ข้อมูล", nextId: "lose" },
+            { text: "แปลความหมายข้อมูล", nextId: "lose" },
+            { text: "ถูกทุกข้อ", nextId: "random" },
         ]
     },
 
     "c43": {
         name: "Mr.EAKAPOT",
-        text: "",
+        text: "“อุณหภูมิวันนี้” เป็นข้อมูลประเภทใด",
         bg: "image/bg4.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
+            { text: "เชิงปริมาณ", nextId: "random" },
+            { text: "เชิงคุณภาพ", nextId: "lose" },
+            { text: "เชิงภาษา", nextId: "lose" },
+            { text: "เชิงภาพ", nextId: "lose" },
         ]
     },
 
     "c44": {
         name: "Mr.EAKAPOT",
-        text: "",
+        text: "ข้อใดเป็นข้อมูลไม่ต่อเนื่อง",
         bg: "image/bg4.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
+            { text: "ความสูง", nextId: "lose" },
+            { text: "จำนวนสัตว์เลี้ยง", nextId: "random" },
+            { text: "น้ำหนัก", nextId: "lose" },
+            { text: "เวลา", nextId: "lose" },
         ]
     },
 
     "c45": {
         name: "Mr.EAKAPOT",
-        text: "",
+        text: "การใช้สถิติช่วยในด้านใด",
         bg: "image/bg4.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
+            { text: "การศึกษา", nextId: "lose" },
+            { text: "ธุรกิจ", nextId: "lose" },
+            { text: "การแพทย์", nextId: "lose" },
+            { text: "ถูกทุกข้อ", nextId: "random" },
         ]
     },
 
     "c46": {
         name: "Mr.EAKAPOT",
-        text: "",
+        text: "ข้อมูลที่มีความน่าเชื่อถือควรเป็นอย่างไร",
         bg: "image/bg4.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
+            { text: "มีแหล่งที่มา", nextId: "random" },
+            { text: "ไม่มีหลักฐาน", nextId: "lose" },
+            { text: "ไม่ชัดเจน", nextId: "lose" },
+            { text: "เปลี่ยนแปลงตลอด", nextId: "lose" },
         ]
     },
 
     "c47": {
         name: "Mr.EAKAPOT",
-        text: "",
+        text: "ข้อใดเป็นตัวอย่างข้อมูลเชิงคุณภาพ",
         bg: "image/bg4.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
+            { text: "คะแนนเฉลี่ย", nextId: "lose" },
+            { text: "สีที่ชอบ", nextId: "random" },
+            { text: "ส่วนสูง", nextId: "lose" },
+            { text: "อายุ", nextId: "lose" },
         ]
     },
 
     "c48": {
         name: "Mr.EAKAPOT",
-        text: "",
+        text: "ข้อใดคือหน้าที่ของสถิติศาสตร์",
         bg: "image/bg4.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
+            { text: "วิเคราะห์ข้อมูล", nextId: "lose" },
+            { text: "ทำนายข้อมูล", nextId: "lose" },
+            { text: "สรุปผลข้อมูล", nextId: "lose" },
+            { text: "ถูกทุกข้อ", nextId: "random" },
         ]
     },
 
     "c49": {
         name: "Mr.EAKAPOT",
-        text: "",
+        text: "การเก็บข้อมูลจำนวนมากควรใช้อะไรช่วย",
         bg: "image/bg4.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
+            { text: "เครื่องมือทางสถิติ", nextId: "random" },
+            { text: "การคาดเดา", nextId: "lose" },
+            { text: "การวาดรูป", nextId: "lose" },
+            { text: "การร้องเพลง", nextId: "lose" },
         ]
     },
 
     "c50": {
         name: "Mr.EAKAPOT",
-        text: "",
+        text: "ข้อใดกล่าวถูกต้องเกี่ยวกับข้อมูล",
         bg: "image/bg4.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
+            { text: "ข้อมูลไม่มีประโยชน์", nextId: "lose" },
+            { text: "ข้อมูลใช้ในการวิเคราะห์", nextId: "random" },
+            { text: "ข้อมูลใช้เฉพาะในโรงเรียน", nextId: "lose" },
+            { text: "ข้อมูลไม่จำเป็น", nextId: "lose" },
         ]
     },
 
