@@ -27,51 +27,24 @@
 
 const storyScript = {
 
-    // ============================================
-    // 🏠 หน้าเริ่มต้น
-    // ============================================
-    "start": {
-        name: "",
-        text: "กดเพื่อเล่นใหม่",
-        bg: "null",
-        sprite: "null",
-        speaking: false,
-        next: "1"
-    },
-
-    // ============================================
-    // 📖 เนื้อเรื่อง
-    // ============================================
     "1": {
         name: "Creator",
         text: "ไงพวกเองคนตกคณิตใช่ไหมละ...ถึงได้มาเล่นเกมนี้\n(ไม่มี save นะ) ",
         bg: "image/bg.png",
         sprite: "image/creator.png",
-        position: "center",          // ✅ ตัวละครอยู่ซ้าย
-        speaking: true,            // ✅ เด้งตอนพูด
-        typeSpeed: 35,             // ✅ ความเร็วพิมพ์
+        position: "center",
+        speaking: true,
+        typeSpeed: 35,
         next: "Ready?"
-    },
-
-    "Ready?": {
-        name: "Creator",
-        text: "แล้วคิดว่า เองพร้อมจะเล่นเกมนี้ยัง...",
-        sprite: "image/creator.png",
-        position: "left",
-        typeSpeed: 30,
-        choices: [
-            { text: "พร้อมโว้ยยย!!", nextId: "2" },
-            { text: "ลองคิดดูก่อน", nextId: "start" },
-            { text: "ไม่พร้อมอะ...", nextId: "start" }
-        ]
     },
 
     "2": {
         name: "Creator",
         text: "เองพร้อมแล้วเพราะฉนั้นขอทวนก่อนเรื่องหนึ่ง",
+        bg: "image/bg.png",
         sprite: "image/creator.png",
         position: "center",
-        speaking: true,    // ✅ ย้ายไปขวา (เปลี่ยนตำแหน่งได้!)
+        speaking: true,
         typeSpeed: 30,
         next: "3"
     },
@@ -79,30 +52,50 @@ const storyScript = {
     "3": {
         name: "Creator",
         text: "เกมนี้้มีจำนวณทั้งหมด 50 ข้อในการทำให้เสร็จ\nและมีความลับหามันให้เจอละ",
+        bg: "image/bg.png",
         sprite: "image/creator.png",
         position: "center",
         speaking: true,
-        typeSpeed: 35,     // ✅ อยู่ตรงกลาง
+        typeSpeed: 35,
         next: "end_demo"
     },
 
-    // ============================================
-    // 🔚 จบ Demo
-    // ============================================
+    "start": {
+        name: "",
+        text: "กดเพื่อเล่นใหม่",
+        bg: "image/bg.png",
+        sprite: "null",
+        speaking: false,
+        next: "1"
+    },
+
+    "Ready?": {
+        name: "Creator",
+        text: "แล้วคิดว่า เองพร้อมจะเล่นเกมนี้ยัง...",
+        bg: "image/bg.png",
+        sprite: "image/creator.png",
+        position: "left",
+        typeSpeed: 30,
+        choices: [
+            { text: "พร้อมโว้ยยย!!", nextId: "2" },
+            { text: "ลองคิดดูก่อน", nextId: "start" },
+            { text: "ไม่พร้อมอะ...", nextId: "start" },
+        ]
+    },
+
     "end_demo": {
         name: "ระบบ",
         text: "ขอบคุณที่ทดลองเล่นระบบตัวเลือก! สนใจเขียนเนื้อเรื่องต่อไหม?",
+        bg: "image/bg.png",
         sprite: "null",
         speaking: false,
-        next: null                  // null = จบเรื่อง
+        next: null
     },
 
-    // ============================================
-    // 🔒 ฉากลับ — กดรูปตัวละคร 5 ครั้งตอน scene "1"
-    // ============================================
     "s1": {
         name: "???",
         text: "เอ๊ะ... เองเจอมาได้ยังไง?",
+        bg: "image/bg.png",
         sprite: "image/creator.png",
         position: "center",
         speaking: true,
@@ -113,6 +106,7 @@ const storyScript = {
     "s2": {
         name: "???",
         text: "ที่นี่ไม่ควรมีใครเข้ามาได้นะ...",
+        bg: "image/bg.png",
         position: "left",
         speaking: true,
         typeSpeed: 55,
@@ -122,6 +116,7 @@ const storyScript = {
     "s3": {
         name: "???",
         text: "แต่เมื่อเองมาถึงแล้ว...\nก็ขอบอกอะไรให้ฟังหน่อย",
+        bg: "image/bg.png",
         position: "center",
         speaking: true,
         typeSpeed: 45,
@@ -131,6 +126,7 @@ const storyScript = {
     "s4": {
         name: "???",
         text: "ความลับของเกมนี้คือ...\nไม่ใช่แค่เรื่องคณิตหรอก",
+        bg: "image/bg.png",
         position: "right",
         speaking: true,
         typeSpeed: 60,
@@ -140,9 +136,11 @@ const storyScript = {
     "s5": {
         name: "???",
         text: "ยินดีด้วยนะ ที่เจอฉากลับ!\nเก็บมันเป็นความลับแล้วกัน...",
+        bg: "image/bg.png",
         position: "center",
         speaking: true,
         typeSpeed: 40,
-        next: "Ready?"             // กลับไปเรื่องหลัก
+        next: "Ready?"
     }
+
 };
