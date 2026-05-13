@@ -466,17 +466,17 @@ const storyScript = {
 
     "c21": {
         name: "Mr.EAKAPOT",
-        text: "",
+        text: "จุดประสงค์สำคัญของสถิติศาสตร์คืออะไร",
         bg: "image/bg2.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
+            { text: "เพื่อความสนุก", nextId: "lose" },
+            { text: "เพื่อวิเคราะห์ข้อมูล", nextId: "random" },
+            { text: "เพื่อแข่งขันกีฬา", nextId: "lose" },
+            { text: "เพื่อแต่งเพลง", nextId: "lose" },
         ]
     },
 
@@ -625,9 +625,11 @@ const storyScript = {
     },
 
     "c31": {
-        name: "",
+        name: "Mr.EAKAPOT",
         text: "",
-        position: "center",
+        bg: "image/bg3.png",
+        sprite: "image/creator.png",
+        position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
@@ -639,9 +641,11 @@ const storyScript = {
     },
 
     "c32": {
-        name: "",
+        name: "Mr.EAKAPOT",
         text: "",
-        position: "center",
+        bg: "image/bg3.png",
+        sprite: "image/creator.png",
+        position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
@@ -653,9 +657,11 @@ const storyScript = {
     },
 
     "c33": {
-        name: "",
+        name: "Mr.EAKAPOT",
         text: "",
-        position: "center",
+        bg: "image/bg3.png",
+        sprite: "image/creator.png",
+        position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
@@ -667,9 +673,11 @@ const storyScript = {
     },
 
     "c34": {
-        name: "",
+        name: "Mr.EAKAPOT",
         text: "",
-        position: "center",
+        bg: "image/bg3.png",
+        sprite: "image/creator.png",
+        position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
@@ -681,9 +689,11 @@ const storyScript = {
     },
 
     "c35": {
-        name: "",
+        name: "Mr.EAKAPOT",
         text: "",
-        position: "center",
+        bg: "image/bg3.png",
+        sprite: "image/creator.png",
+        position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
@@ -695,9 +705,11 @@ const storyScript = {
     },
 
     "c36": {
-        name: "",
+        name: "Mr.EAKAPOT",
         text: "",
-        position: "center",
+        bg: "image/bg3.png",
+        sprite: "image/creator.png",
+        position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
@@ -709,9 +721,11 @@ const storyScript = {
     },
 
     "c37": {
-        name: "",
+        name: "Mr.EAKAPOT",
         text: "",
-        position: "center",
+        bg: "image/bg3.png",
+        sprite: "image/creator.png",
+        position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
@@ -723,9 +737,11 @@ const storyScript = {
     },
 
     "c38": {
-        name: "",
+        name: "Mr.EAKAPOT",
         text: "",
-        position: "center",
+        bg: "image/bg3.png",
+        sprite: "image/creator.png",
+        position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
@@ -737,9 +753,11 @@ const storyScript = {
     },
 
     "c39": {
-        name: "",
+        name: "Mr.EAKAPOT",
         text: "",
-        position: "center",
+        bg: "image/bg3.png",
+        sprite: "image/creator.png",
+        position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
@@ -751,9 +769,11 @@ const storyScript = {
     },
 
     "c40": {
-        name: "",
+        name: "Mr.EAKAPOT",
         text: "",
-        position: "center",
+        bg: "image/bg3.png",
+        sprite: "image/creator.png",
+        position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
@@ -765,9 +785,11 @@ const storyScript = {
     },
 
     "c41": {
-        name: "",
+        name: "Mr.EAKAPOT",
         text: "",
-        position: "center",
+        bg: "image/bg4.png",
+        sprite: "image/creator.png",
+        position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
@@ -779,9 +801,11 @@ const storyScript = {
     },
 
     "c42": {
-        name: "",
+        name: "Mr.EAKAPOT",
         text: "",
-        position: "center",
+        bg: "image/bg4.png",
+        sprite: "image/creator.png",
+        position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
@@ -793,9 +817,11 @@ const storyScript = {
     },
 
     "c43": {
-        name: "",
+        name: "Mr.EAKAPOT",
         text: "",
-        position: "center",
+        bg: "image/bg4.png",
+        sprite: "image/creator.png",
+        position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
@@ -807,9 +833,11 @@ const storyScript = {
     },
 
     "c44": {
-        name: "",
+        name: "Mr.EAKAPOT",
         text: "",
-        position: "center",
+        bg: "image/bg4.png",
+        sprite: "image/creator.png",
+        position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
@@ -821,9 +849,11 @@ const storyScript = {
     },
 
     "c45": {
-        name: "",
+        name: "Mr.EAKAPOT",
         text: "",
-        position: "center",
+        bg: "image/bg4.png",
+        sprite: "image/creator.png",
+        position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
@@ -835,9 +865,11 @@ const storyScript = {
     },
 
     "c46": {
-        name: "",
+        name: "Mr.EAKAPOT",
         text: "",
-        position: "center",
+        bg: "image/bg4.png",
+        sprite: "image/creator.png",
+        position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
@@ -849,9 +881,11 @@ const storyScript = {
     },
 
     "c47": {
-        name: "",
+        name: "Mr.EAKAPOT",
         text: "",
-        position: "center",
+        bg: "image/bg4.png",
+        sprite: "image/creator.png",
+        position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
@@ -863,9 +897,11 @@ const storyScript = {
     },
 
     "c48": {
-        name: "",
+        name: "Mr.EAKAPOT",
         text: "",
-        position: "center",
+        bg: "image/bg4.png",
+        sprite: "image/creator.png",
+        position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
@@ -877,9 +913,11 @@ const storyScript = {
     },
 
     "c49": {
-        name: "",
+        name: "Mr.EAKAPOT",
         text: "",
-        position: "center",
+        bg: "image/bg4.png",
+        sprite: "image/creator.png",
+        position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
@@ -891,9 +929,11 @@ const storyScript = {
     },
 
     "c50": {
-        name: "",
+        name: "Mr.EAKAPOT",
         text: "",
-        position: "center",
+        bg: "image/bg4.png",
+        sprite: "image/creator.png",
+        position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
