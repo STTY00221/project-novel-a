@@ -321,19 +321,35 @@ const storyScript = {
     },
 
     "c12": {
-        name: "",
-        text: "",
-        position: "center",
+        name: "Mr.EAKAPOT",
+        text: "ข้อมูลที่เป็นตัวเลขเรียกว่าอะไร",
+        bg: "image/bg1.png",
+        sprite: "image/creator.png",
+        position: "left",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "ข้อมูลเชิงคุณภาพ", nextId: "lose" },
+            { text: "ข้อมูลเชิงปริมาณ", nextId: "random" },
+            { text: "ข้อมูลทั่วไป", nextId: "lose" },
+            { text: "ข้อมูลภาพ", nextId: "lose" },
+        ]
     },
 
     "c13": {
-        name: "",
-        text: "",
-        position: "center",
+        name: "Mr.EAKAPOT",
+        text: "ข้อใดเป็นตัวอย่างของข้อมูล",
+        bg: "image/bg1.png",
+        sprite: "image/creator.png",
+        position: "left",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "หนังสือ", nextId: "lose" },
+            { text: "คะแนนสอบ", nextId: "random" },
+            { text: "ปากกา", nextId: "lose" },
+            { text: "กระเป๋า", nextId: "lose" },
+        ]
     },
 
     "c14": {
