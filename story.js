@@ -305,11 +305,19 @@ const storyScript = {
     },
 
     "c11": {
-        name: "",
-        text: "",
-        position: "center",
+        name: "Mr.EAKAPOT",
+        text: "การสำรวจความคิดเห็นเป็นการเก็บข้อมูลแบบใด",
+        bg: "image/bg1.png",
+        sprite: "image/creator.png",
+        position: "left",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "การทดลอง", nextId: "lose" },
+            { text: "การสอบถาม", nextId: "random" },
+            { text: "การสังเกต", nextId: "lose" },
+            { text: "การคำนวณ", nextId: "lose" },
+        ]
     },
 
     "c12": {
