@@ -733,7 +733,6 @@ const storyScript = {
         position: "center",
         speaking: true,
         typeSpeed: 20,
-        next: "win",
         random: [
             { nextId: "c1", weight: 1 },
             { nextId: "c2", weight: 1 },
