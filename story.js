@@ -553,12 +553,14 @@ const storyScript = {
     },
 
     "lose": {
-        name: "",
-        text: "",
+        name: "Creator",
+        text: "Woww... ไปทำมาใหม่",
         bg: "none",
+        sprite: "image/creator-1.png",
         position: "center",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 30,
+        next: "start"
     },
 
     "random": {
