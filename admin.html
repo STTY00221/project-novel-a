@@ -90,9 +90,63 @@
     main{grid-template-columns:220px 1fr}
     section.preview{display:none}
   }
+
+  /* Login overlay */
+  #loginOverlay{
+    position:fixed;inset:0;background:radial-gradient(circle at 30% 20%,#1b2236,#0a0d14 70%);
+    display:flex;align-items:center;justify-content:center;z-index:200;
+  }
+  #loginOverlay .card{
+    width:min(380px,92vw);background:var(--panel);border:1px solid var(--line);
+    border-radius:14px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.5);
+  }
+  #loginOverlay h2{margin:0 0 4px;font-size:18px;display:flex;align-items:center;gap:8px}
+  #loginOverlay .sub{color:var(--muted);font-size:12px;margin-bottom:16px}
+  #loginOverlay .field{margin-bottom:12px}
+  #loginOverlay input{
+    width:100%;background:var(--panel2);border:1px solid var(--line);
+    border-radius:8px;padding:10px 12px;font-size:14px;color:var(--text)
+  }
+  #loginOverlay input:focus{outline:none;border-color:var(--accent)}
+  #loginOverlay .err{color:var(--danger);font-size:12px;min-height:16px;margin-top:4px}
+  #loginOverlay .btn-login{
+    width:100%;background:linear-gradient(135deg,var(--accent),var(--accent2));
+    border:none;color:#fff;padding:10px;border-radius:8px;font-size:14px;
+    cursor:pointer;font-weight:600;margin-top:4px
+  }
+  #loginOverlay .btn-login:hover{filter:brightness(1.1)}
+  #loginOverlay .foot{margin-top:14px;text-align:center;font-size:11px;color:var(--muted)}
+  #loginOverlay .foot a{color:var(--accent);text-decoration:none}
+  body.locked .app{filter:blur(4px);pointer-events:none;user-select:none}
+
+  /* Logout button in header */
+  #userBadge{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);margin-right:4px}
+  #userBadge b{color:#fff;font-weight:500}
 </style>
 </head>
-<body>
+<body class="locked">
+
+<!-- 🔐 Login Overlay -->
+<div id="loginOverlay">
+  <div class="card">
+    <h2>🔐 Admin Login</h2>
+    <div class="sub">เข้าสู่ระบบเพื่อแก้ไขเนื้อเรื่อง</div>
+    <form id="loginForm" autocomplete="off">
+      <div class="field">
+        <label class="muted" style="font-size:12px">Student ID</label>
+        <input id="loginId" type="text" inputmode="numeric" placeholder="รหัสนักเรียน" required>
+      </div>
+      <div class="field">
+        <label class="muted" style="font-size:12px">Name</label>
+        <input id="loginName" type="text" placeholder="ชื่อผู้ใช้" required>
+      </div>
+      <div class="err" id="loginErr"></div>
+      <button class="btn-login" type="submit">เข้าสู่ระบบ</button>
+    </form>
+    <div class="foot">← <a href="index.html">กลับไปหน้าเกม</a></div>
+  </div>
+</div>
+
 <div class="app">
   <header>
     <h1>📖 Story Admin</h1>
@@ -104,6 +158,8 @@
     <button class="btn" id="btnDownload">⬇️ Download</button>
     <button class="btn ok" id="btnGithub">☁️ Save to GitHub</button>
     <button class="btn ghost" id="btnSettings" title="GitHub settings">⚙️</button>
+    <span id="userBadge" hidden>👤 <b id="userName"></b></span>
+    <button class="btn ghost" id="btnLogout" title="Logout" hidden>🚪</button>
   </header>
 
   <main>
@@ -546,11 +602,67 @@ async function commitToGithub(){
 $("#btnGithub").onclick = commitToGithub;
 
 /* =====================================================
+   🔐 Login Gate
+   ===================================================== */
+const AUTH_KEY = "novelAdminAuth";
+const VALID_USERS = [
+  { id: "15240", name: "admin" }
+];
+
+function checkAuth(){
+  try{
+    const a = JSON.parse(sessionStorage.getItem(AUTH_KEY) || "null");
+    if(!a) return null;
+    return VALID_USERS.find(u => u.id===a.id && u.name===a.name) ? a : null;
+  }catch{ return null; }
+}
+
+function doLogout(){
+  sessionStorage.removeItem(AUTH_KEY);
+  location.reload();
+}
+
+function bindLoginUI(user){
+  document.body.classList.remove("locked");
+  $("#loginOverlay").style.display = "none";
+  $("#userBadge").hidden = false;
+  $("#btnLogout").hidden = false;
+  $("#userName").textContent = user.name;
+}
+
+$("#loginForm").addEventListener("submit", e=>{
+  e.preventDefault();
+  const id = $("#loginId").value.trim();
+  const name = $("#loginName").value.trim();
+  const ok = VALID_USERS.find(u => u.id===id && u.name.toLowerCase()===name.toLowerCase());
+  if(!ok){
+    $("#loginErr").textContent = "❌ Student ID หรือ Name ไม่ถูกต้อง";
+    return;
+  }
+  sessionStorage.setItem(AUTH_KEY, JSON.stringify({id, name: ok.name}));
+  bindLoginUI(ok);
+  startApp();
+});
+
+$("#btnLogout").addEventListener("click", doLogout);
+
+/* =====================================================
    Init
 ===================================================== */
-(async function init(){
+async function startApp(){
   try{ await loadFromServer(); }
   catch{ story = {}; renderAll(); }
+}
+
+(function bootstrap(){
+  const user = checkAuth();
+  if(user){
+    bindLoginUI(user);
+    startApp();
+  } else {
+    // stay locked, focus login
+    setTimeout(()=>$("#loginId").focus(), 50);
+  }
 })();
 </script>
 </body>
