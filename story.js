@@ -369,11 +369,19 @@ const storyScript = {
     },
 
     "c15": {
-        name: "",
-        text: "",
-        position: "center",
+        name: "Mr.EAKAPOT",
+        text: "ข้อมูลที่ได้จากการวัดเรียกว่าอะไร",
+        bg: "image/bg1.png",
+        sprite: "image/creator.png",
+        position: "left",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "ข้อมูลไม่ต่อเนื่อง", nextId: "lose" },
+            { text: "ข้อมูลต่อเนื่อง", nextId: "random" },
+            { text: "ข้อมูลเชิงคุณภาพ", nextId: "lose" },
+            { text: "ข้อมูลข้อความ", nextId: "lose" },
+        ]
     },
 
     "c16": {
