@@ -154,9 +154,11 @@
     <div class="spacer"></div>
     <button class="btn" id="btnReload">🔄 Load story.js</button>
     <button class="btn" id="btnImport">📂 Import</button>
-    <input id="fileInput" type="file" accept=".js,.json,.txt" hidden>
+    <input id="fileInput" type="file" accept=".js,.json,.txt,.enc" hidden>
     <button class="btn" id="btnDownload">⬇️ Download</button>
+    <button class="btn" id="btnDownloadEnc" title="ดาวน์โหลด story.enc.txt (เข้ารหัส)">🔒 Download Encrypted</button>
     <button class="btn ok" id="btnGithub">☁️ Save to GitHub</button>
+    <button class="btn ok" id="btnGithubEnc" title="commit ไฟล์เข้ารหัสไปยัง story.enc.txt">🔐 Save Encrypted</button>
     <button class="btn ghost" id="btnSettings" title="GitHub settings">⚙️</button>
     <span id="userBadge" hidden>👤 <b id="userName"></b></span>
     <button class="btn ghost" id="btnLogout" title="Logout" hidden>🚪</button>
@@ -679,7 +681,109 @@ async function commitToGithub(){
 $("#btnGithub").onclick = commitToGithub;
 
 /* =====================================================
-   🔐 Login Gate
+   � Story Encryption (must match index.html)
+   ===================================================== */
+const STORY_ENC = {
+  pass: "novel-quiz-mr-eakapot-2026",
+  salt: new Uint8Array([78,111,118,101,108,81,117,105,122,83,97,108,116,33,50,54]),
+  iterations: 100000,
+  file: "story.enc.txt"
+};
+async function _deriveStoryKey(){
+  const baseKey = await crypto.subtle.importKey(
+    "raw", new TextEncoder().encode(STORY_ENC.pass),
+    "PBKDF2", false, ["deriveKey"]
+  );
+  return crypto.subtle.deriveKey(
+    {name:"PBKDF2", salt:STORY_ENC.salt, iterations:STORY_ENC.iterations, hash:"SHA-256"},
+    baseKey,
+    {name:"AES-GCM", length:256},
+    false, ["encrypt","decrypt"]
+  );
+}
+async function encryptStoryText(plain){
+  const key = await _deriveStoryKey();
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = await crypto.subtle.encrypt({name:"AES-GCM", iv}, key, new TextEncoder().encode(plain));
+  const out = new Uint8Array(iv.length + ct.byteLength);
+  out.set(iv, 0); out.set(new Uint8Array(ct), iv.length);
+  let bin = ""; for (const b of out) bin += String.fromCharCode(b);
+  return btoa(bin);
+}
+async function decryptStoryText(b64){
+  const key = await _deriveStoryKey();
+  const data = Uint8Array.from(atob(b64.trim()), c=>c.charCodeAt(0));
+  const iv = data.slice(0,12);
+  const ct = data.slice(12);
+  const pt = await crypto.subtle.decrypt({name:"AES-GCM", iv}, key, ct);
+  return new TextDecoder().decode(pt);
+}
+
+// Build encrypted blob from current `story` state (as JSON)
+async function buildEncryptedBlob(){
+  const json = JSON.stringify(story, null, 0);
+  return await encryptStoryText(json);
+}
+
+// Download encrypted file
+$("#btnDownloadEnc").onclick = async ()=>{
+  try{
+    const b64 = await buildEncryptedBlob();
+    const blob = new Blob([b64],{type:"text/plain"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = STORY_ENC.file; a.click();
+    URL.revokeObjectURL(a.href);
+    toast("Downloaded "+STORY_ENC.file);
+  }catch(e){ console.error(e); toast("Encrypt failed: "+e.message,2800); }
+};
+
+// Commit encrypted file to GitHub (uses same gh config, overrides path)
+$("#btnGithubEnc").onclick = async ()=>{
+  const cfg = ghLoad();
+  if(!cfg.owner||!cfg.repo||!cfg.token) return openGhModal(), toast("Fill GitHub settings first");
+  try{
+    const b64 = await buildEncryptedBlob();
+    const path = STORY_ENC.file;
+    const api = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${encodeURIComponent(path)}`;
+    const headers = {Authorization:`Bearer ${cfg.token}`,Accept:"application/vnd.github+json"};
+    let sha;
+    const g = await fetch(api+`?ref=${encodeURIComponent(cfg.branch)}`,{headers});
+    if(g.ok){ sha = (await g.json()).sha; }
+    else if(g.status!==404){ throw new Error("GET "+g.status); }
+    const contentB64 = btoa(unescape(encodeURIComponent(b64)));
+    const body = { message: (cfg.msg||"chore: update story") + " (encrypted)", content: contentB64, branch: cfg.branch };
+    if(sha) body.sha = sha;
+    const r = await fetch(api,{method:"PUT",headers:{...headers,"Content-Type":"application/json"},body:JSON.stringify(body)});
+    if(!r.ok){ const t = await r.text(); throw new Error(r.status+": "+t); }
+    toast("✅ Encrypted committed: "+path);
+  }catch(e){ console.error(e); toast("GitHub error: "+e.message, 3500); }
+};
+
+// Allow Import to handle .enc.txt files: try base64 decrypt → JSON
+const _origImport = importFile;
+importFile = function(file){
+  const name = (file.name||"").toLowerCase();
+  if(name.endsWith(".txt") || name.endsWith(".enc")){
+    const r = new FileReader();
+    r.onload = async ()=>{
+      try{
+        const json = await decryptStoryText(r.result);
+        const obj = JSON.parse(json);
+        sourceHeader = sourceHeader || "";
+        story = obj;
+        currentId = Object.keys(story)[0] || null;
+        renderAll();
+        toast("Imported encrypted file");
+      }catch(e){ toast("Decrypt failed: "+e.message,2800); }
+    };
+    r.readAsText(file);
+    return;
+  }
+  _origImport(file);
+};
+
+/* =====================================================
+   �� Login Gate
    ===================================================== */
 const AUTH_KEY = "novelAdminAuth";
 const VALID_USERS = [

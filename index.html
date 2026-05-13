@@ -763,9 +763,58 @@
         }
 
         /* ============================================
-           🚀 Init — เริ่มจาก scene "start"
+           � Story Encryption (AES-GCM + PBKDF2)
+           ป้องกันคนเปิด DevTools เห็นเฉลย — เปลี่ยน pass/salt ถ้า fork โปรเจกต์
+           ⚠️ ไม่ใช่ security จริง — แค่ obfuscation กัน casual peek
            ============================================ */
-        renderScene("start");
+        const STORY_ENC = {
+            pass: "novel-quiz-mr-eakapot-2026",
+            salt: new Uint8Array([78,111,118,101,108,81,117,105,122,83,97,108,116,33,50,54]),
+            iterations: 100000,
+            file: "story.enc.txt"
+        };
+        async function _deriveStoryKey() {
+            const baseKey = await crypto.subtle.importKey(
+                "raw", new TextEncoder().encode(STORY_ENC.pass),
+                "PBKDF2", false, ["deriveKey"]
+            );
+            return crypto.subtle.deriveKey(
+                { name: "PBKDF2", salt: STORY_ENC.salt, iterations: STORY_ENC.iterations, hash: "SHA-256" },
+                baseKey,
+                { name: "AES-GCM", length: 256 },
+                false, ["encrypt", "decrypt"]
+            );
+        }
+        async function decryptStoryText(b64) {
+            const key = await _deriveStoryKey();
+            const data = Uint8Array.from(atob(b64.trim()), c => c.charCodeAt(0));
+            const iv = data.slice(0, 12);
+            const ct = data.slice(12);
+            const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, ct);
+            return new TextDecoder().decode(pt);
+        }
+
+        /* ============================================
+           🚀 Init — โหลด story (ลอง encrypted ก่อน) แล้วเริ่ม
+           ============================================ */
+        (async function initStory() {
+            try {
+                const r = await fetch(STORY_ENC.file + "?ts=" + Date.now());
+                if (r.ok) {
+                    const b64 = (await r.text()).trim();
+                    if (b64) {
+                        const json = await decryptStoryText(b64);
+                        const obj = JSON.parse(json);
+                        for (const k in storyScript) delete storyScript[k];
+                        for (const k in obj) storyScript[k] = obj[k];
+                        console.log("[story] loaded encrypted");
+                    }
+                }
+            } catch (e) {
+                console.warn("[story] encrypted load failed, using plain story.js", e);
+            }
+            renderScene("start");
+        })();
 
     </script>
 
