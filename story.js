@@ -626,161 +626,161 @@ const storyScript = {
 
     "c31": {
         name: "Mr.EAKAPOT",
-        text: "",
+        text: "สถิติศาสตร์มีประโยชน์ต่อใคร",
         bg: "image/bg3.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
+            { text: "นักเรียนเท่านั้น", nextId: "lose" },
+            { text: "ครูเท่านั้น", nextId: "lose" },
+            { text: "ทุกอาชีพ", nextId: "random" },
+            { text: "แพทย์เท่านั้น", nextId: "lose" },
         ]
     },
 
     "c32": {
         name: "Mr.EAKAPOT",
-        text: "",
+        text: "ข้อมูลที่ถูกต้องควรมีลักษณะอย่างไร",
         bg: "image/bg3.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
+            { text: "คลุมเครือ", nextId: "lose" },
+            { text: "น่าเชื่อถือ", nextId: "random" },
+            { text: "ไม่ครบถ้วน", nextId: "lose" },
+            { text: "ซ้ำซ้อน", nextId: "lose" },
         ]
     },
 
     "c33": {
         name: "Mr.EAKAPOT",
-        text: "",
+        text: "ข้อใดเป็นข้อมูลจากการทดลอง",
         bg: "image/bg3.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
+            { text: "ผลการปลูกพืช", nextId: "random" },
+            { text: "สีเสื้อ", nextId: "lose" },
+            { text: "จังหวัดเกิด", nextId: "lose" },
+            { text: "ชื่อเล่น", nextId: "lose" },
         ]
     },
 
     "c34": {
         name: "Mr.EAKAPOT",
-        text: "",
+        text: "การวิเคราะห์ข้อมูลมีจุดประสงค์ใด",
         bg: "image/bg3.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
+            { text: "หาข้อสรุป", nextId: "random" },
+            { text: "เพิ่มข้อมูล", nextId: "lose" },
+            { text: "ลบข้อมูล", nextId: "lose" },
+            { text: "ซ่อนข้อมูล", nextId: "lose" },
         ]
     },
 
     "c35": {
         name: "Mr.EAKAPOT",
-        text: "",
+        text: "“จำนวนสมาชิกในครอบครัว” เป็นข้อมูลประเภทใด",
         bg: "image/bg3.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
+            { text: "เชิงคุณภาพ", nextId: "lose" },
+            { text: "เชิงปริมาณ", nextId: "random" },
+            { text: "เชิงภาษา", nextId: "lose" },
+            { text: "เชิงสัญลักษณ์", nextId: "lose" },
         ]
     },
 
     "c36": {
         name: "Mr.EAKAPOT",
-        text: "",
+        text: "ข้อใดเป็นข้อมูลเชิงคุณภาพ",
         bg: "image/bg3.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
+            { text: "สถานภาพสมรส", nextId: "random" },
+            { text: "น้ำหนัก", nextId: "lose" },
+            { text: "ส่วนสูง", nextId: "lose" },
+            { text: "อายุ", nextId: "lose" },
         ]
     },
 
     "c37": {
         name: "Mr.EAKAPOT",
-        text: "",
+        text: "การสรุปผลข้อมูลช่วยอะไร",
         bg: "image/bg3.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
+            { text: "เข้าใจข้อมูลได้ง่าย", nextId: "random" },
+            { text: "ทำให้ข้อมูลหาย", nextId: "lose" },
+            { text: "ทำให้ข้อมูลผิด", nextId: "lose" },
+            { text: "ลดข้อมูลทั้งหมด", nextId: "lose" },
         ]
     },
 
     "c38": {
         name: "Mr.EAKAPOT",
-        text: "",
+        text: "ข้อใดไม่ใช่ตัวอย่างข้อมูล",
         bg: "image/bg3.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
+            { text: "คะแนนสอบ", nextId: "lose" },
+            { text: "จำนวนเงิน", nextId: "lose" },
+            { text: "ชื่อโรงเรียน", nextId: "lose" },
+            { text: "โต๊ะเรียน", nextId: "random" },
         ]
     },
 
     "c39": {
         name: "Mr.EAKAPOT",
-        text: "",
+        text: "การเก็บข้อมูลต้องคำนึงถึงอะไร",
         bg: "image/bg3.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
+            { text: "ความถูกต้อง", nextId: "random" },
+            { text: "ความสวยงาม", nextId: "lose" },
+            { text: "ความรวดเร็วอย่างเดียว", nextId: "lose" },
+            { text: "จำนวนสี", nextId: "lose" },
         ]
     },
 
     "c40": {
         name: "Mr.EAKAPOT",
-        text: "",
+        text: "ข้อมูลที่ได้จากการสัมภาษณ์เป็นข้อมูลแบบใด",
         bg: "image/bg3.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
-            { text: "", nextId: "" },
+            { text: "ปฐมภูมิ", nextId: "random" },
+            { text: "ทุติยภูมิ", nextId: "lose" },
+            { text: "ต่อเนื่อง", nextId: "lose" },
+            { text: "ไม่ต่อเนื่อง", nextId: "lose" },
         ]
     },
 
