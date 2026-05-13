@@ -146,13 +146,17 @@ const storyScript = {
 
     "c1": {
         name: "Mr",
-        text: "",
+        text: "ข้อใดคือความหมายของสถิติศาสตร์",
         bg: "image/bg.png",
+        sprite: "image/creator.png",
         position: "center",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "", nextId: "" },
+            { text: "การวาดภาพ", nextId: "" },
+            { text: "การรวบรวมและวิเคราะห์ข้อมูล", nextId: "c2" },
+            { text: "การทดลองวิทยาศาสตร์", nextId: "" },
+            { text: "การเขียนโปรแกรม", nextId: "" },
         ]
     },
 
