@@ -967,9 +967,10 @@ const storyScript = {
     },
 
     "random": {
-        name: "",
+        name: "Creator",
         text: "ขอที่ได้คือ...",
         bg: "image/bg.png",
+        sprite: "image/creator-1.png",
         position: "center",
         speaking: true,
         typeSpeed: 20,
