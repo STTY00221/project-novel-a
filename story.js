@@ -35,10 +35,24 @@ const storyScript = {
         position: "center",
         speaking: true,
         typeSpeed: 35,
-        next: "Ready?"
+        next: "2"
     },
 
     "2": {
+        name: "Creator",
+        text: "แล้วคิดว่า เองพร้อมจะเล่นเกมนี้ยัง...",
+        bg: "image/bg.png",
+        sprite: "image/creator-1.png",
+        position: "left",
+        typeSpeed: 30,
+        choices: [
+            { text: "พร้อมโว้ยยย!!", nextId: "3" },
+            { text: "ลองคิดดูก่อน", nextId: "start" },
+            { text: "ไม่พร้อมอะ...", nextId: "start" },
+        ]
+    },
+
+    "3": {
         name: "Creator",
         text: "เองพร้อมแล้วเพราะ ฉะนั้นขอทวนก่อนเรื่องหนึ่ง",
         bg: "image/bg.png",
@@ -46,21 +60,21 @@ const storyScript = {
         position: "center",
         speaking: true,
         typeSpeed: 30,
-        next: "3"
+        next: "4"
     },
 
-    "3": {
+    "4": {
         name: "Creator",
-        text: "เกมนี้มีจำนวณทั้งหมด 50 ข้อในการทำให้เสร็จ\nและมีความลับหามันให้เจอละ",
+        text: "เกมนี้มีจำนวณทั้งหมด 50 ข้อในการทำให้เสร็จ จะไม่มีข้อไหนที่ซ้ำกัน\nและมีความลับหามันให้เจอละ",
         bg: "image/bg.png",
         sprite: "image/creator-1.png",
         position: "center",
         speaking: true,
         typeSpeed: 35,
-        next: "4"
+        next: "5"
     },
 
-    "4": {
+    "5": {
         name: "Creator",
         text: "อ่อ...อีกเรื่องหนึ่งตอบผิดก็แค่ กลับไปทำใหม่ขอให้โชคดีละ",
         bg: "image/bg.png",
@@ -68,7 +82,7 @@ const storyScript = {
         position: "center",
         speaking: true,
         typeSpeed: 40,
-        next: "c1"
+        next: "random"
     },
 
     "start": {
@@ -78,20 +92,6 @@ const storyScript = {
         sprite: "null",
         speaking: false,
         next: "1"
-    },
-
-    "Ready?": {
-        name: "Creator",
-        text: "แล้วคิดว่า เองพร้อมจะเล่นเกมนี้ยัง...",
-        bg: "image/bg.png",
-        sprite: "image/creator-1.png",
-        position: "left",
-        typeSpeed: 30,
-        choices: [
-            { text: "พร้อมโว้ยยย!!", nextId: "2" },
-            { text: "ลองคิดดูก่อน", nextId: "start" },
-            { text: "ไม่พร้อมอะ...", nextId: "start" },
-        ]
     },
 
     "s1": {
@@ -550,6 +550,76 @@ const storyScript = {
         position: "center",
         speaking: true,
         typeSpeed: 40
+    },
+
+    "lose": {
+        name: "",
+        text: "",
+        bg: "none",
+        position: "center",
+        speaking: true,
+        typeSpeed: 40
+    },
+
+    "random": {
+        name: "",
+        text: "ขอที่ได้คือ...",
+        bg: "image/bg.png",
+        position: "center",
+        speaking: true,
+        typeSpeed: 20,
+        random: [
+            { nextId: "c1", weight: 1 },
+            { nextId: "c2", weight: 1 },
+            { nextId: "c3", weight: 1 },
+            { nextId: "c4", weight: 1 },
+            { nextId: "c5", weight: 1 },
+            { nextId: "c6", weight: 1 },
+            { nextId: "c7", weight: 1 },
+            { nextId: "c8", weight: 1 },
+            { nextId: "c9", weight: 1 },
+            { nextId: "c10", weight: 1 },
+            { nextId: "c11", weight: 1 },
+            { nextId: "c12", weight: 1 },
+            { nextId: "c13", weight: 1 },
+            { nextId: "c14", weight: 1 },
+            { nextId: "c15", weight: 1 },
+            { nextId: "c16", weight: 1 },
+            { nextId: "c17", weight: 1 },
+            { nextId: "c18", weight: 1 },
+            { nextId: "c19", weight: 1 },
+            { nextId: "c20", weight: 1 },
+            { nextId: "c21", weight: 1 },
+            { nextId: "c22", weight: 1 },
+            { nextId: "c23", weight: 1 },
+            { nextId: "c24", weight: 1 },
+            { nextId: "c25", weight: 1 },
+            { nextId: "c26", weight: 1 },
+            { nextId: "c27", weight: 1 },
+            { nextId: "c28", weight: 1 },
+            { nextId: "c29", weight: 1 },
+            { nextId: "c30", weight: 1 },
+            { nextId: "c31", weight: 1 },
+            { nextId: "c32", weight: 1 },
+            { nextId: "c33", weight: 1 },
+            { nextId: "c34", weight: 1 },
+            { nextId: "c35", weight: 1 },
+            { nextId: "c36", weight: 1 },
+            { nextId: "c37", weight: 1 },
+            { nextId: "c38", weight: 1 },
+            { nextId: "c39", weight: 1 },
+            { nextId: "c40", weight: 1 },
+            { nextId: "c41", weight: 1 },
+            { nextId: "c42", weight: 1 },
+            { nextId: "c43", weight: 1 },
+            { nextId: "c44", weight: 1 },
+            { nextId: "c45", weight: 1 },
+            { nextId: "c46", weight: 1 },
+            { nextId: "c47", weight: 1 },
+            { nextId: "c48", weight: 1 },
+            { nextId: "c49", weight: 1 },
+            { nextId: "c50", weight: 1 },
+        ]
     }
 
 };
