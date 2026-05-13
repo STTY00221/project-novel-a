@@ -40,7 +40,7 @@ const storyScript = {
 
     "2": {
         name: "Creator",
-        text: "เองพร้อมแล้วเพราะ ฉนั้นขอทวนก่อนเรื่องหนึ่ง",
+        text: "เองพร้อมแล้วเพราะ ฉะนั้นขอทวนก่อนเรื่องหนึ่ง",
         bg: "image/bg.png",
         sprite: "image/creator-1.png",
         position: "center",
@@ -51,7 +51,7 @@ const storyScript = {
 
     "3": {
         name: "Creator",
-        text: "เกมนี้้มีจำนวณทั้งหมด 50 ข้อในการทำให้เสร็จ\nและมีความลับหามันให้เจอละ",
+        text: "เกมนี้มีจำนวณทั้งหมด 50 ข้อในการทำให้เสร็จ\nและมีความลับหามันให้เจอละ",
         bg: "image/bg.png",
         sprite: "image/creator-1.png",
         position: "center",
