@@ -385,19 +385,35 @@ const storyScript = {
     },
 
     "c16": {
-        name: "",
-        text: "",
-        position: "center",
+        name: "Mr.EAKAPOT",
+        text: "การใช้สถิติช่วยให้เกิดอะไร",
+        bg: "image/bg1.png",
+        sprite: "image/creator.png",
+        position: "left",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "ความสับสน", nextId: "lose" },
+            { text: "การตัดสินใจที่มีเหตุผล", nextId: "random" },
+            { text: "การคาดเดา", nextId: "lose" },
+            { text: "ความผิดพลาดเสมอ", nextId: "lose" },
+        ]
     },
 
     "c17": {
-        name: "",
-        text: "",
-        position: "center",
+        name: "Mr.EAKAPOT",
+        text: "ข้อใดเป็นข้อมูลเชิงคุณภาพ",
+        bg: "image/bg1.png",
+        sprite: "image/creator.png",
+        position: "left",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "อายุ", nextId: "lose" },
+            { text: "รายได้", nextId: "lose" },
+            { text: "อาชีพ", nextId: "random" },
+            { text: "น้ำหนัก", nextId: "lose" },
+        ]
     },
 
     "c18": {
