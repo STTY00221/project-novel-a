@@ -40,7 +40,7 @@ const storyScript = {
 
     "2": {
         name: "Creator",
-        text: "เองพร้อมแล้วเพราะฉนั้นขอทวนก่อนเรื่องหนึ่ง",
+        text: "เองพร้อมแล้วเพราะ ฉนั้นขอทวนก่อนเรื่องหนึ่ง",
         bg: "image/bg.png",
         sprite: "image/creator-1.png",
         position: "center",
@@ -57,6 +57,17 @@ const storyScript = {
         position: "center",
         speaking: true,
         typeSpeed: 35,
+        next: "4"
+    },
+
+    "4": {
+        name: "Creator",
+        text: "อ่อ...อีกเรื่องหนึ่งตอบผิดก็แค่ กลับไปทำใหม่ขอให้โชคดีละ",
+        bg: "image/bg.png",
+        sprite: "image/creator-1.png",
+        position: "center",
+        speaking: true,
+        typeSpeed: 40,
         next: "c1"
     },
 
