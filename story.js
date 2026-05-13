@@ -273,19 +273,35 @@ const storyScript = {
     },
 
     "c9": {
-        name: "",
-        text: "",
-        position: "center",
+        name: "Mr.EAKAPOT",
+        text: "“ส่วนสูงของนักเรียน” เป็นข้อมูลประเภทใด",
+        bg: "image/bg.png",
+        sprite: "image/creator.png",
+        position: "left",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "เชิงคุณภาพ", nextId: "lose" },
+            { text: "เชิงปริมาณ", nextId: "random" },
+            { text: "เชิงภาษา", nextId: "lose" },
+            { text: "เชิงสัญลักษณ์", nextId: "lose" },
+        ]
     },
 
     "c10": {
-        name: "",
-        text: "",
-        position: "center",
+        name: "Mr.EAKAPOT",
+        text: "ข้อใดเป็นแหล่งข้อมูลปฐมภูมิ",
+        bg: "image/bg.png",
+        sprite: "image/creator.png",
+        position: "left",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "หนังสือพิมพ์", nextId: "lose" },
+            { text: "อินเทอร์เน็ต", nextId: "lose" },
+            { text: "การสอบถามโดยตรง", nextId: "random" },
+            { text: "วารสาร", nextId: "lose" },
+        ]
     },
 
     "c11": {
