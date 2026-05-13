@@ -715,6 +715,17 @@ const storyScript = {
         next: "start"
     },
 
+    "win": {
+        name: "Creator",
+        text: "ยินดีด้วยยย!! 🎉\nเองตอบครบทั้ง 50 ข้อแล้ว เห็นแล้วว่าไม่ตกคณิตจริงๆ!\nสุดยอดไปเลย ✨",
+        bg: "image/bg.png",
+        sprite: "image/creator-1.png",
+        position: "center",
+        speaking: true,
+        typeSpeed: 35,
+        next: "start"
+    },
+
     "random": {
         name: "",
         text: "ขอที่ได้คือ...",
@@ -722,6 +733,7 @@ const storyScript = {
         position: "center",
         speaking: true,
         typeSpeed: 20,
+        next: "win",
         random: [
             { nextId: "c1", weight: 1 },
             { nextId: "c2", weight: 1 },
