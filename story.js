@@ -353,11 +353,19 @@ const storyScript = {
     },
 
     "c14": {
-        name: "",
-        text: "",
-        position: "center",
+        name: "Mr.EAKAPOT",
+        text: "สถิติศาสตร์เกี่ยวข้องกับอะไร",
+        bg: "image/bg1.png",
+        sprite: "image/creator.png",
+        position: "left",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "ข้อมูล", nextId: "random" },
+            { text: "ดนตรี", nextId: "lose" },
+            { text: "กีฬา", nextId: "lose" },
+            { text: "ศิลปะ", nextId: "lose" },
+        ]
     },
 
     "c15": {
