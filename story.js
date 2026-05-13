@@ -241,11 +241,19 @@ const storyScript = {
     },
 
     "c7": {
-        name: "",
-        text: "",
-        position: "center",
+        name: "Mr.EAKAPOT",
+        text: "ข้อใดไม่ใช่ขั้นตอนของสถิติศาสตร์",
+        bg: "image/bg.png",
+        sprite: "image/creator.png",
+        position: "left",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "เก็บข้อมูล", nextId: "lose" },
+            { text: "วิเคราะห์ข้อมูล", nextId: "lose" },
+            { text: "สรุปผล", nextId: "lose" },
+            { text: "แต่งเพลง", nextId: "random" },
+        ]
     },
 
     "c8": {
