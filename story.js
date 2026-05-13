@@ -433,11 +433,19 @@ const storyScript = {
     },
 
     "c19": {
-        name: "",
-        text: "",
-        position: "center",
+        name: "Mr.EAKAPOT",
+        text: "การเก็บข้อมูลโดยดูพฤติกรรมเรียกว่าอะไร",
+        bg: "image/bg1.png",
+        sprite: "image/creator.png",
+        position: "left",
         speaking: true,
-        typeSpeed: 40
+        typeSpeed: 40,
+        choices: [
+            { text: "การทดลอง", nextId: "lose" },
+            { text: " การสัมภาษณ์", nextId: "lose" },
+            { text: "การสังเกต", nextId: "random" },
+            { text: "การวิเคราะห์", nextId: "lose" },
+        ]
     },
 
     "c20": {
