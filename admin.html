@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Story Admin — project-novel</title>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0f1115; --panel:#171a21; --panel2:#1e222c; --line:#2a2f3a;
+    --text:#e7e9ee; --muted:#9aa3b2; --accent:#6aa9ff; --accent2:#8b5cf6;
+    --ok:#22c55e; --warn:#f59e0b; --danger:#ef4444;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:'Prompt',system-ui,sans-serif}
+  button,input,select,textarea{font-family:inherit;color:var(--text)}
+  a{color:var(--accent)}
+  .app{display:grid;grid-template-rows:auto 1fr;height:100%}
+  header{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--panel);border-bottom:1px solid var(--line)}
+  header h1{font-size:16px;margin:0;font-weight:600}
+  header .spacer{flex:1}
+  .btn{background:var(--panel2);border:1px solid var(--line);color:var(--text);padding:7px 12px;border-radius:8px;cursor:pointer;font-size:13px}
+  .btn:hover{border-color:#3a4150}
+  .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));border-color:transparent}
+  .btn.ok{background:var(--ok);border-color:transparent;color:#0b1f12}
+  .btn.warn{background:var(--warn);border-color:transparent;color:#2a1b02}
+  .btn.danger{background:var(--danger);border-color:transparent}
+  .btn.ghost{background:transparent}
+  .btn.sm{padding:4px 8px;font-size:12px}
+  .pill{font-size:11px;padding:2px 8px;border-radius:999px;background:#222836;color:var(--muted);border:1px solid var(--line)}
+
+  main{display:grid;grid-template-columns:260px 1fr 420px;min-height:0}
+  aside,section{min-height:0;overflow:auto}
+  aside{background:var(--panel);border-right:1px solid var(--line)}
+  .scene-list{list-style:none;padding:6px;margin:0}
+  .scene-list li{padding:8px 10px;border-radius:6px;cursor:pointer;display:flex;align-items:center;gap:6px;font-size:13px;color:#cfd3dc}
+  .scene-list li:hover{background:#1d2230}
+  .scene-list li.active{background:#243049;color:#fff}
+  .scene-list li .del{margin-left:auto;opacity:.5;font-size:11px}
+  .scene-list li .del:hover{opacity:1;color:var(--danger)}
+  .side-actions{display:flex;gap:6px;padding:8px;border-bottom:1px solid var(--line)}
+  .side-actions input{flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:6px 8px;font-size:12px}
+
+  section.editor{padding:16px 20px;background:var(--bg)}
+  section.preview{padding:14px;background:var(--panel);border-left:1px solid var(--line)}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px}
+  .field{display:flex;flex-direction:column;gap:4px}
+  .field.full{grid-column:1/-1}
+  .field label{font-size:12px;color:var(--muted)}
+  .field input,.field select,.field textarea{background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:8px 10px;font-size:13px;color:var(--text)}
+  .field textarea{resize:vertical;min-height:84px;font-family:inherit}
+  .row{display:flex;gap:10px;align-items:center}
+  .switch{display:flex;align-items:center;gap:8px}
+  .choices{display:flex;flex-direction:column;gap:8px}
+  .choice{display:grid;grid-template-columns:1fr 180px auto;gap:8px;background:var(--panel2);border:1px solid var(--line);padding:8px;border-radius:8px}
+  .choice input,.choice select{background:#131722;border:1px solid var(--line);border-radius:6px;padding:6px 8px;font-size:12px;color:var(--text)}
+  h2.section-title{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:18px 0 8px}
+
+  /* Preview */
+  .preview-stage{position:relative;width:100%;aspect-ratio:16/9;background:#000;border-radius:10px;overflow:hidden;border:1px solid var(--line)}
+  .preview-stage .bg{position:absolute;inset:0;background-size:cover;background-position:center;transition:background-image .5s}
+  .preview-stage .bg::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,transparent 55%,rgba(0,0,0,.55))}
+  .preview-stage .sprite{position:absolute;bottom:25%;height:55%;transition:all .4s}
+  .preview-stage .sprite.left{left:10%}
+  .preview-stage .sprite.center{left:50%;transform:translateX(-50%)}
+  .preview-stage .sprite.right{right:10%}
+  .preview-stage .sprite.speak{animation:bob 1s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  .preview-stage .sprite.center.speak{animation:bobC 1s ease-in-out infinite}
+  @keyframes bobC{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-6px)}}
+  .dialog{position:absolute;left:4%;right:4%;bottom:4%;background:rgba(0,0,0,.85);border:1px solid #333;border-radius:10px;padding:10px 12px;color:#fff;font-size:12px}
+  .dialog .name{color:#ffd166;font-weight:600;margin-bottom:4px;font-size:12px}
+  .choices-preview{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+  .choices-preview .cp{background:rgba(255,255,255,.08);border:1px solid #444;padding:5px 8px;border-radius:6px;font-size:11px}
+
+  .muted{color:var(--muted);font-size:12px}
+  .hint{font-size:11px;color:var(--muted);margin-top:4px}
+  .toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#111826;border:1px solid var(--line);color:#fff;padding:10px 14px;border-radius:8px;font-size:13px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:99}
+  .toast.show{opacity:1}
+
+  /* Modal */
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:50}
+  .modal.show{display:flex}
+  .modal .box{background:var(--panel);border:1px solid var(--line);border-radius:12px;width:min(520px,92vw);padding:18px}
+  .modal h3{margin:0 0 10px;font-size:15px}
+  .modal .field{margin-bottom:10px}
+  .modal .footer{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
+
+  @media (max-width:1100px){
+    main{grid-template-columns:220px 1fr}
+    section.preview{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>📖 Story Admin</h1>
+    <span id="fileStatus" class="pill">story.js: not loaded</span>
+    <div class="spacer"></div>
+    <button class="btn" id="btnReload">🔄 Load story.js</button>
+    <button class="btn" id="btnImport">📂 Import</button>
+    <input id="fileInput" type="file" accept=".js,.json,.txt" hidden>
+    <button class="btn" id="btnDownload">⬇️ Download</button>
+    <button class="btn ok" id="btnGithub">☁️ Save to GitHub</button>
+    <button class="btn ghost" id="btnSettings" title="GitHub settings">⚙️</button>
+  </header>
+
+  <main>
+    <aside>
+      <div class="side-actions">
+        <input id="newSceneId" placeholder="new scene id...">
+        <button class="btn sm primary" id="btnAddScene">+ Add</button>
+      </div>
+      <ul class="scene-list" id="sceneList"></ul>
+    </aside>
+
+    <section class="editor" id="editor">
+      <div class="muted">Select or create a scene to edit.</div>
+    </section>
+
+    <section class="preview">
+      <h2 class="section-title">Live Preview</h2>
+      <div class="preview-stage" id="previewStage">
+        <div class="bg" id="pvBg"></div>
+        <img class="sprite" id="pvSprite" hidden>
+        <div class="dialog" id="pvDialog">
+          <div class="name" id="pvName"></div>
+          <div id="pvText"></div>
+          <div class="choices-preview" id="pvChoices"></div>
+        </div>
+      </div>
+      <h2 class="section-title">Raw output</h2>
+      <textarea id="rawOutput" style="width:100%;min-height:160px;background:var(--panel2);color:#cbd5e1;border:1px solid var(--line);border-radius:8px;padding:8px;font-family:ui-monospace,Menlo,monospace;font-size:11px" readonly></textarea>
+    </section>
+  </main>
+</div>
+
+<!-- GitHub Settings Modal -->
+<div class="modal" id="modalGh">
+  <div class="box">
+    <h3>☁️ GitHub Settings</h3>
+    <div class="muted" style="margin-bottom:10px">
+      Create a fine-grained Personal Access Token with <b>Contents: Read &amp; Write</b> on your repo.
+      It's stored in your browser (localStorage) only.
+    </div>
+    <div class="field"><label>Owner (username/org)</label><input id="ghOwner" placeholder="e.g. yourname"></div>
+    <div class="field"><label>Repo</label><input id="ghRepo" placeholder="e.g. project-novel"></div>
+    <div class="field"><label>Branch</label><input id="ghBranch" placeholder="main" value="main"></div>
+    <div class="field"><label>File path</label><input id="ghPath" placeholder="story.js" value="story.js"></div>
+    <div class="field"><label>Token</label><input id="ghToken" type="password" placeholder="github_pat_..."></div>
+    <div class="field"><label>Commit message</label><input id="ghMsg" value="chore: update story.js via admin"></div>
+    <div class="footer">
+      <button class="btn ghost" id="ghCancel">Close</button>
+      <button class="btn primary" id="ghSave">Save settings</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =====================================================
+   State & Utilities
+===================================================== */
+const DEFAULTS = { position:"center", speaking:true, typeSpeed:40 };
+let story = {};          // current storyScript object
+let currentId = null;    // selected scene id
+let sourceHeader = "";   // preserved header comment from story.js
+
+const $ = (s,p=document)=>p.querySelector(s);
+const $$ = (s,p=document)=>[...p.querySelectorAll(s)];
+const toast = (msg,ms=1800)=>{const t=$("#toast");t.textContent=msg;t.classList.add("show");clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove("show"),ms);};
+
+/* =====================================================
+   Parse existing story.js (extract storyScript object)
+===================================================== */
+function parseStoryJs(src){
+  // Keep leading comment block as header
+  const headerMatch = src.match(/^\s*\/\*[\s\S]*?\*\/\s*/);
+  const header = headerMatch ? headerMatch[0] : "";
+  // Extract the storyScript = { ... };
+  const m = src.match(/const\s+storyScript\s*=\s*(\{[\s\S]*\})\s*;?\s*$/);
+  if(!m) throw new Error("Cannot find `const storyScript = {...}` in file.");
+  // Evaluate safely-ish: object literal only
+  const obj = Function('"use strict";return ('+m[1]+');')();
+  return { header, script: obj };
+}
+
+/* =====================================================
+   Serialize back to story.js
+===================================================== */
+function serialize(){
+  const esc = s => String(s).replace(/\\/g,"\\\\").replace(/"/g,'\\"').replace(/\n/g,"\\n").replace(/\r/g,"");
+  const lines = ["const storyScript = {",""];
+  const ids = Object.keys(story);
+  ids.forEach((id,idx)=>{
+    const s = story[id];
+    lines.push(`    "${id}": {`);
+    const push = (k,v)=>lines.push(`        ${k}: ${v},`);
+    if(s.name!==undefined) push("name",`"${esc(s.name)}"`);
+    if(s.text!==undefined) push("text",`"${esc(s.text)}"`);
+    if(s.bg!==undefined && s.bg!=="") push("bg",`"${esc(s.bg)}"`);
+    if(s.sprite!==undefined && s.sprite!=="") push("sprite",`"${esc(s.sprite)}"`);
+    if(s.position) push("position",`"${s.position}"`);
+    if(s.speaking!==undefined) push("speaking",`${!!s.speaking}`);
+    if(s.typeSpeed!==undefined && s.typeSpeed!=="") push("typeSpeed",`${Number(s.typeSpeed)}`);
+    if(Array.isArray(s.choices) && s.choices.length){
+      lines.push("        choices: [");
+      s.choices.forEach(c=>lines.push(`            { text: "${esc(c.text||"")}", nextId: "${esc(c.nextId||"")}" },`));
+      lines.push("        ],");
+    } else {
+      const n = s.next===null ? "null" : (s.next===undefined||s.next==="" ? null : `"${esc(s.next)}"`);
+      if(n!==null && n!==undefined) push("next",n);
+      else if(s.next===null) push("next","null");
+    }
+    // remove trailing comma on last inner line
+    const last = lines[lines.length-1];
+    lines[lines.length-1] = last.replace(/,$/,"");
+    lines.push("    }" + (idx<ids.length-1 ? "," : ""));
+    lines.push("");
+  });
+  lines.push("};","");
+  return (sourceHeader || "") + lines.join("\n");
+}
+
+/* =====================================================
+   Load / Import
+===================================================== */
+async function loadFromServer(){
+  try{
+    const res = await fetch("story.js?ts="+Date.now());
+    if(!res.ok) throw new Error("HTTP "+res.status);
+    const txt = await res.text();
+    const {header,script} = parseStoryJs(txt);
+    sourceHeader = header;
+    story = script;
+    currentId = Object.keys(story)[0] || null;
+    renderAll();
+    $("#fileStatus").textContent = `story.js: loaded (${Object.keys(story).length} scenes)`;
+    toast("Loaded story.js");
+  }catch(e){
+    toast("Load failed: "+e.message, 2800);
+    console.error(e);
+  }
+}
+function importFile(file){
+  const r = new FileReader();
+  r.onload = ()=>{
+    try{
+      const {header,script} = parseStoryJs(r.result);
+      sourceHeader = header; story = script;
+      currentId = Object.keys(story)[0] || null;
+      renderAll();
+      toast("Imported "+file.name);
+    }catch(e){ toast("Parse failed: "+e.message,2800); }
+  };
+  r.readAsText(file);
+}
+
+/* =====================================================
+   Render: list + editor + preview
+===================================================== */
+function renderAll(){ renderList(); renderEditor(); renderPreview(); renderRaw(); }
+
+function renderList(){
+  const ul = $("#sceneList"); ul.innerHTML = "";
+  Object.keys(story).forEach(id=>{
+    const li = document.createElement("li");
+    li.className = id===currentId ? "active" : "";
+    li.innerHTML = `<span>${id}</span><span class="del" title="delete">✕</span>`;
+    li.onclick = e=>{
+      if(e.target.classList.contains("del")){
+        if(confirm(`Delete scene "${id}"?`)){
+          delete story[id];
+          if(currentId===id) currentId = Object.keys(story)[0]||null;
+          renderAll();
+        }
+        return;
+      }
+      currentId = id; renderAll();
+    };
+    ul.appendChild(li);
+  });
+}
+
+function renderEditor(){
+  const ed = $("#editor");
+  if(!currentId || !story[currentId]){
+    ed.innerHTML = `<div class="muted">No scene selected. Add one from the left.</div>`;
+    return;
+  }
+  const s = story[currentId];
+  const hasChoices = Array.isArray(s.choices) && s.choices.length>0;
+  ed.innerHTML = `
+    <div class="row" style="justify-content:space-between;margin-bottom:10px">
+      <div class="row">
+        <label class="muted">Scene ID</label>
+        <input id="fId" value="${currentId}" style="background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:6px 10px;color:#fff;min-width:180px">
+        <button class="btn sm" id="btnRename">Rename</button>
+      </div>
+      <div class="row">
+        <button class="btn sm" id="btnDup">Duplicate</button>
+        <button class="btn sm danger" id="btnDel">Delete</button>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="field">
+        <label>Character name</label>
+        <input id="fName" value="${(s.name??"").replace(/"/g,'&quot;')}">
+      </div>
+      <div class="field">
+        <label>Position</label>
+        <select id="fPos">
+          ${["left","center","right"].map(p=>`<option ${(s.position||DEFAULTS.position)===p?"selected":""}>${p}</option>`).join("")}
+        </select>
+      </div>
+      <div class="field full">
+        <label>Dialogue text (use \\n for new line)</label>
+        <textarea id="fText">${(s.text??"").replace(/</g,"&lt;")}</textarea>
+      </div>
+      <div class="field">
+        <label>Background URL (or "null")</label>
+        <input id="fBg" value="${(s.bg??"").replace(/"/g,'&quot;')}">
+      </div>
+      <div class="field">
+        <label>Sprite URL (or "null")</label>
+        <input id="fSprite" value="${(s.sprite??"").replace(/"/g,'&quot;')}">
+      </div>
+      <div class="field">
+        <label>Type speed (ms/char)</label>
+        <input id="fSpeed" type="number" min="1" value="${s.typeSpeed??DEFAULTS.typeSpeed}">
+      </div>
+      <div class="field">
+        <label>Speaking animation</label>
+        <div class="switch"><input id="fSpeak" type="checkbox" ${(s.speaking??DEFAULTS.speaking)?"checked":""}><span class="muted">bob up/down</span></div>
+      </div>
+    </div>
+
+    <h2 class="section-title">Flow</h2>
+    <div class="row" style="gap:14px;flex-wrap:wrap">
+      <label class="switch"><input id="fUseChoices" type="checkbox" ${hasChoices?"checked":""}><span>Use choices (instead of next)</span></label>
+    </div>
+
+    <div id="nextBlock" style="margin-top:10px" ${hasChoices?'hidden':''}>
+      <div class="field">
+        <label>Next scene id (blank = none, "null" literal = end)</label>
+        <input id="fNext" value="${s.next===null?'null':(s.next??'')}" list="sceneOpts">
+        <datalist id="sceneOpts">${Object.keys(story).map(id=>`<option value="${id}">`).join("")}</datalist>
+      </div>
+    </div>
+
+    <div id="choicesBlock" style="margin-top:10px" ${hasChoices?'':'hidden'}>
+      <div class="choices" id="choicesList"></div>
+      <button class="btn sm" id="btnAddChoice" style="margin-top:8px">+ Add choice</button>
+    </div>
+  `;
+
+  // Bind field events
+  const bind = (sel,ev,fn)=>{ const el=$(sel); if(el) el.addEventListener(ev,fn); };
+  const update = (key,val)=>{ s[key]=val; renderPreview(); renderRaw(); };
+
+  bind("#fName","input",e=>update("name",e.target.value));
+  bind("#fText","input",e=>update("text",e.target.value));
+  bind("#fBg","input",e=>update("bg",e.target.value));
+  bind("#fSprite","input",e=>update("sprite",e.target.value));
+  bind("#fPos","change",e=>update("position",e.target.value));
+  bind("#fSpeed","input",e=>update("typeSpeed",Number(e.target.value)||DEFAULTS.typeSpeed));
+  bind("#fSpeak","change",e=>update("speaking",e.target.checked));
+  bind("#fNext","input",e=>{
+    const v = e.target.value;
+    s.next = v==="null" ? null : (v===""?undefined:v);
+    renderRaw();
+  });
+
+  bind("#fUseChoices","change",e=>{
+    if(e.target.checked){
+      s.choices = s.choices && s.choices.length ? s.choices : [{text:"",nextId:""}];
+      delete s.next;
+    } else {
+      delete s.choices;
+      s.next = s.next ?? "";
+    }
+    renderEditor(); renderRaw(); renderPreview();
+  });
+
+  bind("#btnRename","click",()=>{
+    const nid = $("#fId").value.trim();
+    if(!nid || nid===currentId) return;
+    if(story[nid]) return toast("ID already exists");
+    const entries = Object.entries(story);
+    const renamed = Object.fromEntries(entries.map(([k,v])=>[k===currentId?nid:k,v]));
+    story = renamed;
+    currentId = nid;
+    renderAll();
+  });
+  bind("#btnDel","click",()=>{
+    if(confirm("Delete scene "+currentId+"?")){
+      delete story[currentId];
+      currentId = Object.keys(story)[0]||null;
+      renderAll();
+    }
+  });
+  bind("#btnDup","click",()=>{
+    let nid = currentId+"_copy"; let i=1;
+    while(story[nid]){ nid = currentId+"_copy"+(++i); }
+    story[nid] = JSON.parse(JSON.stringify(story[currentId]));
+    currentId = nid;
+    renderAll();
+  });
+
+  renderChoices();
+  bind("#btnAddChoice","click",()=>{
+    s.choices = s.choices || [];
+    s.choices.push({text:"",nextId:""});
+    renderChoices(); renderRaw(); renderPreview();
+  });
+}
+
+function renderChoices(){
+  const s = story[currentId]; if(!s) return;
+  const list = $("#choicesList"); if(!list) return;
+  list.innerHTML = "";
+  (s.choices||[]).forEach((c,i)=>{
+    const row = document.createElement("div");
+    row.className = "choice";
+    row.innerHTML = `
+      <input data-k="text" placeholder="Choice text" value="${(c.text||'').replace(/"/g,'&quot;')}">
+      <input data-k="nextId" placeholder="nextId" list="sceneOpts" value="${(c.nextId||'').replace(/"/g,'&quot;')}">
+      <button class="btn sm danger" data-i="${i}">✕</button>`;
+    row.querySelectorAll("input").forEach(inp=>{
+      inp.addEventListener("input",e=>{
+        c[e.target.dataset.k] = e.target.value;
+        renderRaw(); renderPreview();
+      });
+    });
+    row.querySelector("button").onclick=()=>{
+      s.choices.splice(i,1);
+      if(!s.choices.length){ delete s.choices; s.next=""; renderEditor(); }
+      else renderChoices();
+      renderRaw(); renderPreview();
+    };
+    list.appendChild(row);
+  });
+}
+
+function renderPreview(){
+  if(!currentId || !story[currentId]){ return; }
+  const s = story[currentId];
+  const bg = $("#pvBg"), sp = $("#pvSprite");
+  const bgUrl = s.bg && s.bg!=="null" ? s.bg : "";
+  bg.style.backgroundImage = bgUrl ? `url("${bgUrl}")` : "linear-gradient(135deg,#1a2340,#0a0f1c)";
+  if(s.sprite && s.sprite!=="null"){
+    sp.src = s.sprite; sp.hidden=false;
+    sp.className = "sprite "+(s.position||DEFAULTS.position)+(s.speaking??DEFAULTS.speaking?" speak":"");
+  } else sp.hidden = true;
+  $("#pvName").textContent = s.name||"";
+  $("#pvText").innerHTML = (s.text||"").replace(/</g,"&lt;").replace(/\\n|\n/g,"<br>");
+  const cp = $("#pvChoices"); cp.innerHTML="";
+  (s.choices||[]).forEach(c=>{
+    const d=document.createElement("div"); d.className="cp"; d.textContent=`▸ ${c.text||"(empty)"} → ${c.nextId||"?"}`;
+    cp.appendChild(d);
+  });
+}
+
+function renderRaw(){ $("#rawOutput").value = serialize(); }
+
+/* =====================================================
+   Add scene
+===================================================== */
+$("#btnAddScene").onclick = ()=>{
+  const id = $("#newSceneId").value.trim();
+  if(!id) return toast("Enter a scene id");
+  if(story[id]) return toast("ID already exists");
+  story[id] = { name:"", text:"", position:"center", speaking:true, typeSpeed:40, next:"" };
+  currentId = id;
+  $("#newSceneId").value = "";
+  renderAll();
+};
+
+/* =====================================================
+   Toolbar actions
+===================================================== */
+$("#btnReload").onclick = loadFromServer;
+$("#btnImport").onclick = ()=>$("#fileInput").click();
+$("#fileInput").onchange = e=>{ if(e.target.files[0]) importFile(e.target.files[0]); };
+$("#btnDownload").onclick = ()=>{
+  const blob = new Blob([serialize()],{type:"text/javascript"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = "story.js"; a.click();
+  URL.revokeObjectURL(a.href);
+};
+
+/* =====================================================
+   GitHub integration
+===================================================== */
+const GH_KEY = "novelAdminGh";
+function ghLoad(){ try{ return JSON.parse(localStorage.getItem(GH_KEY)||"{}"); }catch{ return {}; } }
+function ghSave(v){ localStorage.setItem(GH_KEY, JSON.stringify(v)); }
+function openGhModal(){
+  const cfg = ghLoad();
+  $("#ghOwner").value = cfg.owner||"";
+  $("#ghRepo").value = cfg.repo||"";
+  $("#ghBranch").value = cfg.branch||"main";
+  $("#ghPath").value = cfg.path||"story.js";
+  $("#ghToken").value = cfg.token||"";
+  $("#ghMsg").value = cfg.msg||"chore: update story.js via admin";
+  $("#modalGh").classList.add("show");
+}
+$("#btnSettings").onclick = openGhModal;
+$("#ghCancel").onclick = ()=>$("#modalGh").classList.remove("show");
+$("#ghSave").onclick = ()=>{
+  ghSave({
+    owner:$("#ghOwner").value.trim(), repo:$("#ghRepo").value.trim(),
+    branch:$("#ghBranch").value.trim()||"main", path:$("#ghPath").value.trim()||"story.js",
+    token:$("#ghToken").value.trim(), msg:$("#ghMsg").value.trim()||"chore: update story.js"
+  });
+  $("#modalGh").classList.remove("show");
+  toast("Settings saved");
+};
+
+async function commitToGithub(){
+  const cfg = ghLoad();
+  if(!cfg.owner||!cfg.repo||!cfg.token) return openGhModal(), toast("Fill GitHub settings first");
+  const api = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${encodeURIComponent(cfg.path)}`;
+  const headers = {Authorization:`Bearer ${cfg.token}`,Accept:"application/vnd.github+json"};
+  try{
+    // get current sha
+    let sha;
+    const g = await fetch(api+`?ref=${encodeURIComponent(cfg.branch)}`,{headers});
+    if(g.ok){ sha = (await g.json()).sha; }
+    else if(g.status!==404){ throw new Error("GET "+g.status); }
+    const content = serialize();
+    // UTF-8 safe base64
+    const b64 = btoa(unescape(encodeURIComponent(content)));
+    const body = { message: cfg.msg, content: b64, branch: cfg.branch };
+    if(sha) body.sha = sha;
+    const r = await fetch(api,{method:"PUT",headers:{...headers,"Content-Type":"application/json"},body:JSON.stringify(body)});
+    if(!r.ok){ const t = await r.text(); throw new Error(r.status+": "+t); }
+    toast("✅ Committed to GitHub");
+  }catch(e){
+    console.error(e); toast("GitHub error: "+e.message, 3500);
+  }
+}
+$("#btnGithub").onclick = commitToGithub;
+
+/* =====================================================
+   Init
+===================================================== */
+(async function init(){
+  try{ await loadFromServer(); }
+  catch{ story = {}; renderAll(); }
+})();
+</script>
+</body>
+</html>
