@@ -423,14 +423,44 @@ function renderEditor(){
     </div>
 
     <div id="choicesBlock" style="margin-top:10px" ${hasChoices?'':'hidden'}>
+      <div class="muted" style="margin-bottom:6px">
+      🔀 <b>Shuffle:</b> เปิดเพื่อสุ่มลำดับตัวเลือกทุกครั้งที่แสดง (กันคนเล่นจำตำแหน่ง)<br>
+      ✅ <b>Correct flag:</b> ติ๊ก "✓" ตัวเลือกที่ถูก → ระบบจะใช้ <code>onCorrect</code>/<code>onWrong</code> เป็นปลายทาง (ถ้าเว้น <code>nextId</code> ว่าง)<br>
+      💡 ถ้ากำหนด <code>nextId</code> ตรงๆ ระบบจะใช้อันนั้นแทน (รองรับโครงสร้างเดิม)
+      </div>
+      <div class="row" style="gap:10px;flex-wrap:wrap;margin-bottom:8px">
+        <div class="field" style="min-width:160px">
+          <label>🔀 Shuffle ตัวเลือก</label>
+          <div class="switch"><input id="fShuffle" type="checkbox" ${(s.shuffle!==false)?"checked":""}><span class="muted">สุ่มลำดับ (default: เปิด)</span></div>
+        </div>
+        <div class="field" style="min-width:180px">
+          <label>✅ onCorrect (ตอบถูก → ไป)</label>
+          <input id="fOnCorrect" list="sceneOpts" placeholder="default: random" value="${(s.onCorrect||'').replace(/"/g,'&quot;')}">
+        </div>
+        <div class="field" style="min-width:180px">
+          <label>❌ onWrong (ตอบผิด → ไป)</label>
+          <input id="fOnWrong" list="sceneOpts" placeholder="default: lose" value="${(s.onWrong||'').replace(/"/g,'&quot;')}">
+        </div>
+      </div>
       <div class="choices" id="choicesList"></div>
       <button class="btn sm" id="btnAddChoice" style="margin-top:8px">+ Add choice</button>
     </div>
 
     <div id="randomBlock" style="margin-top:10px" ${hasRandom?'':'hidden'}>
       <div class="muted" style="margin-bottom:6px">🎲 เมื่อถึง scene นี้ ระบบจะสุ่มเลือก nextId จากรายการด้านล่าง (weight ยิ่งมาก โอกาสยิ่งสูง)<br>
-      ✨ <b>ไม่ซ้ำของเดิม:</b> ตัวที่สุ่มไปแล้วจะไม่ถูกเลือกอีก หมดแล้วจะ fallback ไป <code>next</code> (ถ้ามี) หรือเริ่มสุ่มใหม่<br>
+      ✨ <b>ไม่ซ้ำของเดิม:</b> ตัวที่สุ่มไปแล้วจะไม่ถูกเลือกอีก<br>
+      🏆 <b>winCount:</b> ตั้งจำนวนข้อที่ต้องสุ่มเจอเพื่อชนะ (0 หรือว่าง = ต้องสุ่มครบทุกข้อ) เมื่อถึงเกณฑ์จะไปที่ <code>Next (เมื่อชนะ)</code><br>
       🔄 ประวัติการสุ่มจะถูกรีเซ็ตเมื่อกลับไปหน้า <code>start</code></div>
+      <div class="row" style="gap:10px;flex-wrap:wrap;margin-bottom:8px">
+        <div class="field" style="min-width:200px">
+          <label>🏆 winCount (จำนวนข้อที่ต้องตอบถูกถึงจะชนะ)</label>
+          <input id="fWinCount" type="number" min="0" step="1" placeholder="0 = ต้องสุ่มครบทุกข้อ" value="${s.winCount??''}">
+        </div>
+        <div class="field" style="min-width:220px">
+          <label>Next scene (เมื่อชนะ / สุ่มหมด)</label>
+          <input id="fRandomNext" list="sceneOpts" placeholder="เช่น win" value="${s.next===null?'null':(s.next??'')}">
+        </div>
+      </div>
       <div class="choices" id="randomList"></div>
       <button class="btn sm" id="btnAddRandom" style="margin-top:8px">+ Add random target</button>
     </div>
@@ -462,7 +492,7 @@ function renderEditor(){
     } else if(mode==="random"){
       s.random = (s.random && s.random.length) ? s.random : [{nextId:"",weight:1}];
       delete s.choices;
-      delete s.next;
+      // เก็บ s.next ไว้ใช้เป็นปลายทาง "เมื่อชนะ / สุ่มหมด"
     } else {
       delete s.choices;
       delete s.random;
@@ -503,11 +533,43 @@ function renderEditor(){
     renderChoices(); renderRaw(); renderPreview();
   });
 
+  // 🔀 Shuffle toggle (default = true; เก็บเฉพาะตอนปิดเพื่อให้ JSON สะอาด)
+  bind("#fShuffle","change",e=>{
+    if(e.target.checked) delete s.shuffle;
+    else s.shuffle = false;
+    renderRaw();
+  });
+  // ✅ onCorrect / ❌ onWrong (ใช้กับ choice ที่ตั้ง correct: true)
+  bind("#fOnCorrect","input",e=>{
+    const v = e.target.value.trim();
+    if(v==="") delete s.onCorrect; else s.onCorrect = v;
+    renderRaw();
+  });
+  bind("#fOnWrong","input",e=>{
+    const v = e.target.value.trim();
+    if(v==="") delete s.onWrong; else s.onWrong = v;
+    renderRaw();
+  });
+
   renderRandomList();
   bind("#btnAddRandom","click",()=>{
     s.random = s.random || [];
     s.random.push({nextId:"",weight:1});
     renderRandomList(); renderRaw(); renderPreview();
+  });
+
+  // 🏆 winCount: จำนวนข้อที่ต้องสุ่มเจอเพื่อชนะ (0/ว่าง = ครบทุกข้อ)
+  bind("#fWinCount","input",e=>{
+    const v = e.target.value.trim();
+    if(v==="" || Number(v)===0){ delete s.winCount; }
+    else { s.winCount = Math.max(0, Math.floor(Number(v)||0)); }
+    renderRaw();
+  });
+  // 🏁 Next scene เมื่อชนะ / สุ่มหมด (สำหรับ random flow)
+  bind("#fRandomNext","input",e=>{
+    const v = e.target.value;
+    s.next = v==="null" ? null : (v===""?undefined:v);
+    renderRaw();
   });
 }
 
@@ -551,13 +613,24 @@ function renderChoices(){
   (s.choices||[]).forEach((c,i)=>{
     const row = document.createElement("div");
     row.className = "choice";
+    row.style.gridTemplateColumns = "auto 1fr 1fr auto";
     row.innerHTML = `
+      <label class="muted" style="display:flex;align-items:center;gap:4px;white-space:nowrap" title="ติ๊กถ้าเป็นคำตอบที่ถูก">
+        <input type="checkbox" data-k="correct" ${c.correct?"checked":""}> ✓
+      </label>
       <input data-k="text" placeholder="Choice text" value="${(c.text||'').replace(/"/g,'&quot;')}">
-      <input data-k="nextId" placeholder="nextId" list="sceneOpts" value="${(c.nextId||'').replace(/"/g,'&quot;')}">
+      <input data-k="nextId" placeholder="nextId (ว่าง = ใช้ onCorrect/onWrong)" list="sceneOpts" value="${(c.nextId||'').replace(/"/g,'&quot;')}">
       <button class="btn sm danger" data-i="${i}">✕</button>`;
     row.querySelectorAll("input").forEach(inp=>{
-      inp.addEventListener("input",e=>{
-        c[e.target.dataset.k] = e.target.value;
+      const evt = inp.type === "checkbox" ? "change" : "input";
+      inp.addEventListener(evt,e=>{
+        const k = e.target.dataset.k;
+        if(k === "correct"){
+          if(e.target.checked) c.correct = true;
+          else delete c.correct;
+        } else {
+          c[k] = e.target.value;
+        }
         renderRaw(); renderPreview();
       });
     });
@@ -584,8 +657,13 @@ function renderPreview(){
   $("#pvName").textContent = s.name||"";
   $("#pvText").innerHTML = (s.text||"").replace(/</g,"&lt;").replace(/\\n|\n/g,"<br>");
   const cp = $("#pvChoices"); cp.innerHTML="";
+  const onC = s.onCorrect || "random";
+  const onW = s.onWrong || "lose";
   (s.choices||[]).forEach(c=>{
-    const d=document.createElement("div"); d.className="cp"; d.textContent=`▸ ${c.text||"(empty)"} → ${c.nextId||"?"}`;
+    const d=document.createElement("div"); d.className="cp";
+    const target = c.nextId ? c.nextId : (c.correct ? onC : onW);
+    const mark = c.correct ? "✅" : "▸";
+    d.textContent=`${mark} ${c.text||"(empty)"} → ${target||"?"}`;
     cp.appendChild(d);
   });
   if(Array.isArray(s.random) && s.random.length){

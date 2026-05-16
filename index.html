@@ -448,6 +448,52 @@
         #admin-btn:hover { opacity: 1; transform: translateY(-1px); }
 
         /* ============================================
+           🎯 Progress Badge & 🏆 Best Record
+           ============================================ */
+        #progress-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 999px;
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            font-family: inherit;
+            backdrop-filter: blur(4px);
+            display: none;
+            user-select: none;
+            pointer-events: none;
+        }
+        #progress-badge .label { opacity: 0.7; margin-right: 6px; }
+        #progress-badge .num { font-weight: 700; color: #ffd166; }
+
+        #best-record {
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.55);
+            color: #fff;
+            border: 1px solid rgba(255, 215, 102, 0.35);
+            border-radius: 12px;
+            padding: 10px 22px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            backdrop-filter: blur(4px);
+            display: none;
+            text-align: center;
+            user-select: none;
+            pointer-events: none;
+        }
+        #best-record .row { display: flex; gap: 18px; justify-content: center; margin-top: 4px; }
+        #best-record .row span { font-size: 0.85rem; opacity: 0.85; }
+        #best-record .row b { color: #ffd166; font-weight: 700; }
+
+        /* ============================================
            ✨ Hints & Misc
            ============================================ */
         .click-hint {
@@ -472,6 +518,16 @@
     <div id="game-container" style="background-image: url('image/bg.png');">
 
         <a id="admin-btn" href="admin.html" title="Admin Panel">⚙️ Admin</a>
+
+        <div id="progress-badge"><span class="label">🎯 ข้อที่</span><span class="num" id="progress-num">0 / 0</span></div>
+
+        <div id="best-record">
+            <div>🏆 <b>สถิติสูงสุด</b></div>
+            <div class="row">
+                <span>ดีที่สุด: <b id="best-num">0</b></span>
+                <span>ครั้งล่าสุด: <b id="last-num">0</b></span>
+            </div>
+        </div>
 
         <img id="character-sprite" class="pos-center" onclick="handleSpriteClick(event)">
 
@@ -506,6 +562,25 @@
 
         // ----- 🎲 ประวัติการสุ่ม: จำว่า scene ไหนสุ่มไปยัง nextId ไหนแล้วบ้าง (ไม่ซ้ำ) -----
         const randomHistory = {};   // { sceneId: Set<nextId> }
+        let lastRandomParent = null; // sceneId ของ random ล่าสุดที่เพิ่งสุ่ม (ใช้แสดง progress)
+
+        // ----- 🏆 Best Record (เก็บใน localStorage) -----
+        const STORAGE_KEY = "vn_best_record";
+        function loadRecord() {
+            try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || { best: 0, last: 0 }; }
+            catch { return { best: 0, last: 0 }; }
+        }
+        function saveRecord(rec) {
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(rec)); } catch {}
+        }
+        // commit คะแนนรอบนี้: เปรียบเทียบกับ best แล้วเก็บ last
+        function commitRunScore(score) {
+            if (score <= 0) return;
+            const rec = loadRecord();
+            rec.last = score;
+            if (score > rec.best) rec.best = score;
+            saveRecord(rec);
+        }
 
         // ----- ฉากลับ: นับจำนวนคลิกที่ตัวละคร -----
         let secretClickCount = 0;
@@ -528,8 +603,26 @@
             const scene = storyScript[sceneId];
             if (!scene) return;
 
+            // 🏆 เมื่อเข้า scene "lose"/"win" → commit คะแนนรอบนี้
+            if (sceneId === "lose" || sceneId === "win") {
+                const parent = lastRandomParent;
+                if (parent && randomHistory[parent]) {
+                    let score = randomHistory[parent].size;
+                    // ตอบผิด → ครั้งล่าสุดที่สุ่มยังไม่ได้นับ (ถูก mark used แล้ว) ต้องลบ 1
+                    if (sceneId === "lose") score = Math.max(0, score - 1);
+                    commitRunScore(score);
+                }
+                lastRandomParent = null; // กัน commit ซ้ำตอนเข้า start
+            }
+
             // 🔄 รีเซ็ตประวัติการสุ่ม เมื่อกลับมาที่หน้า start (เล่นใหม่)
-            if (sceneId === "start") resetRandomHistory();
+            if (sceneId === "start") {
+                resetRandomHistory();
+                lastRandomParent = null;
+            }
+
+            // 🎯 อัปเดต progress badge + best record UI
+            updateOverlayUI(sceneId);
 
             // อ่านค่า config + ใช้ default ถ้าไม่มี
             const position = scene.position || DEFAULTS.position;
@@ -572,11 +665,24 @@
                 $choiceContainer.innerHTML = '';
                 $choiceContainer.style.display = 'flex';
 
-                scene.choices.forEach(choice => {
+                // 🔀 Shuffle ลำดับตัวเลือก (default: true เพื่อกันการจำตำแหน่ง)
+                //    ปิดด้วย scene.shuffle === false
+                const shouldShuffle = scene.shuffle !== false;
+                const items = shouldShuffle ? shuffleArray(scene.choices) : scene.choices;
+
+                // 🎯 ปลายทางเมื่อตอบถูก/ผิด (สำหรับ choice ที่ใช้ correct flag)
+                const onCorrect = scene.onCorrect || "random";
+                const onWrong  = scene.onWrong  || "lose";
+
+                items.forEach(choice => {
                     const btn = document.createElement('div');
                     btn.className = 'choice-button';
                     btn.innerText = choice.text;
-                    btn.onclick = () => selectChoice(choice.nextId);
+                    // รองรับทั้งแบบเก่า (nextId ตรงๆ) และแบบใหม่ (correct: true → onCorrect, อื่นๆ → onWrong)
+                    const target = choice.nextId
+                        ? choice.nextId
+                        : (choice.correct ? onCorrect : onWrong);
+                    btn.onclick = () => selectChoice(target);
                     $choiceContainer.appendChild(btn);
                 });
 
@@ -659,7 +765,7 @@
 
             // 🎲 ถ้ามี random list → สุ่มเลือก next scene (ไม่ซ้ำของเดิม)
             if (Array.isArray(currentScene.random) && currentScene.random.length) {
-                const nextId = pickRandomNext(currentScene.random, currentSceneId);
+                const nextId = pickRandomNext(currentScene.random, currentSceneId, currentScene);
                 if (nextId) {
                     currentSceneId = nextId;
                     renderScene(currentSceneId);
@@ -678,9 +784,11 @@
         /* ============================================
            🎲 Random Next — รองรับ string หรือ {nextId, weight}
            ✨ ไม่ซ้ำของเดิม: จำว่าเคยสุ่มอะไรไปแล้วจาก scene นี้ (randomHistory)
+           🏆 winCount: ถ้าตั้งค่า → เมื่อสุ่มไปแล้วครบ N ครั้ง จะ fallback ไป scene.next ทันที
+              (ไม่ต้องสุ่มครบทุกข้อ — ใช้ทำเงื่อนไข "ชนะเมื่อตอบถูก N ข้อ")
            - ถ้าหมดตัวเลือก → fallback ไป scene.next (ถ้ามี) ไม่งั้นรีเซ็ตแล้วสุ่มใหม่
            ============================================ */
-        function pickRandomNext(list, sceneId) {
+        function pickRandomNext(list, sceneId, scene) {
             const items = list
                 .map(x => typeof x === "string"
                     ? { nextId: x, weight: 1 }
@@ -688,13 +796,20 @@
                 .filter(it => it.nextId);
             if (!items.length) return null;
 
+            scene = scene || (storyScript[sceneId] || {});
             const used = randomHistory[sceneId] || (randomHistory[sceneId] = new Set());
+
+            // 🏆 ถึงเกณฑ์ชนะแล้ว → ออกไป scene.next ทันที (ไม่ต้องสุ่มต่อ)
+            const winCount = Number(scene.winCount) || 0;
+            if (winCount > 0 && used.size >= winCount && scene.next) {
+                return scene.next;
+            }
+
             let pool = items.filter(it => !used.has(it.nextId));
 
             // หมดทุกตัวเลือกแล้ว
             if (!pool.length) {
-                const fallback = storyScript[sceneId] && storyScript[sceneId].next;
-                if (fallback) return fallback;          // ออกไป scene.next
+                if (scene.next) return scene.next;       // ออกไป scene.next
                 used.clear();                            // ไม่งั้น reset แล้วเริ่มสุ่มใหม่
                 pool = items;
             }
@@ -707,12 +822,67 @@
                 if (r <= 0) { picked = it.nextId; break; }
             }
             used.add(picked);
+            lastRandomParent = sceneId; // 📊 จำว่าครั้งล่าสุดเรามาจาก random scene ไหน
             return picked;
         }
 
         // รีเซ็ตประวัติการสุ่มทั้งหมด (เรียกเมื่อเริ่มเกมใหม่)
         function resetRandomHistory() {
             for (const k in randomHistory) delete randomHistory[k];
+        }
+
+        /* ============================================
+           🔀 Fisher–Yates Shuffle — สุ่มลำดับตัวเลือก
+           ============================================ */
+        function shuffleArray(arr) {
+            const a = arr.slice();
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        /* ============================================
+           🎯 Overlay UI — Progress Badge + Best Record
+           ============================================ */
+        function updateOverlayUI(sceneId) {
+            const $progress = document.getElementById('progress-badge');
+            const $progNum = document.getElementById('progress-num');
+            const $best = document.getElementById('best-record');
+            const $bestNum = document.getElementById('best-num');
+            const $lastNum = document.getElementById('last-num');
+
+            // 🏆 Best Record: โชว์เฉพาะหน้า start
+            if (sceneId === "start") {
+                const rec = loadRecord();
+                if (rec.best > 0 || rec.last > 0) {
+                    $bestNum.textContent = rec.best;
+                    $lastNum.textContent = rec.last;
+                    $best.style.display = 'block';
+                } else {
+                    $best.style.display = 'none';
+                }
+            } else {
+                $best.style.display = 'none';
+            }
+
+            // 🎯 Progress badge: โชว์ตอนอยู่ใน random round
+            const parent = lastRandomParent;
+            const inRandomRound = parent
+                && randomHistory[parent]
+                && sceneId !== "start" && sceneId !== "lose" && sceneId !== "win";
+            if (inRandomRound) {
+                const parentScene = storyScript[parent] || {};
+                const total = Number(parentScene.winCount) > 0
+                    ? Number(parentScene.winCount)
+                    : (Array.isArray(parentScene.random) ? parentScene.random.length : 0);
+                const done = randomHistory[parent].size; // ข้อปัจจุบันที่กำลังเล่น
+                $progNum.textContent = `${done} / ${total || '?'}`;
+                $progress.style.display = 'inline-block';
+            } else {
+                $progress.style.display = 'none';
+            }
         }
 
         function selectChoice(nextId) {
