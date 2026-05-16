@@ -264,10 +264,28 @@ function serialize(){
     if(s.speaking!==undefined) push("speaking",`${!!s.speaking}`);
     if(s.typeSpeed!==undefined && s.typeSpeed!=="") push("typeSpeed",`${Number(s.typeSpeed)}`);
     if(Array.isArray(s.choices) && s.choices.length){
+      // 🔀 shuffle (default true → เก็บเฉพาะตอน false)
+      if(s.shuffle===false) push("shuffle","false");
+      // ✅ onCorrect / ❌ onWrong (สำหรับ choice ที่ใช้ correct flag)
+      if(s.onCorrect) push("onCorrect",`"${esc(s.onCorrect)}"`);
+      if(s.onWrong)   push("onWrong",`"${esc(s.onWrong)}"`);
       lines.push("        choices: [");
-      s.choices.forEach(c=>lines.push(`            { text: "${esc(c.text||"")}", nextId: "${esc(c.nextId||"")}" },`));
+      s.choices.forEach(c=>{
+        const parts = [`text: "${esc(c.text||"")}"`];
+        if(c.nextId) parts.push(`nextId: "${esc(c.nextId)}"`);
+        if(c.correct) parts.push(`correct: true`);
+        lines.push(`            { ${parts.join(", ")} },`);
+      });
       lines.push("        ],");
     } else if(Array.isArray(s.random) && s.random.length){
+      // 🏆 winCount + next (ปลายทางเมื่อชนะ/สุ่มหมด) — สำคัญ! ต้อง serialize ก่อน random list
+      if(s.winCount!==undefined && s.winCount!=="" && Number(s.winCount)>0){
+        push("winCount",`${Number(s.winCount)}`);
+      }
+      if(s.next!==undefined){
+        const n = s.next===null ? "null" : (s.next==="" ? null : `"${esc(s.next)}"`);
+        if(n!==null) push("next",n);
+      }
       lines.push("        random: [");
       s.random.forEach(r=>lines.push(`            { nextId: "${esc(r.nextId||"")}", weight: ${Number(r.weight)||1} },`));
       lines.push("        ],");
