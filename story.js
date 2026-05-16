@@ -974,8 +974,6 @@ const storyScript = {
         position: "center",
         speaking: true,
         typeSpeed: 20,
-        next: "win",      // 🏆 ไป scene "win" เมื่อถึงเกณฑ์ (winCount) หรือสุ่มครบทุกข้อ
-        winCount: 50,     // 🎯 ตอบถูกครบกี่ข้อถึงจะชนะ (เปลี่ยนเป็น 10 ก็ได้ถ้าไม่อยากให้เล่นครบ 50)
         random: [
             { nextId: "c1", weight: 1 },
             { nextId: "c2", weight: 1 },
