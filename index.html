@@ -6,6 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Game Math</title>
     <link rel="icon" type="image/png" href="image/icon.png">
+    <link rel="preload" as="image" href="image/bg.png">
+    <link rel="preload" as="image" href="image/creator-1.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <!-- นำเข้า Font สวยๆ จาก Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;500&display=swap" rel="stylesheet">
     <style>
@@ -73,6 +77,7 @@
             cursor: pointer;
             /* transition สำหรับเปลี่ยนตำแหน่ง + fade */
             transition: left 0.6s ease, right 0.6s ease, opacity 0.4s ease, transform 0.6s ease;
+            will-change: transform, opacity;
         }
 
         /* ตำแหน่ง: ซ้าย */
@@ -179,6 +184,7 @@
             cursor: pointer;
             z-index: 10;
             backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
         }
@@ -442,6 +448,7 @@
             cursor: pointer;
             text-decoration: none;
             backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
             opacity: 0.55;
             transition: opacity .2s, transform .2s;
         }
@@ -463,6 +470,7 @@
             font-size: 0.85rem;
             font-family: inherit;
             backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
             display: none;
             user-select: none;
             pointer-events: none;
@@ -484,6 +492,7 @@
             font-size: 0.95rem;
             font-family: inherit;
             backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
             display: none;
             text-align: center;
             user-select: none;
@@ -558,7 +567,12 @@
         let isWaitingForChoice = false;
         let isTyping = false;
         let typewriterInterval = null;
+        let typewriterFrame = null;
         let currentFullText = "";
+        let currentBg = "";
+        let currentSprite = "";
+        let spriteFadeTimer = null;
+        const preloadedAssets = new Set();
 
         // ----- 🎲 ประวัติการสุ่ม: จำว่า scene ไหนสุ่มไปยัง nextId ไหนแล้วบ้าง (ไม่ซ้ำ) -----
         const randomHistory = {};   // { sceneId: Set<nextId> }
@@ -595,6 +609,28 @@
         const $textContent = document.getElementById('text-content');
         const $choiceContainer = document.getElementById('choice-container');
         const $clickHint = document.querySelector('.click-hint');
+        const $progress = document.getElementById('progress-badge');
+        const $progNum = document.getElementById('progress-num');
+        const $best = document.getElementById('best-record');
+        const $bestNum = document.getElementById('best-num');
+        const $lastNum = document.getElementById('last-num');
+
+        function preloadImage(src) {
+            if (!src || src === "null" || preloadedAssets.has(src)) return;
+            preloadedAssets.add(src);
+            const img = new Image();
+            img.decoding = "async";
+            img.src = src;
+        }
+
+        function preloadSceneAssets(scene) {
+            preloadImage(scene.bg);
+            preloadImage(scene.sprite);
+            if (scene.next && storyScript[scene.next]) {
+                preloadImage(storyScript[scene.next].bg);
+                preloadImage(storyScript[scene.next].sprite);
+            }
+        }
 
         /* ============================================
            📖 Render Scene
@@ -628,12 +664,14 @@
             const position = scene.position || DEFAULTS.position;
             const speaking = scene.speaking !== undefined ? scene.speaking : DEFAULTS.speaking;
             const typeSpeed = scene.typeSpeed !== undefined ? scene.typeSpeed : DEFAULTS.typeSpeed;
+            preloadSceneAssets(scene);
 
             // --- ชื่อตัวละคร ---
-            $nameTag.innerText = scene.name || "";
+            $nameTag.textContent = scene.name || "";
 
             // --- Background ---
-            if (scene.bg && scene.bg !== "null") {
+            if (scene.bg && scene.bg !== "null" && scene.bg !== currentBg) {
+                currentBg = scene.bg;
                 $container.style.backgroundImage = `url('${scene.bg}')`;
             }
 
@@ -641,10 +679,11 @@
             if (scene.sprite && scene.sprite !== "null") {
                 // ลบ class position เก่า
                 $sprite.classList.remove('pos-left', 'pos-center', 'pos-right', 'speaking');
-                $sprite.style.opacity = 0;
+                clearTimeout(spriteFadeTimer);
 
-                setTimeout(() => {
+                const showSprite = () => {
                     $sprite.src = scene.sprite;
+                    currentSprite = scene.sprite;
                     $sprite.classList.add(`pos-${position}`);
                     $sprite.style.opacity = 1;
 
@@ -652,9 +691,18 @@
                     if (speaking) {
                         $sprite.classList.add('speaking');
                     }
-                }, 200);
+                };
+
+                if (scene.sprite !== currentSprite) {
+                    $sprite.style.opacity = 0;
+                    spriteFadeTimer = setTimeout(showSprite, 120);
+                } else {
+                    showSprite();
+                }
             } else if (scene.sprite === "null") {
                 // ซ่อน sprite ถ้าตั้งค่าเป็น "null"
+                clearTimeout(spriteFadeTimer);
+                currentSprite = "";
                 $sprite.style.opacity = 0;
                 $sprite.classList.remove('speaking');
             }
@@ -674,17 +722,19 @@
                 const onCorrect = scene.onCorrect || "random";
                 const onWrong  = scene.onWrong  || "lose";
 
+                const fragment = document.createDocumentFragment();
                 items.forEach(choice => {
                     const btn = document.createElement('div');
                     btn.className = 'choice-button';
-                    btn.innerText = choice.text;
+                    btn.textContent = choice.text;
                     // รองรับทั้งแบบเก่า (nextId ตรงๆ) และแบบใหม่ (correct: true → onCorrect, อื่นๆ → onWrong)
                     const target = choice.nextId
                         ? choice.nextId
                         : (choice.correct ? onCorrect : onWrong);
                     btn.onclick = () => selectChoice(target);
-                    $choiceContainer.appendChild(btn);
+                    fragment.appendChild(btn);
                 });
+                $choiceContainer.appendChild(fragment);
 
                 // ซ่อน click hint ตอนมี choices
                 $clickHint.style.display = 'none';
@@ -711,16 +761,31 @@
             $textContent.classList.add('typing');
 
             let charIndex = 0;
+            let lastTick = performance.now();
+            let visibleText = "";
 
-            typewriterInterval = setInterval(() => {
+            const tick = (now) => {
+                if (!isTyping) return;
+                const elapsed = now - lastTick;
+                const charsToAdd = Math.max(1, Math.floor(elapsed / Math.max(1, speed)));
+                if (elapsed < speed) {
+                    typewriterFrame = requestAnimationFrame(tick);
+                    return;
+                }
+                lastTick = now;
                 if (charIndex < currentFullText.length) {
-                    $textContent.textContent += currentFullText[charIndex];
-                    charIndex++;
+                    const nextIndex = Math.min(currentFullText.length, charIndex + charsToAdd);
+                    visibleText += currentFullText.slice(charIndex, nextIndex);
+                    charIndex = nextIndex;
+                    $textContent.textContent = visibleText;
+                    typewriterFrame = requestAnimationFrame(tick);
                 } else {
                     // พิมพ์เสร็จแล้ว!
                     finishTypewriter();
                 }
-            }, speed);
+            };
+
+            typewriterFrame = requestAnimationFrame(tick);
         }
 
         function skipTypewriter() {
@@ -734,6 +799,10 @@
             if (typewriterInterval) {
                 clearInterval(typewriterInterval);
                 typewriterInterval = null;
+            }
+            if (typewriterFrame) {
+                cancelAnimationFrame(typewriterFrame);
+                typewriterFrame = null;
             }
         }
 
@@ -847,12 +916,6 @@
            🎯 Overlay UI — Progress Badge + Best Record
            ============================================ */
         function updateOverlayUI(sceneId) {
-            const $progress = document.getElementById('progress-badge');
-            const $progNum = document.getElementById('progress-num');
-            const $best = document.getElementById('best-record');
-            const $bestNum = document.getElementById('best-num');
-            const $lastNum = document.getElementById('last-num');
-
             // 🏆 Best Record: โชว์เฉพาะหน้า start
             if (sceneId === "start") {
                 const rec = loadRecord();
@@ -969,7 +1032,7 @@
            ============================================ */
         (async function initStory() {
             try {
-                const r = await fetch(STORY_ENC.file + "?ts=" + Date.now());
+                const r = await fetch(STORY_ENC.file, { cache: "force-cache" });
                 if (r.ok) {
                     const b64 = (await r.text()).trim();
                     if (b64) {
