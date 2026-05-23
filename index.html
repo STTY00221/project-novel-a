@@ -784,6 +784,10 @@
             }
         }
     </style>
+    <!-- Vercel Speed Insights -->
+    <script>
+        window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+    </script>
 </head>
 
 <body>
@@ -1611,7 +1615,7 @@
 
         /* ============================================
            🎲 Random Next — รองรับ string หรือ {nextId, weight}
-           ✨ ไม่ซ้ำของเดิม: จำว่าเคยสุ่มอะไรไปแล้วจาก scene นี้ (randomHistory)
+           ✨ ไม่ซ้ำของเดิม: จำว่าเคย���ุ่มอะไรไปแล้วจาก scene นี้ (randomHistory)
            🏆 winCount: ถ้าตั้งค่า → เมื่อสุ่มไปแล้วครบ N ครั้ง จะ fallback ไป scene.next ทันที
               (ไม่ต้องสุ่มครบทุกข้อ — ใช้ทำเงื่อนไข "ชนะเมื่อตอบถูก N ข้อ")
            - ถ้าหมดตัวเลือก → fallback ไป scene.next (ถ้ามี) ไม่งั้นรีเซ็ตแล้วสุ่มใหม่
@@ -1800,6 +1804,8 @@
         refreshClientIp();
 
     </script>
+    <!-- Vercel Speed Insights -->
+    <script defer src="/_vercel/speed-insights/script.js"></script>
 
 </body>
 
