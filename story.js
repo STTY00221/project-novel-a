@@ -473,10 +473,10 @@ const storyScript = {
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "เพื่อความสนุก", nextId: "lose" },
+            { text: "เพื่อจัดเก็บเอกสารให้เป็นระเบียบ", nextId: "lose" },
             { text: "เพื่อวิเคราะห์ข้อมูล", nextId: "random" },
-            { text: "เพื่อแข่งขันกีฬา", nextId: "lose" },
-            { text: "เพื่อแต่งเพลง", nextId: "lose" },
+            { text: "เพื่อประเมินผลการเรียนรู้", nextId: "lose" },
+            { text: "เพื่อการแข่งขันกีฬา", nextId: "lose" },
         ]
     },
 
@@ -489,10 +489,10 @@ const storyScript = {
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "เชิงปริมาณ", nextId: "lose" },
-            { text: "เชิงคุณภาพ", nextId: "random" },
-            { text: "เชิงทดลอง", nextId: "lose" },
-            { text: "เชิงคำนวณ", nextId: "lose" },
+            { text: "ข้อมูลเชิงปริมาณ", nextId: "lose" },
+            { text: "ข้อมูลเชิงคุณภาพ", nextId: "random" },
+            { text: "ข้อมูลปฐมภูมิ", nextId: "lose" },
+            { text: "ข้อมูลทุติยภูมิ", nextId: "lose" },
         ]
     },
 
@@ -522,9 +522,9 @@ const storyScript = {
         typeSpeed: 40,
         choices: [
             { text: "ทำให้ข้อมูลอ่านง่าย", nextId: "random" },
-            { text: "ทำให้ข้อมูลหาย", nextId: "lose" },
-            { text: "ทำให้ข้อมูลซ้ำ", nextId: "lose" },
-            { text: "ทำให้ข้อมูลผิด", nextId: "lose" },
+            { text: "ทำให้ข้อมูลมีจำนวนลดลง", nextId: "lose" },
+            { text: "ทำให้ข้อมูลมีความน่าเชื่อถือมากขึ้น", nextId: "lose" },
+            { text: "ทำให้ข้อมูลไม่มีความคลาดเคลื่อน", nextId: "lose" },
         ]
     },
 
@@ -554,9 +554,9 @@ const storyScript = {
         typeSpeed: 40,
         choices: [
             { text: "ข้อมูลที่เก็บเอง", nextId: "lose" },
-            { text: "ข้อมูลจากแหล่งอื่น", nextId: "random" },
-            { text: "ข้อมูลที่คิดขึ้น", nextId: "lose" },
-            { text: "ข้อมูลที่หายไป", nextId: "lose" },
+            { text: "ข้อมูลที่คิดขึ้น", nextId: "random" },
+            { text: "ข้อมูลที่ได้มาจากการคาดเดา", nextId: "lose" },
+            { text: "ข้อมูลที่ไม่สามารถนำมาประมวลผลได้", nextId: "lose" },
         ]
     },
 
@@ -586,7 +586,7 @@ const storyScript = {
         typeSpeed: 40,
         choices: [
             { text: "การทดลอง", nextId: "lose" },
-            { text: "การสอบถาม", nextId: "random" },
+            { text: "การสำรวจ", nextId: "random" },
             { text: "การสังเกต", nextId: "lose" },
             { text: "การคำนวณ", nextId: "lose" },
         ]
