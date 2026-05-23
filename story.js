@@ -65,7 +65,7 @@ const storyScript = {
 
     "4": {
         name: "Creator",
-        text: "เกมนี้มีจำนวณทั้งหมด 50 ข้อในการทำให้เสร็จ จะไม่มีข้อไหนที่ซ้ำกัน\nและมีความลับหามันให้เจอละ",
+        text: "เกมนี้มีจำนวณทั้งหมด 30 ข้อในการทำให้เสร็จ จะไม่มีข้อไหนที่ซ้ำกัน\nและมีความลับหามันให้เจอละ",
         bg: "image/bg.png",
         sprite: "image/creator-1.png",
         position: "center",
@@ -957,7 +957,7 @@ const storyScript = {
 
     "win": {
         name: "Creator",
-        text: "Woww.... ทำได้ไงครบ 50 ข้อโดยไม่ผิดเนี่ย ยังไงผมเชื่อว่าต้องมีทำหลายๆรอบจนถูกนั้นละ\\n\nถ้าใครทำได้ตั้งครบ 50 ข้อตั้งแต่รอบแรก ผมขอนับถือจริงๆ 5555",
+        text: "Woww.... ทำได้ไงครบ 30 ข้อโดยไม่ผิดเนี่ย ยังไงผมเชื่อว่าต้องมีทำหลายๆรอบจนถูกนั้นละ\\n\nถ้าใครทำได้ตั้งครบ 30 ข้อตั้งแต่รอบแรก ผมขอนับถือจริงๆ 5555",
         bg: "none",
         sprite: "image/creator-1.png",
         position: "center",
@@ -974,7 +974,7 @@ const storyScript = {
         position: "center",
         speaking: true,
         typeSpeed: 20,
-        winCount: 25,
+        winCount: 30,
         next: "win",
         random: [
             { nextId: "c1", weight: 1 },
