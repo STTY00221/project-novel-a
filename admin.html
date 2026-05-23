@@ -16,7 +16,7 @@
   button,input,select,textarea{font-family:inherit;color:var(--text)}
   a{color:var(--accent)}
   .app{display:grid;grid-template-rows:auto 1fr;height:100%}
-  header{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--panel);border-bottom:1px solid var(--line)}
+  header{display:flex;align-items:center;gap:10px;padding:12px 14px;background:rgba(23,26,33,.92);border-bottom:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.22);backdrop-filter:blur(12px);position:sticky;top:0;z-index:30;flex-wrap:wrap}
   header h1{font-size:16px;margin:0;font-weight:600}
   header .spacer{flex:1}
   .btn{background:var(--panel2);border:1px solid var(--line);color:var(--text);padding:7px 12px;border-radius:8px;cursor:pointer;font-size:13px}
@@ -29,7 +29,7 @@
   .btn.sm{padding:4px 8px;font-size:12px}
   .pill{font-size:11px;padding:2px 8px;border-radius:999px;background:#222836;color:var(--muted);border:1px solid var(--line)}
 
-  main{display:grid;grid-template-columns:260px 1fr 420px;min-height:0}
+  main{display:grid;grid-template-columns:280px 1fr 430px;min-height:0}
   aside,section{min-height:0;overflow:auto}
   aside{background:var(--panel);border-right:1px solid var(--line)}
   .scene-list{list-style:none;padding:6px;margin:0}
@@ -39,6 +39,7 @@
   .scene-list li .del{margin-left:auto;opacity:.5;font-size:11px}
   .scene-list li .del:hover{opacity:1;color:var(--danger)}
   .side-actions{display:flex;gap:6px;padding:8px;border-bottom:1px solid var(--line)}
+  .side-actions.stack{flex-direction:column}
   .side-actions input{flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:6px 8px;font-size:12px}
 
   section.editor{padding:16px 20px;background:var(--bg)}
@@ -82,13 +83,29 @@
   .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:50}
   .modal.show{display:flex}
   .modal .box{background:var(--panel);border:1px solid var(--line);border-radius:12px;width:min(520px,92vw);padding:18px}
+  .modal .box.analytics-box{width:min(1120px,94vw);max-height:86vh;overflow:auto}
   .modal h3{margin:0 0 10px;font-size:15px}
   .modal .field{margin-bottom:10px}
   .modal .footer{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
+  .analytics-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:14px}
+  .analytics-title{font-size:20px;font-weight:700;margin:0}
+  .analytics-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+  .stats-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0}
+  .stat-card{background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.03));border:1px solid var(--line);border-radius:14px;padding:12px}
+  .stat-card span{display:block;color:var(--muted);font-size:11px;margin-bottom:4px}
+  .stat-card b{display:block;font-size:20px;color:#fff}
+  .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px;background:#10141e}
+  .data-table{width:100%;border-collapse:collapse;min-width:920px}
+  .data-table th,.data-table td{padding:10px 12px;border-bottom:1px solid var(--line);font-size:12px;text-align:left;vertical-align:top}
+  .data-table th{position:sticky;top:0;background:#171d2a;color:#cbd5e1;font-weight:600;z-index:1}
+  .data-table tr:hover td{background:rgba(106,169,255,.06)}
+  .data-table td.score{color:#ffd166;font-weight:800}
+  .empty-data{padding:24px;text-align:center;color:var(--muted)}
 
   @media (max-width:1100px){
     main{grid-template-columns:220px 1fr}
     section.preview{display:none}
+    .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   }
 
   /* Login overlay */
@@ -129,16 +146,16 @@
 <!-- 🔐 Login Overlay -->
 <div id="loginOverlay">
   <div class="card">
-    <h2>🔐 Admin Login</h2>
-    <div class="sub">เข้าสู่ระบบเพื่อแก้ไขเนื้อเรื่อง</div>
+    <h2 id="loginTitle">🔐 Admin Login</h2>
+    <div class="sub" id="loginSub">เข้าสู่ระบบเพื่อแก้ไขเนื้อเรื่อง</div>
     <form id="loginForm" autocomplete="off">
       <div class="field">
-        <label class="muted" style="font-size:12px">Student ID</label>
-        <input id="loginId" type="text" inputmode="numeric" placeholder="รหัสนักเรียน" required>
+        <label class="muted" style="font-size:12px">Admin ID</label>
+        <input id="loginId" type="text" placeholder="admin id" autocomplete="username" required>
       </div>
       <div class="field">
-        <label class="muted" style="font-size:12px">Name</label>
-        <input id="loginName" type="text" placeholder="ชื่อผู้ใช้" required>
+        <label class="muted" style="font-size:12px">Password</label>
+        <input id="loginPassword" type="password" placeholder="password" autocomplete="current-password" required>
       </div>
       <div class="err" id="loginErr"></div>
       <button class="btn-login" type="submit">เข้าสู่ระบบ</button>
@@ -157,6 +174,7 @@
     <input id="fileInput" type="file" accept=".js,.json,.txt,.enc" hidden>
     <button class="btn" id="btnDownload">⬇️ Download</button>
     <button class="btn" id="btnDownloadEnc" title="ดาวน์โหลด story.enc.txt (เข้ารหัส)">🔒 Download Encrypted</button>
+    <button class="btn primary" id="btnPlayerData">📊 Player Data</button>
     <button class="btn ok" id="btnGithub">☁️ Save to GitHub</button>
     <button class="btn ok" id="btnGithubEnc" title="commit ไฟล์เข้ารหัสไปยัง story.enc.txt">🔐 Save Encrypted</button>
     <button class="btn ghost" id="btnSettings" title="GitHub settings">⚙️</button>
@@ -169,6 +187,9 @@
       <div class="side-actions">
         <input id="newSceneId" placeholder="new scene id...">
         <button class="btn sm primary" id="btnAddScene">+ Add</button>
+      </div>
+      <div class="side-actions stack">
+        <input id="sceneSearch" placeholder="ค้นหา scene id หรือชื่อตัวละคร...">
       </div>
       <ul class="scene-list" id="sceneList"></ul>
     </aside>
@@ -215,6 +236,48 @@
   </div>
 </div>
 
+<div class="modal" id="modalPlayerData">
+  <div class="box analytics-box">
+    <div class="analytics-head">
+      <div>
+        <h3 class="analytics-title">📊 Player Data</h3>
+        <div class="muted">ข้อมูลคะแนนดีที่สุดต่อเครื่อง/ชื่อ/IP เดียวกัน พร้อมเวลา เครื่อง Chrome version และ IP</div>
+      </div>
+      <button class="btn ghost" id="playerDataClose">✕</button>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card"><span>สถิติไม่ซ้ำ</span><b id="statRuns">0</b></div>
+      <div class="stat-card"><span>คะแนนสูงสุด</span><b id="statBest">0</b></div>
+      <div class="stat-card"><span>เวลาเฉลี่ย</span><b id="statAvgTime">0วิ</b></div>
+      <div class="stat-card"><span>เครื่องที่รู้จัก</span><b id="statDevices">0</b></div>
+    </div>
+    <div class="analytics-actions">
+      <button class="btn" id="playerDataRefresh">🔄 Refresh</button>
+      <button class="btn" id="playerDataExport">⬇️ Export JSON</button>
+      <button class="btn ok" id="playerDataSaveFolder">💾 Save Folder</button>
+      <button class="btn danger" id="playerDataClear">🗑 Clear Data</button>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>เวลา</th>
+            <th>ชื่อ</th>
+            <th>คะแนน</th>
+            <th>ใช้เวลา</th>
+            <th>เครื่อง</th>
+            <th>Chrome</th>
+            <th>IP</th>
+            <th>ผลลัพธ์</th>
+          </tr>
+        </thead>
+        <tbody id="playerDataRows"></tbody>
+      </table>
+      <div id="playerDataEmpty" class="empty-data" hidden>ยังไม่มีข้อมูลผู้เล่นในเครื่องนี้</div>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -229,6 +292,44 @@ let sourceHeader = "";   // preserved header comment from story.js
 const $ = (s,p=document)=>p.querySelector(s);
 const $$ = (s,p=document)=>[...p.querySelectorAll(s)];
 const toast = (msg,ms=1800)=>{const t=$("#toast");t.textContent=msg;t.classList.add("show");clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove("show"),ms);};
+const PLAYER_STATS_STORAGE_KEY = "vn_player_stats";
+const CLIENT_INFO_STORAGE_KEY = "vn_client_info";
+const PLAYER_NAME_STORAGE_KEY = "vn_player_name";
+
+function escapeHtml(value){
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
+
+function loadJson(key, fallback){
+  try{
+    const data = JSON.parse(localStorage.getItem(key) || "null");
+    return data ?? fallback;
+  }catch{
+    return fallback;
+  }
+}
+
+function saveJson(key, value){
+  localStorage.setItem(key, JSON.stringify(value));
+}
+
+function formatDuration(ms){
+  const seconds = Math.max(0, Math.round((Number(ms) || 0) / 1000));
+  const minutes = Math.floor(seconds / 60);
+  const rest = seconds % 60;
+  return minutes > 0 ? `${minutes}น ${rest}วิ` : `${rest}วิ`;
+}
+
+function formatDate(value){
+  const date = value ? new Date(value) : null;
+  if(!date || Number.isNaN(date.getTime())) return "-";
+  return date.toLocaleString("th-TH", { dateStyle:"short", timeStyle:"medium" });
+}
 
 /* =====================================================
    Parse existing story.js (extract storyScript object)
@@ -345,10 +446,22 @@ function renderAll(){ renderList(); renderEditor(); renderPreview(); renderRaw()
 
 function renderList(){
   const ul = $("#sceneList"); ul.innerHTML = "";
-  Object.keys(story).forEach(id=>{
+  const q = ($("#sceneSearch")?.value || "").trim().toLowerCase();
+  const ids = Object.keys(story).filter(id=>{
+    if(!q) return true;
+    const s = story[id] || {};
+    return id.toLowerCase().includes(q)
+      || String(s.name || "").toLowerCase().includes(q)
+      || String(s.text || "").toLowerCase().includes(q);
+  });
+  if(!ids.length){
+    ul.innerHTML = `<li class="muted">ไม่พบ scene ที่ค้นหา</li>`;
+    return;
+  }
+  ids.forEach(id=>{
     const li = document.createElement("li");
     li.className = id===currentId ? "active" : "";
-    li.innerHTML = `<span>${id}</span><span class="del" title="delete">✕</span>`;
+    li.innerHTML = `<span>${escapeHtml(id)}</span><span class="del" title="delete">✕</span>`;
     li.onclick = e=>{
       if(e.target.classList.contains("del")){
         if(confirm(`Delete scene "${id}"?`)){
@@ -878,19 +991,213 @@ importFile = function(file){
   _origImport(file);
 };
 
+function getPlayerStats(){
+  const stats = loadJson(PLAYER_STATS_STORAGE_KEY, []);
+  return Array.isArray(stats) ? stats : [];
+}
+
+function renderPlayerData(){
+  const stats = getPlayerStats().slice().sort((a,b)=>Date.parse(b.endedAt||0)-Date.parse(a.endedAt||0));
+  const rows = $("#playerDataRows");
+  const empty = $("#playerDataEmpty");
+  const total = stats.length;
+  const best = stats.reduce((m,s)=>Math.max(m, Number(s.score)||0), 0);
+  const avg = total ? stats.reduce((sum,s)=>sum+(Number(s.durationMs)||0), 0) / total : 0;
+  const devices = new Set(stats.map(s=>s.deviceId || `${s.deviceModel||""}|${s.ip||""}`).filter(Boolean));
+  $("#statRuns").textContent = total;
+  $("#statBest").textContent = best;
+  $("#statAvgTime").textContent = formatDuration(avg);
+  $("#statDevices").textContent = devices.size;
+  empty.hidden = total !== 0;
+  rows.innerHTML = stats.map(item=>`
+    <tr>
+      <td>${formatDate(item.endedAt)}</td>
+      <td><b>${escapeHtml(item.name || "Player")}</b><div class="muted">${escapeHtml(item.deviceId || "-")} • เล่น ${Number(item.attempts) || 1} ครั้ง</div></td>
+      <td class="score">${Number(item.score) || 0} ข้อ</td>
+      <td>${formatDuration(item.durationMs)}<div class="muted">${Number(item.seconds) || 0} sec / ${Number(item.minutes) || 0} min</div></td>
+      <td>${escapeHtml(item.deviceModel || "unknown")}<div class="muted">${escapeHtml(item.platform || "unknown")} • ${escapeHtml(item.screen || "-")}</div></td>
+      <td>${escapeHtml(item.chromeVersion || "unknown")}</td>
+      <td>${escapeHtml(item.ip || "unknown")}</td>
+      <td>${escapeHtml(item.outcome || "unknown")}</td>
+    </tr>
+  `).join("");
+}
+
+function openPlayerData(){
+  renderPlayerData();
+  $("#modalPlayerData").classList.add("show");
+}
+
+function exportPlayerData(){
+  const payload = {
+    exportedAt: new Date().toISOString(),
+    playerName: localStorage.getItem(PLAYER_NAME_STORAGE_KEY) || "",
+    clientInfo: loadJson(CLIENT_INFO_STORAGE_KEY, {}),
+    stats: getPlayerStats()
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `player-data-${Date.now()}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function buildPlayerDataPayload(){
+  const stats = getPlayerStats();
+  const clientInfo = loadJson(CLIENT_INFO_STORAGE_KEY, {});
+  const bestRecord = loadJson("vn_best_record", {best:0,last:0});
+  return {
+    exportedAt: new Date().toISOString(),
+    playerName: localStorage.getItem(PLAYER_NAME_STORAGE_KEY) || "",
+    clientInfo,
+    bestRecord,
+    summary: {
+      uniqueRecords: stats.length,
+      bestScore: stats.reduce((m,s)=>Math.max(m, Number(s.score)||0), 0),
+      devices: [...new Set(stats.map(s=>s.deviceId || `${s.deviceModel||""}|${s.ip||""}`).filter(Boolean))].length
+    },
+    stats
+  };
+}
+
+async function writeJsonFile(dirHandle, fileName, data){
+  const fileHandle = await dirHandle.getFileHandle(fileName, {create:true});
+  const writable = await fileHandle.createWritable();
+  await writable.write(JSON.stringify(data, null, 2));
+  await writable.close();
+}
+
+function downloadPlayerDataFolderFallback(payload){
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `player-data-folder-${Date.now()}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+async function savePlayerDataFolder(){
+  const payload = buildPlayerDataPayload();
+  if(!window.showDirectoryPicker){
+    downloadPlayerDataFolderFallback(payload);
+    toast("Browser นี้ไม่รองรับ Save Folder จึงดาวน์โหลดเป็น JSON แทน", 3200);
+    return;
+  }
+  try{
+    const rootHandle = await window.showDirectoryPicker({mode:"readwrite"});
+    const folderName = `player-data-${new Date().toISOString().replace(/[:.]/g,"-")}`;
+    const dataDir = await rootHandle.getDirectoryHandle(folderName, {create:true});
+    await writeJsonFile(dataDir, "summary.json", payload.summary);
+    await writeJsonFile(dataDir, "client-info.json", payload.clientInfo);
+    await writeJsonFile(dataDir, "best-record.json", payload.bestRecord);
+    await writeJsonFile(dataDir, "runs.json", payload.stats);
+    await writeJsonFile(dataDir, "all-data.json", payload);
+    toast(`Saved user data folder: ${folderName}`, 3200);
+  }catch(err){
+    if(err?.name !== "AbortError") toast("Save folder failed: "+err.message, 3200);
+  }
+}
+
+function clearPlayerData(){
+  if(!confirm("Clear all player records stored in this browser?")) return;
+  localStorage.removeItem(PLAYER_STATS_STORAGE_KEY);
+  localStorage.removeItem("vn_best_record");
+  renderPlayerData();
+  toast("Player data cleared");
+}
+
+$("#btnPlayerData").onclick = openPlayerData;
+$("#playerDataClose").onclick = ()=>$("#modalPlayerData").classList.remove("show");
+$("#playerDataRefresh").onclick = renderPlayerData;
+$("#playerDataExport").onclick = exportPlayerData;
+$("#playerDataSaveFolder").onclick = savePlayerDataFolder;
+$("#playerDataClear").onclick = clearPlayerData;
+$("#sceneSearch").addEventListener("input", renderList);
+
 /* =====================================================
    �� Login Gate
    ===================================================== */
 const AUTH_KEY = "novelAdminAuth";
-const VALID_USERS = [
-  { id: "15240", name: "admin" }
-];
+const ADMIN_CREDENTIAL_KEY = "novelAdminCredential";
+const ADMIN_HASH_ITERATIONS = 210000;
+
+function bytesToBase64(bytes){
+  return btoa(String.fromCharCode(...new Uint8Array(bytes)));
+}
+
+function base64ToBytes(text){
+  return Uint8Array.from(atob(text), c=>c.charCodeAt(0));
+}
+
+async function hashPassword(password, salt, iterations=ADMIN_HASH_ITERATIONS){
+  const baseKey = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(password),
+    "PBKDF2",
+    false,
+    ["deriveBits"]
+  );
+  const bits = await crypto.subtle.deriveBits(
+    {name:"PBKDF2", salt, iterations, hash:"SHA-256"},
+    baseKey,
+    256
+  );
+  return bytesToBase64(bits);
+}
+
+function loadAdminCredential(){
+  return loadJson(ADMIN_CREDENTIAL_KEY, null);
+}
+
+function saveAdminCredential(credential){
+  saveJson(ADMIN_CREDENTIAL_KEY, credential);
+}
+
+function safeEqual(a,b){
+  if(typeof a !== "string" || typeof b !== "string" || a.length !== b.length) return false;
+  let diff = 0;
+  for(let i=0;i<a.length;i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
+}
+
+async function createAdminCredential(id, password){
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const hash = await hashPassword(password, salt);
+  const credential = {
+    id,
+    salt: bytesToBase64(salt),
+    hash,
+    iterations: ADMIN_HASH_ITERATIONS,
+    createdAt: new Date().toISOString()
+  };
+  saveAdminCredential(credential);
+  return credential;
+}
+
+async function verifyAdminCredential(id, password){
+  const credential = loadAdminCredential();
+  if(!credential || credential.id !== id) return null;
+  const hash = await hashPassword(password, base64ToBytes(credential.salt), credential.iterations || ADMIN_HASH_ITERATIONS);
+  return safeEqual(hash, credential.hash) ? { id: credential.id, name: credential.id } : null;
+}
+
+function updateLoginMode(){
+  const hasCredential = !!loadAdminCredential();
+  $("#loginTitle").textContent = hasCredential ? "🔐 Admin Login" : "🛡️ Create Admin Login";
+  $("#loginSub").textContent = hasCredential
+    ? "เข้าสู่ระบบเพื่อแก้ไขเนื้อเรื่อง"
+    : "ตั้ง Admin ID และ Password ครั้งแรก ระบบจะเก็บเฉพาะ hash ใน browser นี้";
+  $("#loginPassword").autocomplete = hasCredential ? "current-password" : "new-password";
+  $("#loginForm button[type='submit']").textContent = hasCredential ? "เข้าสู่ระบบ" : "สร้างบัญชี Admin";
+}
 
 function checkAuth(){
   try{
     const a = JSON.parse(sessionStorage.getItem(AUTH_KEY) || "null");
     if(!a) return null;
-    return VALID_USERS.find(u => u.id===a.id && u.name===a.name) ? a : null;
+    const credential = loadAdminCredential();
+    return credential && credential.id === a.id ? a : null;
   }catch{ return null; }
 }
 
@@ -907,18 +1214,30 @@ function bindLoginUI(user){
   $("#userName").textContent = user.name;
 }
 
-$("#loginForm").addEventListener("submit", e=>{
+$("#loginForm").addEventListener("submit", async e=>{
   e.preventDefault();
   const id = $("#loginId").value.trim();
-  const name = $("#loginName").value.trim();
-  const ok = VALID_USERS.find(u => u.id===id && u.name.toLowerCase()===name.toLowerCase());
-  if(!ok){
-    $("#loginErr").textContent = "❌ Student ID หรือ Name ไม่ถูกต้อง";
+  const password = $("#loginPassword").value;
+  if(!id || password.length < 8){
+    $("#loginErr").textContent = "❌ Password ต้องมีอย่างน้อย 8 ตัวอักษร";
     return;
   }
-  sessionStorage.setItem(AUTH_KEY, JSON.stringify({id, name: ok.name}));
-  bindLoginUI(ok);
-  startApp();
+  $("#loginErr").textContent = "";
+  const credential = loadAdminCredential();
+  try{
+    const user = credential
+      ? await verifyAdminCredential(id, password)
+      : await createAdminCredential(id, password).then(c=>({id:c.id, name:c.id}));
+    if(!user){
+      $("#loginErr").textContent = "❌ Admin ID หรือ Password ไม่ถูกต้อง";
+      return;
+    }
+    sessionStorage.setItem(AUTH_KEY, JSON.stringify(user));
+    bindLoginUI(user);
+    startApp();
+  }catch(err){
+    $("#loginErr").textContent = "❌ ไม่สามารถตรวจสอบรหัสได้";
+  }
 });
 
 $("#btnLogout").addEventListener("click", doLogout);
@@ -937,7 +1256,7 @@ async function startApp(){
     bindLoginUI(user);
     startApp();
   } else {
-    // stay locked, focus login
+    updateLoginMode();
     setTimeout(()=>$("#loginId").focus(), 50);
   }
 })();

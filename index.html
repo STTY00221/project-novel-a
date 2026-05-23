@@ -71,9 +71,9 @@
            ============================================ */
         #character-sprite {
             position: absolute;
-            bottom: 10%;
+            bottom: var(--sprite-bottom-offset, 10%);
             height: 50%;
-            z-index: 2;
+            z-index: 8;
             cursor: pointer;
             /* transition สำหรับเปลี่ยนตำแหน่ง + fade */
             transition: left 0.6s ease, right 0.6s ease, opacity 0.4s ease, transform 0.6s ease;
@@ -182,7 +182,7 @@
             padding: 25px;
             box-sizing: border-box;
             cursor: pointer;
-            z-index: 10;
+            z-index: 20;
             backdrop-filter: blur(5px);
             -webkit-backdrop-filter: blur(5px);
             touch-action: manipulation;
@@ -228,35 +228,90 @@
            🔘 Choices
            ============================================ */
         #choice-container {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            position: static;
+            top: auto;
+            left: auto;
+            transform: none;
             display: none;
             /* ซ่อนไว้ก่อน */
             flex-direction: column;
-            gap: 15px;
-            width: 300px;
+            gap: 10px;
+            width: 100%;
             z-index: 100;
+            box-sizing: border-box;
+            max-height: min(36vh, 300px);
+            overflow-y: auto;
+            padding-right: 4px;
         }
 
         .choice-button {
-            background: var(--box-bg);
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
             color: rgb(255, 255, 255);
-            border: 1px solid var(--primary-color);
-            padding: 15px 20px;
-            border-radius: 5px;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            padding: 13px 16px;
+            border-radius: 14px;
             cursor: pointer;
             text-align: center;
             transition: all 0.2s;
             font-size: 1rem;
+            font-family: inherit;
+            font-weight: 500;
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
         }
 
         .choice-button:hover {
-            background: var(--primary-color);
-            transform: scale(1.05);
+            background: rgba(255, 209, 102, 0.18);
+            border-color: rgba(255, 209, 102, 0.55);
+            transform: translateY(-1px);
+        }
+
+        .choice-button:active {
+            transform: translateY(0) scale(0.99);
+        }
+
+        #dialogue-box.choice-mode {
+            min-height: 180px;
+        }
+
+        #text-content.is-hidden {
+            display: none;
+        }
+
+        #choice-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        #choice-toolbar[hidden] {
+            display: none;
+        }
+
+        #choice-mode-label {
+            color: #ffd166;
+            font-size: 0.92rem;
+            font-weight: 700;
+        }
+
+        #question-toggle-btn {
+            border: 1px solid rgba(255, 255, 255, 0.24);
+            border-radius: 999px;
+            padding: 7px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.82rem;
+            cursor: pointer;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #question-toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.18);
         }
 
         /* ============================================
@@ -267,7 +322,7 @@
             /* ตัวละครใหญ่ขึ้นหน่อย + ปรับตำแหน่ง */
             #character-sprite {
                 height: 40%;
-                bottom: 22%;
+                bottom: var(--sprite-bottom-offset, 22%);
             }
 
             #character-sprite.pos-left {
@@ -307,13 +362,22 @@
 
             /* Choices ปรับ width ให้พอดีจอ */
             #choice-container {
-                width: 85%;
-                gap: 10px;
+                width: 100%;
+                gap: 8px;
+                max-height: 38vh;
             }
 
             .choice-button {
-                padding: 12px 15px;
+                padding: 11px 12px;
                 font-size: 0.9rem;
+            }
+
+            #dialogue-box.choice-mode {
+                min-height: 150px;
+            }
+
+            #choice-toolbar {
+                margin-bottom: 10px;
             }
         }
 
@@ -323,7 +387,7 @@
         @media screen and (max-width: 360px) {
             #character-sprite {
                 height: 35%;
-                bottom: 24%;
+                bottom: var(--sprite-bottom-offset, 24%);
             }
 
             #dialogue-box {
@@ -339,6 +403,11 @@
                 padding: 10px 12px;
                 font-size: 0.85rem;
             }
+
+            #question-toggle-btn {
+                padding: 6px 10px;
+                font-size: 0.75rem;
+            }
         }
 
         /* ============================================
@@ -347,7 +416,7 @@
         @media screen and (max-height: 500px) and (orientation: landscape) {
             #character-sprite {
                 height: 60%;
-                bottom: 25%;
+                bottom: var(--sprite-bottom-offset, 25%);
             }
 
             #dialogue-box {
@@ -375,9 +444,10 @@
             #choice-container {
                 flex-direction: row;
                 flex-wrap: wrap;
-                width: 80%;
+                width: 100%;
                 justify-content: center;
                 gap: 8px;
+                max-height: 32vh;
             }
 
             .choice-button {
@@ -407,7 +477,7 @@
             }
 
             #choice-container {
-                width: 350px;
+                width: 100%;
             }
 
             .choice-button {
@@ -422,7 +492,7 @@
         @media screen and (min-width: 600px) and (max-width: 1024px) and (orientation: portrait) {
             #character-sprite {
                 height: 40%;
-                bottom: 18%;
+                bottom: var(--sprite-bottom-offset, 18%);
             }
 
             #dialogue-box {
@@ -436,8 +506,8 @@
         #admin-btn {
             position: absolute;
             top: 12px;
-            right: 12px;
-            z-index: 10;
+            left: 12px;
+            z-index: 170;
             background: rgba(0, 0, 0, 0.55);
             color: #fff;
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -449,13 +519,13 @@
             text-decoration: none;
             backdrop-filter: blur(4px);
             -webkit-backdrop-filter: blur(4px);
-            opacity: 0.55;
+            opacity: 0.85;
             transition: opacity .2s, transform .2s;
         }
         #admin-btn:hover { opacity: 1; transform: translateY(-1px); }
 
         /* ============================================
-           🎯 Progress Badge & 🏆 Best Record
+           🎯 Progress Badge
            ============================================ */
         #progress-badge {
             position: absolute;
@@ -478,29 +548,223 @@
         #progress-badge .label { opacity: 0.7; margin-right: 6px; }
         #progress-badge .num { font-weight: 700; color: #ffd166; }
 
-        #best-record {
+        #start-menu {
             position: absolute;
-            top: 60px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 10;
-            background: rgba(0, 0, 0, 0.55);
-            color: #fff;
-            border: 1px solid rgba(255, 215, 102, 0.35);
-            border-radius: 12px;
-            padding: 10px 22px;
-            font-size: 0.95rem;
-            font-family: inherit;
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
+            inset: 0;
+            z-index: 150;
             display: none;
-            text-align: center;
-            user-select: none;
-            pointer-events: none;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+            box-sizing: border-box;
+            background: radial-gradient(circle at center, rgba(255, 209, 102, 0.12), rgba(0, 0, 0, 0.78));
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
         }
-        #best-record .row { display: flex; gap: 18px; justify-content: center; margin-top: 4px; }
-        #best-record .row span { font-size: 0.85rem; opacity: 0.85; }
-        #best-record .row b { color: #ffd166; font-weight: 700; }
+
+        .start-menu-card {
+            width: min(92vw, 440px);
+            max-height: calc(100dvh - 48px);
+            overflow-y: auto;
+            padding: 34px 28px;
+            box-sizing: border-box;
+            border-radius: 24px;
+            background: rgba(0, 0, 0, 0.78);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .start-menu-title {
+            margin: 0;
+            font-size: clamp(2.2rem, 8vw, 4rem);
+            line-height: 1;
+            color: #ffd166;
+            text-shadow: 0 4px 24px rgba(255, 209, 102, 0.45);
+        }
+
+        .start-menu-subtitle {
+            margin: 14px 0 26px;
+            color: rgba(255, 255, 255, 0.78);
+            font-size: 1rem;
+        }
+
+        .menu-button {
+            width: 100%;
+            border: 0;
+            border-radius: 999px;
+            padding: 14px 20px;
+            margin-top: 12px;
+            font-family: inherit;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform .2s, filter .2s, background .2s;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .menu-button:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.08);
+        }
+
+        .menu-button.primary {
+            background: linear-gradient(135deg, #ffd166, #ff8fab);
+            color: #171717;
+        }
+
+        .menu-button.secondary {
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .player-panel,
+        .leaderboard-panel {
+            margin-top: 18px;
+            padding: 16px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            text-align: left;
+        }
+
+        .leaderboard-panel {
+            margin-top: 14px;
+        }
+
+        #settings-panel {
+            margin-top: 18px;
+            padding: 18px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            text-align: left;
+        }
+
+        #settings-panel[hidden] {
+            display: none;
+        }
+
+        .settings-label {
+            display: block;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.86);
+            font-size: 0.92rem;
+        }
+
+        #username-input,
+        #player-name-input {
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 12px;
+            padding: 12px 14px;
+            font-family: inherit;
+            font-size: 1rem;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.35);
+            outline: none;
+        }
+
+        #username-input:focus,
+        #player-name-input:focus {
+            border-color: #ffd166;
+            box-shadow: 0 0 0 3px rgba(255, 209, 102, 0.16);
+        }
+
+        .stat-note {
+            margin-top: 8px;
+            color: rgba(255, 255, 255, 0.58);
+            font-size: 0.76rem;
+            line-height: 1.45;
+        }
+
+        .leaderboard-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+            color: #ffd166;
+            font-weight: 700;
+            font-size: 0.92rem;
+        }
+
+        .leaderboard-list {
+            display: grid;
+            gap: 8px;
+        }
+
+        .leaderboard-row {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 10px;
+            align-items: center;
+            padding: 9px 10px;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.24);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .leaderboard-rank {
+            width: 28px;
+            height: 28px;
+            display: grid;
+            place-items: center;
+            border-radius: 999px;
+            background: rgba(255, 209, 102, 0.16);
+            color: #ffd166;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .leaderboard-name {
+            min-width: 0;
+            overflow: hidden;
+            color: #fff;
+            font-size: 0.86rem;
+            font-weight: 700;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .leaderboard-meta {
+            color: rgba(255, 255, 255, 0.62);
+            font-size: 0.72rem;
+        }
+
+        .leaderboard-score {
+            color: #ffd166;
+            font-size: 0.82rem;
+            font-weight: 800;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .empty-leaderboard {
+            padding: 12px;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.22);
+            color: rgba(255, 255, 255, 0.62);
+            font-size: 0.82rem;
+            text-align: center;
+        }
+
+        .settings-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .settings-actions .menu-button {
+            margin-top: 0;
+            padding: 10px 14px;
+            font-size: 0.92rem;
+        }
 
         /* ============================================
            ✨ Hints & Misc
@@ -526,25 +790,48 @@
 
     <div id="game-container" style="background-image: url('image/bg.png');">
 
-        <a id="admin-btn" href="admin.html" title="Admin Panel">⚙️ Admin</a>
-
         <div id="progress-badge"><span class="label">🎯 ข้อที่</span><span class="num" id="progress-num">0 / 0</span></div>
 
-        <div id="best-record">
-            <div>🏆 <b>สถิติสูงสุด</b></div>
-            <div class="row">
-                <span>ดีที่สุด: <b id="best-num">0</b></span>
-                <span>ครั้งล่าสุด: <b id="last-num">0</b></span>
+        <div id="start-menu">
+            <a id="admin-btn" href="admin.html" title="Admin Panel">⚙️ Admin</a>
+            <div class="start-menu-card">
+                <h1 class="start-menu-title">Game Math</h1>
+                <p class="start-menu-subtitle">ผู้สอน: <span id="menu-teacher-name">Mr.EAKAPOT</span></p>
+                <div class="player-panel">
+                    <label class="settings-label" for="player-name-input">ชื่อผู้เล่น</label>
+                    <input id="player-name-input" type="text" maxlength="32" autocomplete="off" placeholder="ใส่ชื่อของคุณ">
+                    <div class="stat-note">ระบบจะจำชื่อ คะแนน เวลา และข้อมูลเครื่องไว้ในเครื่องนี้</div>
+                </div>
+                <div class="leaderboard-panel">
+                    <div class="leaderboard-title">
+                        <span>🏆 จัดอันดับในเครื่องนี้</span>
+                        <span id="leaderboard-count">0 รอบ</span>
+                    </div>
+                    <div id="leaderboard-list" class="leaderboard-list"></div>
+                </div>
+                <button id="play-btn" class="menu-button primary" type="button">▶ Play</button>
+                <button id="settings-btn" class="menu-button secondary" type="button">⚙ Setting</button>
+                <div id="settings-panel" hidden>
+                    <label class="settings-label" for="username-input">เปลี่ยนชื่อของ Mr.EAKAPOT</label>
+                    <input id="username-input" type="text" maxlength="32" autocomplete="off">
+                    <div class="settings-actions">
+                        <button id="save-settings-btn" class="menu-button primary" type="button">บันทึก</button>
+                        <button id="cancel-settings-btn" class="menu-button secondary" type="button">ยกเลิก</button>
+                    </div>
+                </div>
             </div>
         </div>
 
         <img id="character-sprite" class="pos-center" onclick="handleSpriteClick(event)">
 
-        <div id="choice-container"></div>
-
         <div id="dialogue-box" onclick="handleInput()">
             <div id="name-tag">ระบบ</div>
             <div id="text-content">กดเพื่อเริ่มเกม...</div>
+            <div id="choice-toolbar" hidden>
+                <span id="choice-mode-label">เลือกคำตอบ</span>
+                <button id="question-toggle-btn" type="button">ดูคำถาม</button>
+            </div>
+            <div id="choice-container"></div>
             <div class="click-hint">กด คลิก ที่กล่องข้อความเพื่อไปต่อ</div>
         </div>
     </div>
@@ -561,6 +848,20 @@
             speaking: true,       // animation เด้งตอนพูด
             typeSpeed: 40,        // ms ต่อตัวอักษร
         };
+        const DEFAULT_TEACHER_NAME = "Mr.EAKAPOT";
+        const TEACHER_NAME_STORAGE_KEY = "vn_teacher_name";
+        const PLAYER_NAME_STORAGE_KEY = "vn_player_name";
+        const PLAYER_STATS_STORAGE_KEY = "vn_player_stats";
+        const CLIENT_INFO_STORAGE_KEY = "vn_client_info";
+        const MAX_PLAYER_STATS = 100;
+        const CLIENT_IP_MAX_AGE_MS = 6 * 60 * 60 * 1000;
+        const STAGE_BACKGROUNDS = [
+            { min: 1, max: 10, bg: "image/bg.png" },
+            { min: 11, max: 15, bg: "image/bg1.png" },
+            { min: 16, max: 20, bg: "image/bg2.png" },
+            { min: 21, max: 25, bg: "image/bg3.png" },
+            { min: 26, max: 30, bg: "image/bg4.png" },
+        ];
 
         // ----- State -----
         let currentSceneId = "start";
@@ -573,6 +874,15 @@
         let currentSprite = "";
         let spriteFadeTimer = null;
         const preloadedAssets = new Set();
+        let backgroundWarmupStarted = false;
+        let isStartMenuOpen = true;
+        let teacherName = loadTeacherName();
+        let playerName = loadPlayerName();
+        let runStartedAt = 0;
+        let clientInfo = loadClientInfo();
+        let hasPendingChoices = false;
+        let isViewingQuestion = false;
+        let currentQuestionText = "";
 
         // ----- 🎲 ประวัติการสุ่ม: จำว่า scene ไหนสุ่มไปยัง nextId ไหนแล้วบ้าง (ไม่ซ้ำ) -----
         const randomHistory = {};   // { sceneId: Set<nextId> }
@@ -588,12 +898,14 @@
             try { localStorage.setItem(STORAGE_KEY, JSON.stringify(rec)); } catch {}
         }
         // commit คะแนนรอบนี้: เปรียบเทียบกับ best แล้วเก็บ last
-        function commitRunScore(score) {
-            if (score <= 0) return;
+        function commitRunScore(score, outcome = "unknown") {
+            score = Math.max(0, Number(score) || 0);
             const rec = loadRecord();
             rec.last = score;
             if (score > rec.best) rec.best = score;
             saveRecord(rec);
+            savePlayerRun(score, outcome);
+            updateLeaderboardUI();
         }
 
         // ----- ฉากลับ: นับจำนวนคลิกที่ตัวละคร -----
@@ -611,9 +923,419 @@
         const $clickHint = document.querySelector('.click-hint');
         const $progress = document.getElementById('progress-badge');
         const $progNum = document.getElementById('progress-num');
-        const $best = document.getElementById('best-record');
-        const $bestNum = document.getElementById('best-num');
-        const $lastNum = document.getElementById('last-num');
+        const $dialogueBox = document.getElementById('dialogue-box');
+        const $startMenu = document.getElementById('start-menu');
+        const $playBtn = document.getElementById('play-btn');
+        const $settingsBtn = document.getElementById('settings-btn');
+        const $settingsPanel = document.getElementById('settings-panel');
+        const $usernameInput = document.getElementById('username-input');
+        const $saveSettingsBtn = document.getElementById('save-settings-btn');
+        const $cancelSettingsBtn = document.getElementById('cancel-settings-btn');
+        const $menuTeacherName = document.getElementById('menu-teacher-name');
+        const $playerNameInput = document.getElementById('player-name-input');
+        const $leaderboardList = document.getElementById('leaderboard-list');
+        const $leaderboardCount = document.getElementById('leaderboard-count');
+        const $choiceToolbar = document.getElementById('choice-toolbar');
+        const $questionToggleBtn = document.getElementById('question-toggle-btn');
+        const $choiceModeLabel = document.getElementById('choice-mode-label');
+
+        function loadTeacherName() {
+            try {
+                const saved = localStorage.getItem(TEACHER_NAME_STORAGE_KEY);
+                return saved && saved.trim() ? saved.trim() : DEFAULT_TEACHER_NAME;
+            } catch {
+                return DEFAULT_TEACHER_NAME;
+            }
+        }
+
+        function saveTeacherName(name) {
+            teacherName = name && name.trim() ? name.trim() : DEFAULT_TEACHER_NAME;
+            try { localStorage.setItem(TEACHER_NAME_STORAGE_KEY, teacherName); } catch {}
+            updateTeacherNameUI();
+        }
+
+        function updateTeacherNameUI() {
+            $menuTeacherName.textContent = teacherName;
+            if ($usernameInput) $usernameInput.value = teacherName;
+        }
+
+        function resolveSceneName(name) {
+            return name === DEFAULT_TEACHER_NAME ? teacherName : (name || "");
+        }
+
+        function loadPlayerName() {
+            try {
+                const saved = localStorage.getItem(PLAYER_NAME_STORAGE_KEY);
+                return saved && saved.trim() ? saved.trim() : "Player";
+            } catch {
+                return "Player";
+            }
+        }
+
+        function savePlayerName(name) {
+            playerName = name && name.trim() ? name.trim() : "Player";
+            try { localStorage.setItem(PLAYER_NAME_STORAGE_KEY, playerName); } catch {}
+            updatePlayerNameUI();
+        }
+
+        function updatePlayerNameUI() {
+            if ($playerNameInput) $playerNameInput.value = playerName;
+        }
+
+        function loadPlayerStats() {
+            try {
+                const stats = JSON.parse(localStorage.getItem(PLAYER_STATS_STORAGE_KEY) || "[]");
+                return Array.isArray(stats) ? stats : [];
+            } catch {
+                return [];
+            }
+        }
+
+        function savePlayerStats(stats) {
+            try { localStorage.setItem(PLAYER_STATS_STORAGE_KEY, JSON.stringify(stats)); } catch {}
+        }
+
+        function parseChromeVersion(userAgent) {
+            const match = String(userAgent).match(/(?:Chrome|CriOS)\/([\d.]+)/);
+            return match ? match[1] : "unknown";
+        }
+
+        function parseDeviceModel(userAgent) {
+            const ua = String(userAgent);
+            const ios = ua.match(/\((iPhone|iPad|iPod)[^)]*\)/);
+            const android = ua.match(/Android[^;)]*;\s*([^;)]+)/);
+            if (ios) return ios[1];
+            if (android) return android[1].replace(/\s+Build\/.*$/i, "").trim();
+            return navigator.platform || "unknown";
+        }
+
+        function createClientId() {
+            return `client-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+        }
+
+        function saveClientInfo(info) {
+            try { localStorage.setItem(CLIENT_INFO_STORAGE_KEY, JSON.stringify(info)); } catch {}
+        }
+
+        function loadClientInfo() {
+            let saved = {};
+            try { saved = JSON.parse(localStorage.getItem(CLIENT_INFO_STORAGE_KEY) || "{}") || {}; } catch {}
+            const userAgent = navigator.userAgent || "";
+            const info = {
+                ...saved,
+                id: saved.id || createClientId(),
+                deviceModel: parseDeviceModel(userAgent),
+                chromeVersion: parseChromeVersion(userAgent),
+                platform: navigator.platform || "unknown",
+                language: navigator.language || "unknown",
+                screen: `${screen.width}x${screen.height}`,
+                userAgent,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "unknown",
+                updatedAt: new Date().toISOString(),
+            };
+            saveClientInfo(info);
+            return info;
+        }
+
+        async function refreshClientIp() {
+            const fetchedAt = Date.parse(clientInfo.ipFetchedAt || 0);
+            if (clientInfo.ip && Number.isFinite(fetchedAt) && Date.now() - fetchedAt < CLIENT_IP_MAX_AGE_MS) return;
+            try {
+                const controller = new AbortController();
+                const timer = setTimeout(() => controller.abort(), 1500);
+                const res = await fetch("https://api.ipify.org?format=json", { cache: "no-store", signal: controller.signal });
+                clearTimeout(timer);
+                if (!res.ok) return;
+                const data = await res.json();
+                if (!data.ip) return;
+                clientInfo = {
+                    ...clientInfo,
+                    ip: data.ip,
+                    ipFetchedAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+                saveClientInfo(clientInfo);
+            } catch {}
+        }
+
+        function formatDuration(ms) {
+            const seconds = Math.max(0, Math.round((Number(ms) || 0) / 1000));
+            const minutes = Math.floor(seconds / 60);
+            const rest = seconds % 60;
+            return minutes > 0 ? `${minutes}น ${rest}วิ` : `${rest}วิ`;
+        }
+
+        function escapeHtml(value) {
+            return String(value ?? "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function normalizeStatValue(value) {
+            return String(value ?? "unknown").trim().toLowerCase() || "unknown";
+        }
+
+        function getPlayerStatKey(record) {
+            return [
+                normalizeStatValue(record.deviceId),
+                normalizeStatValue(record.name),
+                normalizeStatValue(record.ip)
+            ].join("|");
+        }
+
+        function isBetterRun(newRecord, oldRecord) {
+            const newScore = Number(newRecord.score) || 0;
+            const oldScore = Number(oldRecord.score) || 0;
+            if (newScore !== oldScore) return newScore > oldScore;
+            const newTime = Number(newRecord.durationMs) || 0;
+            const oldTime = Number(oldRecord.durationMs) || 0;
+            if (newTime !== oldTime) return newTime < oldTime;
+            return Date.parse(newRecord.endedAt || 0) > Date.parse(oldRecord.endedAt || 0);
+        }
+
+        function savePlayerRun(score, outcome) {
+            const endedAt = Date.now();
+            const startedAt = runStartedAt || endedAt;
+            const durationMs = Math.max(0, endedAt - startedAt);
+            const record = {
+                id: `run-${endedAt.toString(36)}-${Math.random().toString(36).slice(2, 8)}`,
+                name: playerName,
+                score,
+                outcome,
+                durationMs,
+                seconds: Math.round(durationMs / 1000),
+                minutes: Number((durationMs / 60000).toFixed(2)),
+                startedAt: new Date(startedAt).toISOString(),
+                endedAt: new Date(endedAt).toISOString(),
+                deviceId: clientInfo.id,
+                deviceModel: clientInfo.deviceModel,
+                chromeVersion: clientInfo.chromeVersion,
+                ip: clientInfo.ip || "unknown",
+                platform: clientInfo.platform,
+                screen: clientInfo.screen,
+                userAgent: clientInfo.userAgent,
+            };
+            const stats = loadPlayerStats();
+            const recordKey = getPlayerStatKey(record);
+            const existingIndex = stats.findIndex(item => getPlayerStatKey(item) === recordKey);
+            if (existingIndex >= 0) {
+                const existing = stats[existingIndex];
+                if (isBetterRun(record, existing)) {
+                    stats[existingIndex] = {
+                        ...existing,
+                        ...record,
+                        id: existing.id || record.id,
+                        firstPlayedAt: existing.firstPlayedAt || existing.startedAt || record.startedAt,
+                        updatedAt: record.endedAt,
+                        attempts: (Number(existing.attempts) || 1) + 1,
+                    };
+                } else {
+                    stats[existingIndex] = {
+                        ...existing,
+                        lastAttemptAt: record.endedAt,
+                        attempts: (Number(existing.attempts) || 1) + 1,
+                    };
+                }
+            } else {
+                stats.push({
+                    ...record,
+                    firstPlayedAt: record.startedAt,
+                    updatedAt: record.endedAt,
+                    attempts: 1,
+                });
+            }
+            savePlayerStats(stats.slice(-MAX_PLAYER_STATS));
+            runStartedAt = 0;
+        }
+
+        function updateLeaderboardUI() {
+            if (!$leaderboardList || !$leaderboardCount) return;
+            const stats = loadPlayerStats();
+            $leaderboardCount.textContent = `${stats.length} สถิติ`;
+            if (!stats.length) {
+                $leaderboardList.innerHTML = `<div class="empty-leaderboard">ยังไม่มีสถิติ เริ่มเล่นเพื่อบันทึกอันดับแรก</div>`;
+                return;
+            }
+            const top = stats.slice().sort((a, b) =>
+                (Number(b.score) || 0) - (Number(a.score) || 0)
+                || (Number(a.durationMs) || 0) - (Number(b.durationMs) || 0)
+                || Date.parse(b.endedAt || 0) - Date.parse(a.endedAt || 0)
+            ).slice(0, 5);
+            $leaderboardList.innerHTML = top.map((item, index) => `
+                <div class="leaderboard-row">
+                    <div class="leaderboard-rank">${index + 1}</div>
+                    <div>
+                        <div class="leaderboard-name">${escapeHtml(item.name || "Player")}</div>
+                        <div class="leaderboard-meta">${formatDuration(item.durationMs)} • เล่น ${Number(item.attempts) || 1} ครั้ง • ${escapeHtml(item.deviceModel || "unknown")}</div>
+                    </div>
+                    <div class="leaderboard-score">${Number(item.score) || 0} ข้อ</div>
+                </div>
+            `).join("");
+        }
+
+        function getStageBackground(stageNumber) {
+            const stage = Number(stageNumber) || 0;
+            const matched = STAGE_BACKGROUNDS.find(item => stage >= item.min && stage <= item.max);
+            return matched ? matched.bg : "";
+        }
+
+        function getCurrentStageNumber(sceneId) {
+            const parent = lastRandomParent;
+            if (parent && parent !== sceneId && randomHistory[parent] && sceneId !== "start" && sceneId !== "lose" && sceneId !== "win") {
+                return randomHistory[parent].size;
+            }
+            const match = /^c(\d+)$/.exec(sceneId);
+            return match ? Number(match[1]) : 0;
+        }
+
+        function resolveSceneBackground(sceneId, scene) {
+            return getStageBackground(getCurrentStageNumber(sceneId)) || scene.bg;
+        }
+
+        function setBackground(bg) {
+            if (bg && bg !== "null" && bg !== currentBg) {
+                currentBg = bg;
+                $container.style.backgroundImage = `url('${bg}')`;
+            }
+        }
+
+        function showStartMenu() {
+            isStartMenuOpen = true;
+            stopTypewriter();
+            clearTimeout(spriteFadeTimer);
+            setBackground("image/bg.png");
+            updateTeacherNameUI();
+            updatePlayerNameUI();
+            updateLeaderboardUI();
+            $settingsPanel.hidden = true;
+            $startMenu.style.display = 'flex';
+            $dialogueBox.style.display = 'none';
+            $choiceContainer.style.display = 'none';
+            $clickHint.style.display = 'none';
+            $sprite.style.opacity = 0;
+            $sprite.classList.remove('speaking');
+            currentSprite = "";
+            isWaitingForChoice = false;
+            isTyping = false;
+            resetChoiceMode();
+        }
+
+        function hideStartMenu() {
+            isStartMenuOpen = false;
+            $startMenu.style.display = 'none';
+            $dialogueBox.style.display = 'block';
+        }
+
+        function startGame() {
+            savePlayerName($playerNameInput.value);
+            runStartedAt = Date.now();
+            hideStartMenu();
+            warmupLaterStageBackgrounds();
+            currentSceneId = "1";
+            renderScene(currentSceneId);
+        }
+
+        function openSettings() {
+            updateTeacherNameUI();
+            $settingsPanel.hidden = false;
+            $usernameInput.focus();
+            $usernameInput.select();
+        }
+
+        function closeSettings() {
+            $settingsPanel.hidden = true;
+            updateTeacherNameUI();
+        }
+
+        function bindMenuEvents() {
+            $playBtn.addEventListener('click', startGame);
+            $settingsBtn.addEventListener('click', openSettings);
+            $saveSettingsBtn.addEventListener('click', () => {
+                saveTeacherName($usernameInput.value);
+                closeSettings();
+            });
+            $cancelSettingsBtn.addEventListener('click', closeSettings);
+            $usernameInput.addEventListener('keydown', (e) => {
+                if (e.key === "Enter") {
+                    saveTeacherName($usernameInput.value);
+                    closeSettings();
+                }
+                if (e.key === "Escape") closeSettings();
+            });
+            $playerNameInput.addEventListener('change', () => savePlayerName($playerNameInput.value));
+            $playerNameInput.addEventListener('keydown', (e) => {
+                if (e.key === "Enter") startGame();
+            });
+        }
+
+        function resetChoiceMode() {
+            hasPendingChoices = false;
+            isViewingQuestion = false;
+            currentQuestionText = "";
+            $dialogueBox.classList.remove('choice-mode');
+            $textContent.classList.remove('is-hidden');
+            $choiceToolbar.hidden = true;
+            $questionToggleBtn.textContent = "ดูคำถาม";
+            $choiceModeLabel.textContent = "เลือกคำตอบ";
+            $choiceContainer.innerHTML = '';
+            $choiceContainer.style.display = 'none';
+            syncSpriteWithDialogue();
+        }
+
+        function showChoicesInDialogue() {
+            if (!hasPendingChoices) return;
+            isViewingQuestion = false;
+            $dialogueBox.classList.add('choice-mode');
+            $textContent.classList.add('is-hidden');
+            $choiceToolbar.hidden = false;
+            $choiceContainer.style.display = 'flex';
+            $questionToggleBtn.textContent = "ดูคำถาม";
+            $choiceModeLabel.textContent = "เลือกคำตอบ";
+            $clickHint.style.display = 'none';
+            syncSpriteWithDialogue();
+        }
+
+        function showQuestionInDialogue() {
+            if (!hasPendingChoices) return;
+            isViewingQuestion = true;
+            $dialogueBox.classList.add('choice-mode');
+            $textContent.textContent = currentQuestionText;
+            $textContent.classList.remove('is-hidden');
+            $choiceToolbar.hidden = false;
+            $choiceContainer.style.display = 'none';
+            $questionToggleBtn.textContent = "กลับไปตอบ";
+            $choiceModeLabel.textContent = "คำถาม";
+            $clickHint.style.display = 'none';
+            syncSpriteWithDialogue();
+        }
+
+        function toggleQuestionView(event) {
+            if (event) event.stopPropagation();
+            if (isViewingQuestion) {
+                showChoicesInDialogue();
+            } else {
+                showQuestionInDialogue();
+            }
+        }
+
+        function syncSpriteWithDialogue() {
+            if (isStartMenuOpen || $dialogueBox.style.display === 'none') {
+                $sprite.style.removeProperty('--sprite-bottom-offset');
+                return;
+            }
+            requestAnimationFrame(() => {
+                const containerRect = $container.getBoundingClientRect();
+                const dialogueRect = $dialogueBox.getBoundingClientRect();
+                const spriteRect = $sprite.getBoundingClientRect();
+                if (!dialogueRect.height || !spriteRect.height) return;
+                const safeGap = Math.max(24, Math.round(containerRect.height * 0.035));
+                const targetOffset = containerRect.bottom - dialogueRect.top + safeGap;
+                $sprite.style.setProperty('--sprite-bottom-offset', `${Math.ceil(targetOffset)}px`);
+            });
+        }
 
         function preloadImage(src) {
             if (!src || src === "null" || preloadedAssets.has(src)) return;
@@ -623,11 +1345,30 @@
             img.src = src;
         }
 
-        function preloadSceneAssets(scene) {
-            preloadImage(scene.bg);
+        function scheduleIdleTask(task, timeout = 1500) {
+            if ("requestIdleCallback" in window) {
+                requestIdleCallback(task, { timeout });
+                return;
+            }
+            setTimeout(task, Math.min(timeout, 800));
+        }
+
+        function warmupLaterStageBackgrounds() {
+            if (backgroundWarmupStarted) return;
+            backgroundWarmupStarted = true;
+            const laterBackgrounds = STAGE_BACKGROUNDS
+                .map(item => item.bg)
+                .filter(bg => bg && bg !== "image/bg.png");
+            laterBackgrounds.forEach((bg, index) => {
+                scheduleIdleTask(() => preloadImage(bg), 1800 + index * 700);
+            });
+        }
+
+        function preloadSceneAssets(scene, sceneId) {
+            preloadImage(resolveSceneBackground(sceneId, scene));
             preloadImage(scene.sprite);
             if (scene.next && storyScript[scene.next]) {
-                preloadImage(storyScript[scene.next].bg);
+                preloadImage(resolveSceneBackground(scene.next, storyScript[scene.next]));
                 preloadImage(storyScript[scene.next].sprite);
             }
         }
@@ -646,7 +1387,7 @@
                     let score = randomHistory[parent].size;
                     // ตอบผิด → ครั้งล่าสุดที่สุ่มยังไม่ได้นับ (ถูก mark used แล้ว) ต้องลบ 1
                     if (sceneId === "lose") score = Math.max(0, score - 1);
-                    commitRunScore(score);
+                    commitRunScore(score, sceneId);
                 }
                 lastRandomParent = null; // กัน commit ซ้ำตอนเข้า start
             }
@@ -660,20 +1401,25 @@
             // 🎯 อัปเดต progress badge + best record UI
             updateOverlayUI(sceneId);
 
+            if (sceneId === "start") {
+                showStartMenu();
+                return;
+            }
+
+            if (isStartMenuOpen) hideStartMenu();
+            resetChoiceMode();
+
             // อ่านค่า config + ใช้ default ถ้าไม่มี
             const position = scene.position || DEFAULTS.position;
             const speaking = scene.speaking !== undefined ? scene.speaking : DEFAULTS.speaking;
             const typeSpeed = scene.typeSpeed !== undefined ? scene.typeSpeed : DEFAULTS.typeSpeed;
-            preloadSceneAssets(scene);
+            preloadSceneAssets(scene, sceneId);
 
             // --- ชื่อตัวละคร ---
-            $nameTag.textContent = scene.name || "";
+            $nameTag.textContent = resolveSceneName(scene.name);
 
             // --- Background ---
-            if (scene.bg && scene.bg !== "null" && scene.bg !== currentBg) {
-                currentBg = scene.bg;
-                $container.style.backgroundImage = `url('${scene.bg}')`;
-            }
+            setBackground(resolveSceneBackground(sceneId, scene));
 
             // --- Character Sprite ---
             if (scene.sprite && scene.sprite !== "null") {
@@ -710,8 +1456,10 @@
             // --- Choices ---
             if (scene.choices) {
                 isWaitingForChoice = true;
+                hasPendingChoices = true;
+                currentQuestionText = scene.text || "";
                 $choiceContainer.innerHTML = '';
-                $choiceContainer.style.display = 'flex';
+                $choiceContainer.style.display = 'none';
 
                 // 🔀 Shuffle ลำดับตัวเลือก (default: true เพื่อกันการจำตำแหน่ง)
                 //    ปิดด้วย scene.shuffle === false
@@ -731,21 +1479,25 @@
                     const target = choice.nextId
                         ? choice.nextId
                         : (choice.correct ? onCorrect : onWrong);
-                    btn.onclick = () => selectChoice(target);
+                    btn.onclick = (event) => {
+                        event.stopPropagation();
+                        selectChoice(target);
+                    };
                     fragment.appendChild(btn);
                 });
                 $choiceContainer.appendChild(fragment);
+                $questionToggleBtn.onclick = toggleQuestionView;
 
                 // ซ่อน click hint ตอนมี choices
                 $clickHint.style.display = 'none';
             } else {
                 isWaitingForChoice = false;
-                $choiceContainer.style.display = 'none';
                 $clickHint.style.display = 'block';
             }
 
             // --- Typewriter Effect ---
             startTypewriter(scene.text || "", typeSpeed, speaking);
+            syncSpriteWithDialogue();
         }
 
         /* ============================================
@@ -778,6 +1530,7 @@
                     visibleText += currentFullText.slice(charIndex, nextIndex);
                     charIndex = nextIndex;
                     $textContent.textContent = visibleText;
+                    syncSpriteWithDialogue();
                     typewriterFrame = requestAnimationFrame(tick);
                 } else {
                     // พิมพ์เสร็จแล้ว!
@@ -792,6 +1545,7 @@
             // แสดงข้อความทั้งหมดทันที
             stopTypewriter();
             $textContent.textContent = currentFullText;
+            syncSpriteWithDialogue();
             finishTypewriter();
         }
 
@@ -813,6 +1567,11 @@
 
             // หยุด speaking animation เมื่อพิมพ์เสร็จ
             $sprite.classList.remove('speaking');
+
+            if (hasPendingChoices && !isViewingQuestion) {
+                showChoicesInDialogue();
+            }
+            syncSpriteWithDialogue();
         }
 
         /* ============================================
@@ -913,23 +1672,9 @@
         }
 
         /* ============================================
-           🎯 Overlay UI — Progress Badge + Best Record
+           🎯 Overlay UI — Progress Badge
            ============================================ */
         function updateOverlayUI(sceneId) {
-            // 🏆 Best Record: โชว์เฉพาะหน้า start
-            if (sceneId === "start") {
-                const rec = loadRecord();
-                if (rec.best > 0 || rec.last > 0) {
-                    $bestNum.textContent = rec.best;
-                    $lastNum.textContent = rec.last;
-                    $best.style.display = 'block';
-                } else {
-                    $best.style.display = 'none';
-                }
-            } else {
-                $best.style.display = 'none';
-            }
-
             // 🎯 Progress badge: โชว์ตอนอยู่ใน random round
             const parent = lastRandomParent;
             const inRandomRound = parent
@@ -951,8 +1696,7 @@
         function selectChoice(nextId) {
             currentSceneId = nextId;
             isWaitingForChoice = false;
-            $choiceContainer.style.display = 'none';
-            $clickHint.style.display = 'block';
+            resetChoiceMode();
             renderScene(currentSceneId);
         }
 
@@ -960,11 +1704,15 @@
            ⌨️ Keyboard Support
            ============================================ */
         window.addEventListener('keydown', (e) => {
+            if (isStartMenuOpen) return;
+            if (["BUTTON", "INPUT", "TEXTAREA"].includes(e.target?.tagName)) return;
             if (e.code === "Space" || e.code === "Enter") {
                 e.preventDefault();
                 handleInput();
             }
         });
+
+        window.addEventListener('resize', syncSpriteWithDialogue);
 
         /* ============================================
            🔒 Secret Scene — คลิกที่ตัวละครเพื่อเข้าฉากลับ
@@ -1048,6 +1796,8 @@
             }
             renderScene("start");
         })();
+        bindMenuEvents();
+        refreshClientIp();
 
     </script>
 
