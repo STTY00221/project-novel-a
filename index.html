@@ -856,6 +856,7 @@
         const MAX_PLAYER_STATS = 100;
         const CLIENT_IP_MAX_AGE_MS = 6 * 60 * 60 * 1000;
         const LEADERBOARD_FILE = "leaderboard.json";
+        const LEADERBOARD_CONFIG_FILE = "leaderboard-config.json";
         const LEADERBOARD_CACHE_STORAGE_KEY = "vn_global_leaderboard_cache";
         const GH_KEY = "novelAdminGh";
         const STAGE_BACKGROUNDS = [
@@ -888,6 +889,7 @@
         let isViewingQuestion = false;
         let currentQuestionText = "";
         let autoPublishInFlight = false;
+        let leaderboardApiUrl = "";
 
         // ----- 🎲 ประวัติการสุ่ม: จำว่า scene ไหนสุ่มไปยัง nextId ไหนแล้วบ้าง (ไม่ซ้ำ) -----
         const randomHistory = {};   // { sceneId: Set<nextId> }
@@ -1139,6 +1141,23 @@
             }
         }
 
+        function getLeaderboardApiUrl(path = "") {
+            if (!leaderboardApiUrl) return "";
+            const base = leaderboardApiUrl.replace(/\/+$/, "");
+            return `${base}${path}`;
+        }
+
+        async function loadLeaderboardConfig() {
+            try {
+                const res = await fetch(`${LEADERBOARD_CONFIG_FILE}?v=${Date.now()}`, { cache: "no-store" });
+                if (!res.ok) return;
+                const cfg = await res.json();
+                leaderboardApiUrl = String(cfg.apiUrl || "").trim();
+            } catch {
+                leaderboardApiUrl = "";
+            }
+        }
+
         async function commitFileToGithub(path, content, message) {
             const cfg = loadGhConfig();
             if (!cfg.autoLeaderboard || !cfg.owner || !cfg.repo || !cfg.token) return false;
@@ -1167,8 +1186,12 @@
             return true;
         }
 
-        async function autoPublishLeaderboard() {
+        async function autoPublishLeaderboard(entry = null) {
             if (autoPublishInFlight) return;
+            if (leaderboardApiUrl) {
+                await publishLeaderboardToWorker(entry);
+                return;
+            }
             const cfg = loadGhConfig();
             if (!cfg.autoLeaderboard || !cfg.owner || !cfg.repo || !cfg.token) return;
             autoPublishInFlight = true;
@@ -1184,6 +1207,31 @@
                 updateLeaderboardUI();
             } catch (err) {
                 console.warn("[leaderboard] auto publish failed", err);
+            } finally {
+                autoPublishInFlight = false;
+            }
+        }
+
+        async function publishLeaderboardToWorker(entry = null) {
+            if (autoPublishInFlight) return;
+            const url = getLeaderboardApiUrl("/score");
+            if (!url) return;
+            autoPublishInFlight = true;
+            try {
+                const latest = entry || loadPlayerStats()[0];
+                if (!latest) return;
+                const res = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ entry: latest })
+                });
+                if (!res.ok) throw new Error(`POST ${res.status}`);
+                const data = await res.json();
+                globalLeaderboard = normalizeLeaderboardEntries(data);
+                saveLeaderboardCache(globalLeaderboard);
+                updateLeaderboardUI();
+            } catch (err) {
+                console.warn("[leaderboard] worker publish failed", err);
             } finally {
                 autoPublishInFlight = false;
             }
@@ -1213,7 +1261,9 @@
 
         async function loadGlobalLeaderboard() {
             try {
-                const res = await fetch(`${LEADERBOARD_FILE}?v=${Date.now()}`, { cache: "no-store" });
+                const apiUrl = getLeaderboardApiUrl("/leaderboard");
+                const url = apiUrl || `${LEADERBOARD_FILE}?v=${Date.now()}`;
+                const res = await fetch(url, { cache: "no-store" });
                 if (!res.ok) throw new Error("leaderboard not found");
                 const data = await res.json();
                 globalLeaderboard = normalizeLeaderboardEntries(data);
@@ -1247,6 +1297,7 @@
                 userAgent: clientInfo.userAgent,
             };
             const stats = loadPlayerStats();
+            let savedRecord = record;
             const recordKey = getPlayerStatKey(record);
             const existingIndex = stats.findIndex(item => getPlayerStatKey(item) === recordKey);
             if (existingIndex >= 0) {
@@ -1260,27 +1311,30 @@
                         updatedAt: record.endedAt,
                         attempts: (Number(existing.attempts) || 1) + 1,
                     };
+                    savedRecord = stats[existingIndex];
                 } else {
                     stats[existingIndex] = {
                         ...existing,
                         lastAttemptAt: record.endedAt,
                         attempts: (Number(existing.attempts) || 1) + 1,
                     };
+                    savedRecord = stats[existingIndex];
                 }
             } else {
-                stats.push({
+                savedRecord = {
                     ...record,
                     firstPlayedAt: record.startedAt,
                     updatedAt: record.endedAt,
                     attempts: 1,
-                });
+                };
+                stats.push(savedRecord);
             }
             const sortedStats = sortLeaderboardEntries(stats).slice(0, MAX_PLAYER_STATS);
             savePlayerStats(sortedStats);
             globalLeaderboard = mergeLeaderboardEntries(globalLeaderboard, sortedStats).slice(0, 100);
             saveLeaderboardCache(globalLeaderboard);
             runStartedAt = 0;
-            autoPublishLeaderboard();
+            autoPublishLeaderboard(savedRecord);
         }
 
         function updateLeaderboardUI() {
@@ -1957,7 +2011,7 @@
         })();
         bindMenuEvents();
         refreshClientIp();
-        loadGlobalLeaderboard();
+        loadLeaderboardConfig().then(loadGlobalLeaderboard);
 
     </script>
 
