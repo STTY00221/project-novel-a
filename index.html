@@ -1214,7 +1214,7 @@
 
         async function publishLeaderboardToWorker(entry = null) {
             if (autoPublishInFlight) return;
-            const url = getLeaderboardApiUrl("/score");
+            const url = leaderboardApiUrl;
             if (!url) return;
             autoPublishInFlight = true;
             try {
@@ -1261,8 +1261,7 @@
 
         async function loadGlobalLeaderboard() {
             try {
-                const apiUrl = getLeaderboardApiUrl("/leaderboard");
-                const url = apiUrl || `${LEADERBOARD_FILE}?v=${Date.now()}`;
+                const url = leaderboardApiUrl || `${LEADERBOARD_FILE}?v=${Date.now()}`;
                 const res = await fetch(url, { cache: "no-store" });
                 if (!res.ok) throw new Error("leaderboard not found");
                 const data = await res.json();
