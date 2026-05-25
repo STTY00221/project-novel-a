@@ -228,6 +228,7 @@
     <div class="field"><label>Branch</label><input id="ghBranch" placeholder="main" value="main"></div>
     <div class="field"><label>File path</label><input id="ghPath" placeholder="story.js" value="story.js"></div>
     <div class="field"><label>Token</label><input id="ghToken" type="password" placeholder="github_pat_..."></div>
+    <div class="field"><label><input id="ghAutoLeaderboard" type="checkbox" style="width:auto;margin-right:8px">Auto publish leaderboard หลังเล่นจบในเครื่องนี้</label></div>
     <div class="field"><label>Commit message</label><input id="ghMsg" value="chore: update story.js via admin"></div>
     <div class="footer">
       <button class="btn ghost" id="ghCancel">Close</button>
@@ -256,6 +257,7 @@
       <button class="btn" id="playerDataImport">📥 Import Player JSON</button>
       <input id="playerDataImportInput" type="file" accept=".json" hidden>
       <button class="btn" id="playerDataExport">⬇️ Export JSON</button>
+      <button class="btn" id="playerDataDownloadLeaderboard">⬇️ Download Leaderboard</button>
       <button class="btn primary" id="playerDataPublishLeaderboard">🏆 Publish Leaderboard</button>
       <button class="btn ok" id="playerDataSaveFolder">💾 Save Folder</button>
       <button class="btn danger" id="playerDataClear">🗑 Clear Data</button>
@@ -868,6 +870,7 @@ function openGhModal(){
   $("#ghBranch").value = cfg.branch||"main";
   $("#ghPath").value = cfg.path||"story.js";
   $("#ghToken").value = cfg.token||"";
+  $("#ghAutoLeaderboard").checked = !!cfg.autoLeaderboard;
   $("#ghMsg").value = cfg.msg||"chore: update story.js via admin";
   $("#modalGh").classList.add("show");
 }
@@ -877,7 +880,8 @@ $("#ghSave").onclick = ()=>{
   ghSave({
     owner:$("#ghOwner").value.trim(), repo:$("#ghRepo").value.trim(),
     branch:$("#ghBranch").value.trim()||"main", path:$("#ghPath").value.trim()||"story.js",
-    token:$("#ghToken").value.trim(), msg:$("#ghMsg").value.trim()||"chore: update story.js"
+    token:$("#ghToken").value.trim(), autoLeaderboard:$("#ghAutoLeaderboard").checked,
+    msg:$("#ghMsg").value.trim()||"chore: update story.js"
   });
   $("#modalGh").classList.remove("show");
   toast("Settings saved");
@@ -1174,13 +1178,31 @@ async function loadPublishedLeaderboard(){
   }
 }
 
-async function publishLeaderboard(){
+async function buildMergedLeaderboardPayload(){
   const existingEntries = await loadPublishedLeaderboard();
   const localPayload = buildLeaderboardPayload();
-  const payload = {
+  return {
     updatedAt: new Date().toISOString(),
     entries: mergeLeaderboardEntries(existingEntries, localPayload.entries).slice(0, 100)
   };
+}
+
+async function downloadLeaderboard(){
+  const payload = await buildMergedLeaderboardPayload();
+  if(!payload.entries.length){
+    toast("ยังไม่มีข้อมูลผู้เล่นสำหรับสร้าง leaderboard", 2800);
+    return;
+  }
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "leaderboard.json";
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+async function publishLeaderboard(){
+  const payload = await buildMergedLeaderboardPayload();
   if(!payload.entries.length){
     toast("ยังไม่มีข้อมูลผู้เล่นสำหรับสร้าง leaderboard", 2800);
     return;
@@ -1249,6 +1271,7 @@ $("#playerDataImportInput").onchange = e=>{
   e.target.value = "";
 };
 $("#playerDataExport").onclick = exportPlayerData;
+$("#playerDataDownloadLeaderboard").onclick = downloadLeaderboard;
 $("#playerDataPublishLeaderboard").onclick = publishLeaderboard;
 $("#playerDataSaveFolder").onclick = savePlayerDataFolder;
 $("#playerDataClear").onclick = clearPlayerData;

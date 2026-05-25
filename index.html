@@ -856,6 +856,8 @@
         const MAX_PLAYER_STATS = 100;
         const CLIENT_IP_MAX_AGE_MS = 6 * 60 * 60 * 1000;
         const LEADERBOARD_FILE = "leaderboard.json";
+        const LEADERBOARD_CACHE_STORAGE_KEY = "vn_global_leaderboard_cache";
+        const GH_KEY = "novelAdminGh";
         const STAGE_BACKGROUNDS = [
             { min: 1, max: 10, bg: "image/bg.png" },
             { min: 11, max: 15, bg: "image/bg1.png" },
@@ -885,6 +887,7 @@
         let hasPendingChoices = false;
         let isViewingQuestion = false;
         let currentQuestionText = "";
+        let autoPublishInFlight = false;
 
         // ----- 🎲 ประวัติการสุ่ม: จำว่า scene ไหนสุ่มไปยัง nextId ไหนแล้วบ้าง (ไม่ซ้ำ) -----
         const randomHistory = {};   // { sceneId: Set<nextId> }
@@ -1111,14 +1114,112 @@
             return sortLeaderboardEntries(entries.filter(item => item && typeof item === "object"));
         }
 
+        function loadLeaderboardCache() {
+            try {
+                return normalizeLeaderboardEntries(JSON.parse(localStorage.getItem(LEADERBOARD_CACHE_STORAGE_KEY) || "null"));
+            } catch {
+                return [];
+            }
+        }
+
+        function saveLeaderboardCache(entries) {
+            try {
+                localStorage.setItem(LEADERBOARD_CACHE_STORAGE_KEY, JSON.stringify({
+                    updatedAt: new Date().toISOString(),
+                    entries: sortLeaderboardEntries(entries).slice(0, 100)
+                }));
+            } catch {}
+        }
+
+        function loadGhConfig() {
+            try {
+                return JSON.parse(localStorage.getItem(GH_KEY) || "{}");
+            } catch {
+                return {};
+            }
+        }
+
+        async function commitFileToGithub(path, content, message) {
+            const cfg = loadGhConfig();
+            if (!cfg.autoLeaderboard || !cfg.owner || !cfg.repo || !cfg.token) return false;
+            const branch = cfg.branch || "main";
+            const api = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${encodeURIComponent(path)}`;
+            const headers = { Authorization: `Bearer ${cfg.token}`, Accept: "application/vnd.github+json" };
+            let sha;
+            const getRes = await fetch(`${api}?ref=${encodeURIComponent(branch)}`, { headers });
+            if (getRes.ok) {
+                sha = (await getRes.json()).sha;
+            } else if (getRes.status !== 404) {
+                throw new Error(`GET ${getRes.status}`);
+            }
+            const body = {
+                message,
+                content: btoa(unescape(encodeURIComponent(content))),
+                branch
+            };
+            if (sha) body.sha = sha;
+            const putRes = await fetch(api, {
+                method: "PUT",
+                headers: { ...headers, "Content-Type": "application/json" },
+                body: JSON.stringify(body)
+            });
+            if (!putRes.ok) throw new Error(`PUT ${putRes.status}`);
+            return true;
+        }
+
+        async function autoPublishLeaderboard() {
+            if (autoPublishInFlight) return;
+            const cfg = loadGhConfig();
+            if (!cfg.autoLeaderboard || !cfg.owner || !cfg.repo || !cfg.token) return;
+            autoPublishInFlight = true;
+            try {
+                const mergedEntries = mergeLeaderboardEntries(globalLeaderboard, loadPlayerStats()).slice(0, 100);
+                const payload = {
+                    updatedAt: new Date().toISOString(),
+                    entries: mergedEntries
+                };
+                await commitFileToGithub(LEADERBOARD_FILE, JSON.stringify(payload, null, 2), "chore: auto update leaderboard");
+                globalLeaderboard = mergedEntries;
+                saveLeaderboardCache(globalLeaderboard);
+                updateLeaderboardUI();
+            } catch (err) {
+                console.warn("[leaderboard] auto publish failed", err);
+            } finally {
+                autoPublishInFlight = false;
+            }
+        }
+
+        function mergeLeaderboardEntries(...groups) {
+            const merged = new Map();
+            groups.flat().forEach(item => {
+                if (!item || typeof item !== "object") return;
+                const key = getPlayerStatKey(item);
+                const current = merged.get(key);
+                if (!current || isBetterRun(item, current)) {
+                    merged.set(key, {
+                        ...current,
+                        ...item,
+                        attempts: Math.max(Number(current?.attempts) || 1, Number(item.attempts) || 1)
+                    });
+                } else {
+                    merged.set(key, {
+                        ...current,
+                        attempts: Math.max(Number(current.attempts) || 1, Number(item.attempts) || 1)
+                    });
+                }
+            });
+            return sortLeaderboardEntries([...merged.values()]);
+        }
+
         async function loadGlobalLeaderboard() {
             try {
                 const res = await fetch(`${LEADERBOARD_FILE}?v=${Date.now()}`, { cache: "no-store" });
                 if (!res.ok) throw new Error("leaderboard not found");
                 const data = await res.json();
                 globalLeaderboard = normalizeLeaderboardEntries(data);
+                saveLeaderboardCache(globalLeaderboard);
             } catch {
-                globalLeaderboard = [];
+                globalLeaderboard = loadLeaderboardCache();
             }
             updateLeaderboardUI();
         }
@@ -1174,15 +1275,21 @@
                     attempts: 1,
                 });
             }
-            savePlayerStats(stats.slice(-MAX_PLAYER_STATS));
+            const sortedStats = sortLeaderboardEntries(stats).slice(0, MAX_PLAYER_STATS);
+            savePlayerStats(sortedStats);
+            globalLeaderboard = mergeLeaderboardEntries(globalLeaderboard, sortedStats).slice(0, 100);
+            saveLeaderboardCache(globalLeaderboard);
             runStartedAt = 0;
+            autoPublishLeaderboard();
         }
 
         function updateLeaderboardUI() {
             if (!$leaderboardList || !$leaderboardCount) return;
             const stats = loadPlayerStats();
-            const entries = globalLeaderboard.length ? globalLeaderboard : sortLeaderboardEntries(stats);
-            const sourceText = globalLeaderboard.length ? "ทั่วเว็บ" : "ในเครื่องนี้";
+            const entries = mergeLeaderboardEntries(globalLeaderboard, stats);
+            const sourceText = globalLeaderboard.length && stats.length
+                ? "ทั่วเว็บ + เครื่องนี้"
+                : (globalLeaderboard.length ? "ทั่วเว็บ" : "ในเครื่องนี้");
             $leaderboardCount.textContent = `${entries.length} สถิติ`;
             if (!entries.length) {
                 $leaderboardList.innerHTML = `<div class="empty-leaderboard">ยังไม่มีอันดับ เริ่มเล่นเพื่อบันทึกคะแนนแรก</div>`;
@@ -1235,6 +1342,7 @@
             updateTeacherNameUI();
             updatePlayerNameUI();
             updateLeaderboardUI();
+            loadGlobalLeaderboard();
             $settingsPanel.hidden = true;
             $startMenu.style.display = 'flex';
             $dialogueBox.style.display = 'none';
