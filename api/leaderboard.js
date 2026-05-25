@@ -166,11 +166,29 @@ async function saveLeaderboard(cfg, sha, payload, attempts = 3) {
   if (!res.ok) throw new Error(`GitHub PUT ${res.status}: ${await res.text()}`);
 }
 
+function validateConfig(cfg) {
+  const missing = [];
+  if (!cfg.owner) missing.push("GITHUB_OWNER");
+  if (!cfg.repo) missing.push("GITHUB_REPO");
+  if (!cfg.token) missing.push("GITHUB_TOKEN");
+  return missing;
+}
+
 export default async function handler(request) {
   if (request.method === "OPTIONS") return cors();
 
   const url = new URL(request.url);
   const cfg = githubConfig();
+
+  // Validate config first
+  const missing = validateConfig(cfg);
+  if (missing.length > 0) {
+    return json({ 
+      error: "Missing environment variables", 
+      missing: missing,
+      hint: "Please set GITHUB_OWNER, GITHUB_REPO, and GITHUB_TOKEN in Vercel dashboard Settings > Environment Variables"
+    }, 500);
+  }
 
   try {
     if (request.method === "GET" && url.pathname === "/api/leaderboard") {
@@ -192,7 +210,14 @@ export default async function handler(request) {
 
     return json({ error: "Not found" }, 404);
   } catch (err) {
-    return json({ error: err.message || "API error" }, 500);
+    console.error("[leaderboard-api] error:", err.message);
+    return json({ 
+      error: err.message || "API error",
+      type: err.name,
+      githubOwner: cfg.owner,
+      githubRepo: cfg.repo,
+      hasToken: !!cfg.token
+    }, 500);
   }
 }
 
