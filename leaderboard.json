@@ -1,4 +1,21 @@
 {
-  "updatedAt": "",
-  "entries": []
+  "updatedAt": "2026-05-25T13:26:19.051Z",
+  "entries": [
+    {
+      "id": "run-mpl8ih6l-9wv9yp",
+      "name": "STTY",
+      "score": 1,
+      "durationMs": 45113,
+      "seconds": 45,
+      "minutes": 0.75,
+      "attempts": 2,
+      "outcome": "lose",
+      "deviceId": "client-mpiufmax-xlu2qe",
+      "deviceModel": "Win32",
+      "chromeVersion": "148.0.0.0",
+      "ip": "171.101.118.239",
+      "endedAt": "2026-05-25T13:20:57.213Z",
+      "updatedAt": "2026-05-25T13:20:57.213Z"
+    }
+  ]
 }
