@@ -784,10 +784,6 @@
             }
         }
     </style>
-    <!-- Vercel Speed Insights -->
-    <script>
-        window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
-    </script>
 </head>
 
 <body>
@@ -808,7 +804,7 @@
                 </div>
                 <div class="leaderboard-panel">
                     <div class="leaderboard-title">
-                        <span>🏆 จัดอันดับในเครื่องนี้</span>
+                        <span>🏆 จัดอันดับสูงสุด</span>
                         <span id="leaderboard-count">0 รอบ</span>
                     </div>
                     <div id="leaderboard-list" class="leaderboard-list"></div>
@@ -859,6 +855,7 @@
         const CLIENT_INFO_STORAGE_KEY = "vn_client_info";
         const MAX_PLAYER_STATS = 100;
         const CLIENT_IP_MAX_AGE_MS = 6 * 60 * 60 * 1000;
+        const LEADERBOARD_FILE = "leaderboard.json";
         const STAGE_BACKGROUNDS = [
             { min: 1, max: 10, bg: "image/bg.png" },
             { min: 11, max: 15, bg: "image/bg1.png" },
@@ -880,6 +877,7 @@
         const preloadedAssets = new Set();
         let backgroundWarmupStarted = false;
         let isStartMenuOpen = true;
+        let globalLeaderboard = [];
         let teacherName = loadTeacherName();
         let playerName = loadPlayerName();
         let runStartedAt = 0;
@@ -1100,6 +1098,31 @@
             return Date.parse(newRecord.endedAt || 0) > Date.parse(oldRecord.endedAt || 0);
         }
 
+        function sortLeaderboardEntries(entries) {
+            return entries.slice().sort((a, b) =>
+                (Number(b.score) || 0) - (Number(a.score) || 0)
+                || (Number(a.durationMs) || 0) - (Number(b.durationMs) || 0)
+                || Date.parse(b.endedAt || b.updatedAt || 0) - Date.parse(a.endedAt || a.updatedAt || 0)
+            );
+        }
+
+        function normalizeLeaderboardEntries(data) {
+            const entries = Array.isArray(data) ? data : (Array.isArray(data?.entries) ? data.entries : []);
+            return sortLeaderboardEntries(entries.filter(item => item && typeof item === "object"));
+        }
+
+        async function loadGlobalLeaderboard() {
+            try {
+                const res = await fetch(`${LEADERBOARD_FILE}?v=${Date.now()}`, { cache: "no-store" });
+                if (!res.ok) throw new Error("leaderboard not found");
+                const data = await res.json();
+                globalLeaderboard = normalizeLeaderboardEntries(data);
+            } catch {
+                globalLeaderboard = [];
+            }
+            updateLeaderboardUI();
+        }
+
         function savePlayerRun(score, outcome) {
             const endedAt = Date.now();
             const startedAt = runStartedAt || endedAt;
@@ -1158,22 +1181,20 @@
         function updateLeaderboardUI() {
             if (!$leaderboardList || !$leaderboardCount) return;
             const stats = loadPlayerStats();
-            $leaderboardCount.textContent = `${stats.length} สถิติ`;
-            if (!stats.length) {
-                $leaderboardList.innerHTML = `<div class="empty-leaderboard">ยังไม่มีสถิติ เริ่มเล่นเพื่อบันทึกอันดับแรก</div>`;
+            const entries = globalLeaderboard.length ? globalLeaderboard : sortLeaderboardEntries(stats);
+            const sourceText = globalLeaderboard.length ? "ทั่วเว็บ" : "ในเครื่องนี้";
+            $leaderboardCount.textContent = `${entries.length} สถิติ`;
+            if (!entries.length) {
+                $leaderboardList.innerHTML = `<div class="empty-leaderboard">ยังไม่มีอันดับ เริ่มเล่นเพื่อบันทึกคะแนนแรก</div>`;
                 return;
             }
-            const top = stats.slice().sort((a, b) =>
-                (Number(b.score) || 0) - (Number(a.score) || 0)
-                || (Number(a.durationMs) || 0) - (Number(b.durationMs) || 0)
-                || Date.parse(b.endedAt || 0) - Date.parse(a.endedAt || 0)
-            ).slice(0, 5);
+            const top = entries.slice(0, 5);
             $leaderboardList.innerHTML = top.map((item, index) => `
                 <div class="leaderboard-row">
                     <div class="leaderboard-rank">${index + 1}</div>
                     <div>
                         <div class="leaderboard-name">${escapeHtml(item.name || "Player")}</div>
-                        <div class="leaderboard-meta">${formatDuration(item.durationMs)} • เล่น ${Number(item.attempts) || 1} ครั้ง • ${escapeHtml(item.deviceModel || "unknown")}</div>
+                        <div class="leaderboard-meta">${formatDuration(item.durationMs)} • ${sourceText} • เล่น ${Number(item.attempts) || 1} ครั้ง</div>
                     </div>
                     <div class="leaderboard-score">${Number(item.score) || 0} ข้อ</div>
                 </div>
@@ -1289,6 +1310,20 @@
             syncSpriteWithDialogue();
         }
 
+        function prepareChoiceQuestion() {
+            if (!hasPendingChoices) return;
+            isViewingQuestion = true;
+            $dialogueBox.classList.add('choice-mode');
+            $textContent.textContent = currentQuestionText;
+            $textContent.classList.remove('is-hidden');
+            $choiceToolbar.hidden = false;
+            $choiceContainer.style.display = 'none';
+            $questionToggleBtn.textContent = "ไปตอบ";
+            $choiceModeLabel.textContent = "คำถาม";
+            $clickHint.style.display = 'block';
+            syncSpriteWithDialogue();
+        }
+
         function showChoicesInDialogue() {
             if (!hasPendingChoices) return;
             isViewingQuestion = false;
@@ -1339,6 +1374,11 @@
                 const targetOffset = containerRect.bottom - dialogueRect.top + safeGap;
                 $sprite.style.setProperty('--sprite-bottom-offset', `${Math.ceil(targetOffset)}px`);
             });
+        }
+
+        function syncSpriteAfterLayout() {
+            syncSpriteWithDialogue();
+            requestAnimationFrame(syncSpriteWithDialogue);
         }
 
         function preloadImage(src) {
@@ -1432,10 +1472,12 @@
                 clearTimeout(spriteFadeTimer);
 
                 const showSprite = () => {
+                    $sprite.onload = syncSpriteAfterLayout;
                     $sprite.src = scene.sprite;
                     currentSprite = scene.sprite;
                     $sprite.classList.add(`pos-${position}`);
                     $sprite.style.opacity = 1;
+                    syncSpriteAfterLayout();
 
                     // เริ่ม speaking animation ถ้าเปิด
                     if (speaking) {
@@ -1455,6 +1497,7 @@
                 currentSprite = "";
                 $sprite.style.opacity = 0;
                 $sprite.classList.remove('speaking');
+                $sprite.onload = null;
             }
 
             // --- Choices ---
@@ -1501,7 +1544,7 @@
 
             // --- Typewriter Effect ---
             startTypewriter(scene.text || "", typeSpeed, speaking);
-            syncSpriteWithDialogue();
+            syncSpriteAfterLayout();
         }
 
         /* ============================================
@@ -1572,8 +1615,8 @@
             // หยุด speaking animation เมื่อพิมพ์เสร็จ
             $sprite.classList.remove('speaking');
 
-            if (hasPendingChoices && !isViewingQuestion) {
-                showChoicesInDialogue();
+            if (hasPendingChoices) {
+                prepareChoiceQuestion();
             }
             syncSpriteWithDialogue();
         }
@@ -1589,6 +1632,10 @@
             }
 
             // ถ้ามีตัวเลือก → ไม่ทำอะไร (รอเลือก)
+            if (hasPendingChoices && isViewingQuestion) {
+                showChoicesInDialogue();
+                return;
+            }
             if (isWaitingForChoice) return;
 
             // ไป scene ถัดไป
@@ -1615,7 +1662,7 @@
 
         /* ============================================
            🎲 Random Next — รองรับ string หรือ {nextId, weight}
-           ✨ ไม่ซ้ำของเดิม: จำว่าเคย���ุ่มอะไรไปแล้วจาก scene นี้ (randomHistory)
+           ✨ ไม่ซ้ำของเดิม: จำว่าเคยสุ่มอะไรไปแล้วจาก scene นี้ (randomHistory)
            🏆 winCount: ถ้าตั้งค่า → เมื่อสุ่มไปแล้วครบ N ครั้ง จะ fallback ไป scene.next ทันที
               (ไม่ต้องสุ่มครบทุกข้อ — ใช้ทำเงื่อนไข "ชนะเมื่อตอบถูก N ข้อ")
            - ถ้าหมดตัวเลือก → fallback ไป scene.next (ถ้ามี) ไม่งั้นรีเซ็ตแล้วสุ่มใหม่
@@ -1716,7 +1763,7 @@
             }
         });
 
-        window.addEventListener('resize', syncSpriteWithDialogue);
+        window.addEventListener('resize', syncSpriteAfterLayout);
 
         /* ============================================
            🔒 Secret Scene — คลิกที่ตัวละครเพื่อเข้าฉากลับ
@@ -1802,10 +1849,9 @@
         })();
         bindMenuEvents();
         refreshClientIp();
+        loadGlobalLeaderboard();
 
     </script>
-    <!-- Vercel Speed Insights -->
-    <script defer src="/_vercel/speed-insights/script.js"></script>
 
 </body>
 

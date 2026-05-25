@@ -140,10 +140,6 @@
   #userBadge{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);margin-right:4px}
   #userBadge b{color:#fff;font-weight:500}
 </style>
-<!-- Vercel Speed Insights -->
-<script>
-  window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
-</script>
 </head>
 <body class="locked">
 
@@ -257,7 +253,10 @@
     </div>
     <div class="analytics-actions">
       <button class="btn" id="playerDataRefresh">🔄 Refresh</button>
+      <button class="btn" id="playerDataImport">📥 Import Player JSON</button>
+      <input id="playerDataImportInput" type="file" accept=".json" hidden>
       <button class="btn" id="playerDataExport">⬇️ Export JSON</button>
+      <button class="btn primary" id="playerDataPublishLeaderboard">🏆 Publish Leaderboard</button>
       <button class="btn ok" id="playerDataSaveFolder">💾 Save Folder</button>
       <button class="btn danger" id="playerDataClear">🗑 Clear Data</button>
     </div>
@@ -277,7 +276,7 @@
         </thead>
         <tbody id="playerDataRows"></tbody>
       </table>
-      <div id="playerDataEmpty" class="empty-data" hidden>ยังไม่ม���ข้อมูลผู้เล่นในเครื่องนี้</div>
+      <div id="playerDataEmpty" class="empty-data" hidden>ยังไม่มีข้อมูลผู้เล่นในเครื่องนี้</div>
     </div>
   </div>
 </div>
@@ -846,6 +845,22 @@ $("#btnDownload").onclick = ()=>{
 const GH_KEY = "novelAdminGh";
 function ghLoad(){ try{ return JSON.parse(localStorage.getItem(GH_KEY)||"{}"); }catch{ return {}; } }
 function ghSave(v){ localStorage.setItem(GH_KEY, JSON.stringify(v)); }
+async function commitFileToGithub(path, content, message){
+  const cfg = ghLoad();
+  if(!cfg.owner||!cfg.repo||!cfg.token) return openGhModal(), toast("Fill GitHub settings first"), false;
+  const api = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${encodeURIComponent(path)}`;
+  const headers = {Authorization:`Bearer ${cfg.token}`,Accept:"application/vnd.github+json"};
+  let sha;
+  const g = await fetch(api+`?ref=${encodeURIComponent(cfg.branch||"main")}`,{headers});
+  if(g.ok){ sha = (await g.json()).sha; }
+  else if(g.status!==404){ throw new Error("GET "+g.status); }
+  const contentB64 = btoa(unescape(encodeURIComponent(content)));
+  const body = { message, content: contentB64, branch: cfg.branch||"main" };
+  if(sha) body.sha = sha;
+  const r = await fetch(api,{method:"PUT",headers:{...headers,"Content-Type":"application/json"},body:JSON.stringify(body)});
+  if(!r.ok){ const t = await r.text(); throw new Error(r.status+": "+t); }
+  return true;
+}
 function openGhModal(){
   const cfg = ghLoad();
   $("#ghOwner").value = cfg.owner||"";
@@ -871,21 +886,8 @@ $("#ghSave").onclick = ()=>{
 async function commitToGithub(){
   const cfg = ghLoad();
   if(!cfg.owner||!cfg.repo||!cfg.token) return openGhModal(), toast("Fill GitHub settings first");
-  const api = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${encodeURIComponent(cfg.path)}`;
-  const headers = {Authorization:`Bearer ${cfg.token}`,Accept:"application/vnd.github+json"};
   try{
-    // get current sha
-    let sha;
-    const g = await fetch(api+`?ref=${encodeURIComponent(cfg.branch)}`,{headers});
-    if(g.ok){ sha = (await g.json()).sha; }
-    else if(g.status!==404){ throw new Error("GET "+g.status); }
-    const content = serialize();
-    // UTF-8 safe base64
-    const b64 = btoa(unescape(encodeURIComponent(content)));
-    const body = { message: cfg.msg, content: b64, branch: cfg.branch };
-    if(sha) body.sha = sha;
-    const r = await fetch(api,{method:"PUT",headers:{...headers,"Content-Type":"application/json"},body:JSON.stringify(body)});
-    if(!r.ok){ const t = await r.text(); throw new Error(r.status+": "+t); }
+    await commitFileToGithub(cfg.path, serialize(), cfg.msg);
     toast("✅ Committed to GitHub");
   }catch(e){
     console.error(e); toast("GitHub error: "+e.message, 3500);
@@ -1047,6 +1049,35 @@ function exportPlayerData(){
   URL.revokeObjectURL(a.href);
 }
 
+function extractPlayerStatsPayload(data){
+  if(Array.isArray(data)) return data;
+  if(Array.isArray(data?.stats)) return data.stats;
+  if(Array.isArray(data?.entries)) return data.entries;
+  if(Array.isArray(data?.runs)) return data.runs;
+  return [];
+}
+
+function importPlayerDataFile(file){
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    try{
+      const data = JSON.parse(reader.result);
+      const imported = extractPlayerStatsPayload(data);
+      if(!imported.length){
+        toast("ไม่พบข้อมูลผู้เล่นในไฟล์นี้", 2600);
+        return;
+      }
+      const merged = mergeLeaderboardEntries(getPlayerStats(), imported).slice(0, 500);
+      saveJson(PLAYER_STATS_STORAGE_KEY, merged);
+      renderPlayerData();
+      toast(`Imported ${imported.length} records`, 2600);
+    }catch(err){
+      toast("Import failed: "+err.message, 3200);
+    }
+  };
+  reader.readAsText(file);
+}
+
 function buildPlayerDataPayload(){
   const stats = getPlayerStats();
   const clientInfo = loadJson(CLIENT_INFO_STORAGE_KEY, {});
@@ -1063,6 +1094,104 @@ function buildPlayerDataPayload(){
     },
     stats
   };
+}
+
+function sortLeaderboardEntries(entries){
+  return entries.slice().sort((a,b)=>
+    (Number(b.score)||0) - (Number(a.score)||0)
+    || (Number(a.durationMs)||0) - (Number(b.durationMs)||0)
+    || Date.parse(b.endedAt||b.updatedAt||0) - Date.parse(a.endedAt||a.updatedAt||0)
+  );
+}
+
+function getLeaderboardKey(item){
+  return [
+    String(item.deviceId || item.id || "unknown").trim().toLowerCase(),
+    String(item.name || "player").trim().toLowerCase(),
+    String(item.ip || "unknown").trim().toLowerCase()
+  ].join("|");
+}
+
+function isBetterLeaderboardEntry(next, current){
+  const nextScore = Number(next.score) || 0;
+  const currentScore = Number(current.score) || 0;
+  if(nextScore !== currentScore) return nextScore > currentScore;
+  const nextTime = Number(next.durationMs) || 0;
+  const currentTime = Number(current.durationMs) || 0;
+  if(nextTime !== currentTime) return nextTime < currentTime;
+  return Date.parse(next.endedAt || next.updatedAt || 0) > Date.parse(current.endedAt || current.updatedAt || 0);
+}
+
+function mergeLeaderboardEntries(...groups){
+  const merged = new Map();
+  groups.flat().forEach(item=>{
+    if(!item || typeof item !== "object") return;
+    const key = getLeaderboardKey(item);
+    const current = merged.get(key);
+    if(!current || isBetterLeaderboardEntry(item, current)){
+      merged.set(key, item);
+    }else{
+      merged.set(key, {
+        ...current,
+        attempts: Math.max(Number(current.attempts)||1, Number(item.attempts)||1)
+      });
+    }
+  });
+  return sortLeaderboardEntries([...merged.values()]);
+}
+
+function buildLeaderboardPayload(){
+  const entries = sortLeaderboardEntries(getPlayerStats()).slice(0, 100).map(item=>({
+    id: item.id,
+    name: item.name || "Player",
+    score: Number(item.score) || 0,
+    durationMs: Number(item.durationMs) || 0,
+    seconds: Number(item.seconds) || 0,
+    minutes: Number(item.minutes) || 0,
+    attempts: Number(item.attempts) || 1,
+    outcome: item.outcome || "unknown",
+    deviceId: item.deviceId || "",
+    deviceModel: item.deviceModel || "unknown",
+    chromeVersion: item.chromeVersion || "unknown",
+    ip: item.ip || "unknown",
+    endedAt: item.endedAt || item.updatedAt || "",
+    updatedAt: item.updatedAt || item.endedAt || ""
+  }));
+  return {
+    updatedAt: new Date().toISOString(),
+    entries
+  };
+}
+
+async function loadPublishedLeaderboard(){
+  try{
+    const res = await fetch(`leaderboard.json?v=${Date.now()}`, {cache:"no-store"});
+    if(!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data) ? data : (Array.isArray(data.entries) ? data.entries : []);
+  }catch{
+    return [];
+  }
+}
+
+async function publishLeaderboard(){
+  const existingEntries = await loadPublishedLeaderboard();
+  const localPayload = buildLeaderboardPayload();
+  const payload = {
+    updatedAt: new Date().toISOString(),
+    entries: mergeLeaderboardEntries(existingEntries, localPayload.entries).slice(0, 100)
+  };
+  if(!payload.entries.length){
+    toast("ยังไม่มีข้อมูลผู้เล่นสำหรับสร้าง leaderboard", 2800);
+    return;
+  }
+  try{
+    const ok = await commitFileToGithub("leaderboard.json", JSON.stringify(payload, null, 2), "chore: update leaderboard");
+    if(ok) toast("✅ Published leaderboard.json", 3200);
+  }catch(err){
+    console.error(err);
+    toast("Publish leaderboard failed: "+err.message, 3600);
+  }
 }
 
 async function writeJsonFile(dirHandle, fileName, data){
@@ -1114,7 +1243,13 @@ function clearPlayerData(){
 $("#btnPlayerData").onclick = openPlayerData;
 $("#playerDataClose").onclick = ()=>$("#modalPlayerData").classList.remove("show");
 $("#playerDataRefresh").onclick = renderPlayerData;
+$("#playerDataImport").onclick = ()=>$("#playerDataImportInput").click();
+$("#playerDataImportInput").onchange = e=>{
+  if(e.target.files[0]) importPlayerDataFile(e.target.files[0]);
+  e.target.value = "";
+};
 $("#playerDataExport").onclick = exportPlayerData;
+$("#playerDataPublishLeaderboard").onclick = publishLeaderboard;
 $("#playerDataSaveFolder").onclick = savePlayerDataFolder;
 $("#playerDataClear").onclick = clearPlayerData;
 $("#sceneSearch").addEventListener("input", renderList);
@@ -1123,8 +1258,9 @@ $("#sceneSearch").addEventListener("input", renderList);
    �� Login Gate
    ===================================================== */
 const AUTH_KEY = "novelAdminAuth";
-const ADMIN_CREDENTIAL_KEY = "novelAdminCredential";
+const ADMIN_CREDENTIAL_FILE = "admin-auth.json";
 const ADMIN_HASH_ITERATIONS = 210000;
+let adminCredential = null;
 
 function bytesToBase64(bytes){
   return btoa(String.fromCharCode(...new Uint8Array(bytes)));
@@ -1150,12 +1286,23 @@ async function hashPassword(password, salt, iterations=ADMIN_HASH_ITERATIONS){
   return bytesToBase64(bits);
 }
 
-function loadAdminCredential(){
-  return loadJson(ADMIN_CREDENTIAL_KEY, null);
+function isValidAdminCredential(credential){
+  return !!(credential && credential.id && credential.salt && credential.hash);
 }
 
-function saveAdminCredential(credential){
-  saveJson(ADMIN_CREDENTIAL_KEY, credential);
+async function loadAdminCredential(){
+  if(isValidAdminCredential(adminCredential)) return adminCredential;
+  try{
+    const res = await fetch(`${ADMIN_CREDENTIAL_FILE}?v=${Date.now()}`, {cache:"no-store"});
+    if(res.ok){
+      const credential = await res.json();
+      if(isValidAdminCredential(credential)){
+        adminCredential = credential;
+        return adminCredential;
+      }
+    }
+  }catch{}
+  return null;
 }
 
 function safeEqual(a,b){
@@ -1165,42 +1312,28 @@ function safeEqual(a,b){
   return diff === 0;
 }
 
-async function createAdminCredential(id, password){
-  const salt = crypto.getRandomValues(new Uint8Array(16));
-  const hash = await hashPassword(password, salt);
-  const credential = {
-    id,
-    salt: bytesToBase64(salt),
-    hash,
-    iterations: ADMIN_HASH_ITERATIONS,
-    createdAt: new Date().toISOString()
-  };
-  saveAdminCredential(credential);
-  return credential;
-}
-
 async function verifyAdminCredential(id, password){
-  const credential = loadAdminCredential();
+  const credential = await loadAdminCredential();
   if(!credential || credential.id !== id) return null;
   const hash = await hashPassword(password, base64ToBytes(credential.salt), credential.iterations || ADMIN_HASH_ITERATIONS);
   return safeEqual(hash, credential.hash) ? { id: credential.id, name: credential.id } : null;
 }
 
-function updateLoginMode(){
-  const hasCredential = !!loadAdminCredential();
-  $("#loginTitle").textContent = hasCredential ? "🔐 Admin Login" : "🛡️ Create Admin Login";
+async function updateLoginMode(){
+  const hasCredential = !!(await loadAdminCredential());
+  $("#loginTitle").textContent = "🔐 Admin Login";
   $("#loginSub").textContent = hasCredential
-    ? "เข้าสู่ระบบเพื่อแก้ไขเนื้อเรื่อง"
-    : "ตั้ง Admin ID และ Password ครั้งแรก ระบบจะเก็บเฉพาะ hash ใน browser นี้";
-  $("#loginPassword").autocomplete = hasCredential ? "current-password" : "new-password";
-  $("#loginForm button[type='submit']").textContent = hasCredential ? "เข้าสู่ระบบ" : "สร้างบัญชี Admin";
+    ? "เข้าสู่ระบบด้วยรหัสกลางจากไฟล์ admin-auth.json"
+    : "ยังไม่ได้ตั้งค่า admin-auth.json ให้เจ้าของเว็บสร้างไฟล์รหัสกลางก่อน";
+  $("#loginPassword").autocomplete = "current-password";
+  $("#loginForm button[type='submit']").textContent = "เข้าสู่ระบบ";
 }
 
-function checkAuth(){
+async function checkAuth(){
   try{
     const a = JSON.parse(sessionStorage.getItem(AUTH_KEY) || "null");
     if(!a) return null;
-    const credential = loadAdminCredential();
+    const credential = await loadAdminCredential();
     return credential && credential.id === a.id ? a : null;
   }catch{ return null; }
 }
@@ -1227,11 +1360,13 @@ $("#loginForm").addEventListener("submit", async e=>{
     return;
   }
   $("#loginErr").textContent = "";
-  const credential = loadAdminCredential();
   try{
-    const user = credential
-      ? await verifyAdminCredential(id, password)
-      : await createAdminCredential(id, password).then(c=>({id:c.id, name:c.id}));
+    const credential = await loadAdminCredential();
+    if(!credential){
+      $("#loginErr").textContent = "❌ ไม่พบ admin-auth.json หรือไฟล์ยังไม่ได้ตั้งค่า";
+      return;
+    }
+    const user = await verifyAdminCredential(id, password);
     if(!user){
       $("#loginErr").textContent = "❌ Admin ID หรือ Password ไม่ถูกต้อง";
       return;
@@ -1254,18 +1389,16 @@ async function startApp(){
   catch{ story = {}; renderAll(); }
 }
 
-(function bootstrap(){
-  const user = checkAuth();
+(async function bootstrap(){
+  const user = await checkAuth();
   if(user){
     bindLoginUI(user);
     startApp();
   } else {
-    updateLoginMode();
+    await updateLoginMode();
     setTimeout(()=>$("#loginId").focus(), 50);
   }
 })();
 </script>
-<!-- Vercel Speed Insights -->
-<script defer src="/_vercel/speed-insights/script.js"></script>
 </body>
 </html>
