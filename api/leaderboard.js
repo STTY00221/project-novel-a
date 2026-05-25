@@ -191,6 +191,20 @@ export default async function handler(request) {
   }
 
   try {
+    // Debug endpoint - check what's configured
+    if (request.method === "GET" && url.pathname === "/api/leaderboard/debug") {
+      return json({
+        hasOwner: !!cfg.owner,
+        hasRepo: !!cfg.repo,
+        hasToken: !!cfg.token,
+        owner: cfg.owner || null,
+        repo: cfg.repo || null,
+        branch: cfg.branch,
+        path: cfg.path,
+        nodeEnv: process.env.NODE_ENV || "unknown"
+      });
+    }
+
     if (request.method === "GET" && url.pathname === "/api/leaderboard") {
       const { data } = await loadLeaderboard(cfg);
       return json(data);
