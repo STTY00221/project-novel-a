@@ -102,6 +102,58 @@
         }
 
         /* ============================================
+           ⏳ Loading Screen — แสดงตอน publish leaderboard
+           ============================================ */
+        #publish-loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        #publish-loading.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #fff;
+            font-size: 18px;
+            margin-top: 20px;
+            font-family: 'Prompt', sans-serif;
+        }
+
+        .loading-status {
+            color: #aaa;
+            font-size: 14px;
+            margin-top: 10px;
+            font-family: 'Prompt', sans-serif;
+        }
+
+        /* ============================================
            💬 Speaking Animation — เด้งขึ้นลงตอนพูด
            ============================================ */
         @keyframes speaking-bounce {
@@ -788,6 +840,13 @@
 
 <body>
 
+    <!-- Loading Screen for Leaderboard Publish -->
+    <div id="publish-loading">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">กำลังอัปโหลดคะแนน...</div>
+        <div class="loading-status" id="publish-status">กรุณารอสักครู่</div>
+    </div>
+
     <div id="game-container" style="background-image: url('image/bg.png');">
 
         <div id="progress-badge"><span class="label">🎯 ข้อที่</span><span class="num" id="progress-num">0 / 0</span></div>
@@ -889,7 +948,6 @@
         let isViewingQuestion = false;
         let currentQuestionText = "";
         let autoPublishInFlight = false;
-        let leaderboardApiUrl = "";
 
         // ----- 🎲 ประวัติการสุ่ม: จำว่า scene ไหนสุ่มไปยัง nextId ไหนแล้วบ้าง (ไม่ซ้ำ) -----
         const randomHistory = {};   // { sceneId: Set<nextId> }
@@ -1141,29 +1199,159 @@
             }
         }
 
-        function getLeaderboardApiUrl(path = "") {
-            if (!leaderboardApiUrl) return "";
-            const base = leaderboardApiUrl.replace(/\/+$/, "");
-            return `${base}${path}`;
+        // GitHub Token Encryption/Decryption (AES-256-GCM with PBKDF2)
+        const GH_TOKEN_ENC_FILE = "github-token.enc.json";
+        let cachedDecryptedToken = null;
+
+        async function deriveKey(password, salt, iterations = 210000) {
+            const enc = new TextEncoder();
+            const keyMaterial = await crypto.subtle.importKey(
+                "raw", enc.encode(password), "PBKDF2", false, ["deriveBits", "deriveKey"]
+            );
+            const saltBuffer = Uint8Array.from(atob(salt), c => c.charCodeAt(0));
+            return await crypto.subtle.deriveKey(
+                { name: "PBKDF2", salt: saltBuffer, iterations, hash: "SHA-256" },
+                keyMaterial,
+                { name: "AES-GCM", length: 256 },
+                false,
+                ["decrypt"]
+            );
         }
 
-        async function loadLeaderboardConfig() {
+        async function decryptToken(encryptedData, password) {
             try {
-                const res = await fetch(`${LEADERBOARD_CONFIG_FILE}?v=${Date.now()}`, { cache: "no-store" });
-                if (!res.ok) return;
-                const cfg = await res.json();
-                leaderboardApiUrl = String(cfg.apiUrl || "").trim();
-            } catch {
-                leaderboardApiUrl = "";
+                const key = await deriveKey(password, encryptedData.salt, encryptedData.iterations);
+                const iv = Uint8Array.from(atob(encryptedData.iv), c => c.charCodeAt(0));
+                const encrypted = Uint8Array.from(atob(encryptedData.encryptedToken), c => c.charCodeAt(0));
+                const authTag = Uint8Array.from(atob(encryptedData.authTag), c => c.charCodeAt(0));
+                // Combine encrypted data + auth tag for AES-GCM
+                const ciphertext = new Uint8Array(encrypted.length + authTag.length);
+                ciphertext.set(encrypted);
+                ciphertext.set(authTag, encrypted.length);
+                const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, ciphertext);
+                return new TextDecoder().decode(decrypted);
+            } catch (err) {
+                throw new Error("Invalid password or corrupted data");
             }
         }
 
-        async function commitFileToGithub(path, content, message) {
+        async function loadEncryptedToken(password) {
+            if (cachedDecryptedToken) return cachedDecryptedToken;
+            try {
+                const res = await fetch(`${GH_TOKEN_ENC_FILE}?v=${Date.now()}`, { cache: "no-store" });
+                if (!res.ok) throw new Error("Token file not found");
+                const data = await res.json();
+                const token = await decryptToken(data, password);
+                cachedDecryptedToken = token;
+                return token;
+            } catch (err) {
+                console.warn("[token] decrypt failed:", err);
+                return null;
+            }
+        }
+
+        function clearCachedToken() {
+            cachedDecryptedToken = null;
+        }
+
+        // Loading screen helpers
+        function showPublishLoading(status = "กรุณารอสักครู่") {
+            const loading = document.getElementById('publish-loading');
+            const statusEl = document.getElementById('publish-status');
+            if (statusEl) statusEl.textContent = status;
+            if (loading) loading.classList.add('active');
+        }
+
+        function hidePublishLoading() {
+            const loading = document.getElementById('publish-loading');
+            if (loading) loading.classList.remove('active');
+        }
+
+        // Password prompt for encrypted token
+        function promptForTokenPassword() {
+            return new Promise(resolve => {
+                const password = prompt("Enter password to decrypt GitHub token:");
+                resolve(password || null);
+            });
+        }
+
+        async function getGitHubToken() {
             const cfg = loadGhConfig();
-            if (!cfg.autoLeaderboard || !cfg.owner || !cfg.repo || !cfg.token) return false;
+            // Method 1: Plain token from localStorage (legacy)
+            if (cfg.token) return cfg.token;
+            
+            // Method 2: Encrypted token from github-token.enc.json
+            try {
+                const encRes = await fetch(`${GH_TOKEN_ENC_FILE}?v=${Date.now()}`, { cache: "no-store" });
+                if (!encRes.ok) return null;
+                
+                // Check if encrypted file exists and has valid data
+                const encData = await encRes.json();
+                if (encData.encryptedToken && encData.salt) {
+                    // Try to use cached token first
+                    if (cachedDecryptedToken) return cachedDecryptedToken;
+                    
+                    // Prompt for password
+                    const password = await promptForTokenPassword();
+                    if (!password) return null;
+                    
+                    showPublishLoading("กำลังถอดรหัส token...");
+                    const token = await decryptToken(encData, password);
+                    if (token) {
+                        cachedDecryptedToken = token;
+                        return token;
+                    }
+                }
+            } catch (err) {
+                console.warn("[token] failed to load encrypted:", err);
+            }
+            return null;
+        }
+
+        async function autoPublishLeaderboard(entry = null) {
+            if (autoPublishInFlight) return;
+            const cfg = loadGhConfig();
+            if (!cfg.autoLeaderboard || !cfg.owner || !cfg.repo) return;
+
+            // Get token (plain or encrypted)
+            const token = await getGitHubToken();
+            if (!token) {
+                console.warn("[leaderboard] no token available");
+                return;
+            }
+
+            autoPublishInFlight = true;
+            showPublishLoading("กำลังเชื่อมต่อ GitHub...");
+
+            try {
+                showPublishLoading("กำลังโหลดข้อมูล leaderboard...");
+                const mergedEntries = mergeLeaderboardEntries(globalLeaderboard, loadPlayerStats()).slice(0, 100);
+                const payload = {
+                    updatedAt: new Date().toISOString(),
+                    entries: mergedEntries
+                };
+
+                showPublishLoading("กำลังอัปโหลดไป GitHub...");
+                await commitFileToGithubWithToken(LEADERBOARD_FILE, JSON.stringify(payload, null, 2), "chore: auto update leaderboard", cfg, token);
+
+                globalLeaderboard = mergedEntries;
+                saveLeaderboardCache(globalLeaderboard);
+                updateLeaderboardUI();
+            } catch (err) {
+                console.warn("[leaderboard] auto publish failed", err);
+                const statusEl = document.getElementById('publish-status');
+                if (statusEl) statusEl.textContent = "อัปโหลดไม่สำเร็จ: " + (err.message || "unknown error");
+                await new Promise(resolve => setTimeout(resolve, 2000));
+            } finally {
+                hidePublishLoading();
+                autoPublishInFlight = false;
+            }
+        }
+
+        async function commitFileToGithubWithToken(path, content, message, cfg, token) {
             const branch = cfg.branch || "main";
             const api = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${encodeURIComponent(path)}`;
-            const headers = { Authorization: `Bearer ${cfg.token}`, Accept: "application/vnd.github+json" };
+            const headers = { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" };
             let sha;
             const getRes = await fetch(`${api}?ref=${encodeURIComponent(branch)}`, { headers });
             if (getRes.ok) {
@@ -1184,57 +1372,6 @@
             });
             if (!putRes.ok) throw new Error(`PUT ${putRes.status}`);
             return true;
-        }
-
-        async function autoPublishLeaderboard(entry = null) {
-            if (autoPublishInFlight) return;
-            if (leaderboardApiUrl) {
-                await publishLeaderboardToWorker(entry);
-                return;
-            }
-            const cfg = loadGhConfig();
-            if (!cfg.autoLeaderboard || !cfg.owner || !cfg.repo || !cfg.token) return;
-            autoPublishInFlight = true;
-            try {
-                const mergedEntries = mergeLeaderboardEntries(globalLeaderboard, loadPlayerStats()).slice(0, 100);
-                const payload = {
-                    updatedAt: new Date().toISOString(),
-                    entries: mergedEntries
-                };
-                await commitFileToGithub(LEADERBOARD_FILE, JSON.stringify(payload, null, 2), "chore: auto update leaderboard");
-                globalLeaderboard = mergedEntries;
-                saveLeaderboardCache(globalLeaderboard);
-                updateLeaderboardUI();
-            } catch (err) {
-                console.warn("[leaderboard] auto publish failed", err);
-            } finally {
-                autoPublishInFlight = false;
-            }
-        }
-
-        async function publishLeaderboardToWorker(entry = null) {
-            if (autoPublishInFlight) return;
-            const url = leaderboardApiUrl;
-            if (!url) return;
-            autoPublishInFlight = true;
-            try {
-                const latest = entry || loadPlayerStats()[0];
-                if (!latest) return;
-                const res = await fetch(url, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ entry: latest })
-                });
-                if (!res.ok) throw new Error(`POST ${res.status}`);
-                const data = await res.json();
-                globalLeaderboard = normalizeLeaderboardEntries(data);
-                saveLeaderboardCache(globalLeaderboard);
-                updateLeaderboardUI();
-            } catch (err) {
-                console.warn("[leaderboard] worker publish failed", err);
-            } finally {
-                autoPublishInFlight = false;
-            }
         }
 
         function mergeLeaderboardEntries(...groups) {
@@ -1261,8 +1398,7 @@
 
         async function loadGlobalLeaderboard() {
             try {
-                const url = leaderboardApiUrl || `${LEADERBOARD_FILE}?v=${Date.now()}`;
-                const res = await fetch(url, { cache: "no-store" });
+                const res = await fetch(`${LEADERBOARD_FILE}?v=${Date.now()}`, { cache: "no-store" });
                 if (!res.ok) throw new Error("leaderboard not found");
                 const data = await res.json();
                 globalLeaderboard = normalizeLeaderboardEntries(data);
@@ -2010,7 +2146,7 @@
         })();
         bindMenuEvents();
         refreshClientIp();
-        loadLeaderboardConfig().then(loadGlobalLeaderboard);
+        loadGlobalLeaderboard();
 
     </script>
 
