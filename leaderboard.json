@@ -1,4 +1,48 @@
 {
-  "updatedAt": "",
-  "entries": []
+  "updatedAt": "2026-05-26T16:08:31.987Z",
+  "entries": [
+    {
+      "id": "run-mpl8ih6l-9wv9yp",
+      "name": "STTY",
+      "score": 7,
+      "outcome": "lose",
+      "durationMs": 31513,
+      "seconds": 32,
+      "minutes": 0.53,
+      "startedAt": "2026-05-25T14:33:36.786Z",
+      "endedAt": "2026-05-25T14:34:08.299Z",
+      "deviceId": "client-mpiufmax-xlu2qe",
+      "deviceModel": "Nexus 5",
+      "chromeVersion": "148.0.0.0",
+      "ip": "171.101.118.239",
+      "platform": "Win32",
+      "screen": "937x824",
+      "userAgent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Mobile Safari/537.36",
+      "firstPlayedAt": "2026-05-25T13:20:12.100Z",
+      "updatedAt": "2026-05-25T14:34:08.299Z",
+      "attempts": 12,
+      "lastAttemptAt": "2026-05-25T14:37:20.097Z"
+    },
+    {
+      "id": "run-mpmtxu5u-1aulkd",
+      "name": "STTY",
+      "score": 0,
+      "outcome": "lose",
+      "durationMs": 8521,
+      "seconds": 9,
+      "minutes": 0.14,
+      "startedAt": "2026-05-26T16:08:23.465Z",
+      "endedAt": "2026-05-26T16:08:31.986Z",
+      "deviceId": "client-mpiufmax-xlu2qe",
+      "deviceModel": "Win32",
+      "chromeVersion": "148.0.0.0",
+      "ip": "171.101.138.6",
+      "platform": "Win32",
+      "screen": "1920x1080",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+      "firstPlayedAt": "2026-05-26T16:08:23.465Z",
+      "updatedAt": "2026-05-26T16:08:31.986Z",
+      "attempts": 1
+    }
+  ]
 }
