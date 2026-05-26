@@ -1104,7 +1104,7 @@ function sortLeaderboardEntries(entries){
   return entries.slice().sort((a,b)=>
     (Number(b.score)||0) - (Number(a.score)||0)
     || (Number(a.durationMs)||0) - (Number(b.durationMs)||0)
-    || Date.parse(b.endedAt||b.updatedAt||0) - Date.parse(a.endedAt||a.updatedAt||0)
+    || (Date.parse(b.endedAt||b.updatedAt)||0) - (Date.parse(a.endedAt||a.updatedAt)||0)
   );
 }
 
@@ -1123,7 +1123,7 @@ function isBetterLeaderboardEntry(next, current){
   const nextTime = Number(next.durationMs) || 0;
   const currentTime = Number(current.durationMs) || 0;
   if(nextTime !== currentTime) return nextTime < currentTime;
-  return Date.parse(next.endedAt || next.updatedAt || 0) > Date.parse(current.endedAt || current.updatedAt || 0);
+  return (Date.parse(next.endedAt || next.updatedAt) || 0) > (Date.parse(current.endedAt || current.updatedAt) || 0);
 }
 
 function mergeLeaderboardEntries(...groups){

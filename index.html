@@ -1171,14 +1171,14 @@
             const newTime = Number(newRecord.durationMs) || 0;
             const oldTime = Number(oldRecord.durationMs) || 0;
             if (newTime !== oldTime) return newTime < oldTime;
-            return Date.parse(newRecord.endedAt || 0) > Date.parse(oldRecord.endedAt || 0);
+            return (Date.parse(newRecord.endedAt) || 0) > (Date.parse(oldRecord.endedAt) || 0);
         }
 
         function sortLeaderboardEntries(entries) {
             return entries.slice().sort((a, b) =>
                 (Number(b.score) || 0) - (Number(a.score) || 0)
                 || (Number(a.durationMs) || 0) - (Number(b.durationMs) || 0)
-                || Date.parse(b.endedAt || b.updatedAt || 0) - Date.parse(a.endedAt || a.updatedAt || 0)
+                || (Date.parse(b.endedAt || b.updatedAt) || 0) - (Date.parse(a.endedAt || a.updatedAt) || 0)
             );
         }
 
