@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-26T17:33:47.662Z",
+  "updatedAt": "2026-05-26T17:35:55.599Z",
   "entries": [
     {
       "id": "run-mpmulfnm-3yenxh",
@@ -22,6 +22,27 @@
       "updatedAt": "2026-05-26T17:33:47.245Z",
       "attempts": 4,
       "lastAttemptAt": "2026-05-26T17:23:36.189Z"
+    },
+    {
+      "id": "run-mpmx27ic-pt25qg",
+      "name": "Player",
+      "score": 0,
+      "outcome": "lose",
+      "durationMs": 4263,
+      "seconds": 4,
+      "minutes": 0.07,
+      "startedAt": "2026-05-26T17:35:50.493Z",
+      "endedAt": "2026-05-26T17:35:54.756Z",
+      "deviceId": "client-mpmx185x-4ltp12",
+      "deviceModel": "Win32",
+      "chromeVersion": "148.0.0.0",
+      "ip": "171.101.138.6",
+      "platform": "Win32",
+      "screen": "1920x1080",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+      "firstPlayedAt": "2026-05-26T17:35:50.493Z",
+      "updatedAt": "2026-05-26T17:35:54.756Z",
+      "attempts": 1
     }
   ]
 }
