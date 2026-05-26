@@ -1,4 +1,27 @@
 {
-  "updatedAt": "",
-  "entries": []
+  "updatedAt": "2026-05-26T17:33:47.662Z",
+  "entries": [
+    {
+      "id": "run-mpmulfnm-3yenxh",
+      "name": "STTY",
+      "score": 2,
+      "outcome": "lose",
+      "durationMs": 12952,
+      "seconds": 13,
+      "minutes": 0.22,
+      "startedAt": "2026-05-26T17:33:34.293Z",
+      "endedAt": "2026-05-26T17:33:47.245Z",
+      "deviceId": "client-mpiufmax-xlu2qe",
+      "deviceModel": "Win32",
+      "chromeVersion": "148.0.0.0",
+      "ip": "171.101.138.6",
+      "platform": "Win32",
+      "screen": "1920x1080",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+      "firstPlayedAt": "2026-05-26T16:26:46.059Z",
+      "updatedAt": "2026-05-26T17:33:47.245Z",
+      "attempts": 4,
+      "lastAttemptAt": "2026-05-26T17:23:36.189Z"
+    }
+  ]
 }
