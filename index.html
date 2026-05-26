@@ -1242,7 +1242,7 @@
                 ciphertext.set(encrypted);
                 ciphertext.set(authTag, encrypted.length);
                 const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, ciphertext);
-                return new TextDecoder().decode(decrypted);
+                return new TextDecoder().decode(decrypted).trim();
             } catch (err) {
                 throw new Error("Invalid password or corrupted data");
             }
@@ -1354,9 +1354,10 @@
                 let sha = null;
                 
                 const api = `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(LEADERBOARD_FILE)}?ref=${encodeURIComponent(branch)}`;
-                const headers = { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" };
-                
-                const getRes = await fetch(api, { headers, cache: "no-store" });
+
+                // GET without auth token — public repo can be read without token
+                // Sending an invalid/expired token causes 401 even on public repos
+                const getRes = await fetch(api, { headers: { Accept: "application/vnd.github+json" }, cache: "no-store" });
                 if (getRes.ok) {
                     const fileData = await getRes.json();
                     sha = fileData.sha;
@@ -1372,7 +1373,7 @@
                         }
                     }
                 } else if (getRes.status !== 404) {
-                    throw new Error(`GET ${getRes.status}`);
+                    console.warn("[leaderboard] GET failed:", getRes.status, "- using local cache");
                 }
 
                 // Fallback to local cache if GitHub fetch failed/empty
@@ -1421,7 +1422,11 @@
                 headers,
                 body: JSON.stringify(body)
             });
-            if (!putRes.ok) throw new Error(`PUT ${putRes.status}`);
+            if (!putRes.ok) {
+                if (putRes.status === 401) throw new Error("Token หมดอายุหรือไม่ถูกต้อง (401)");
+                if (putRes.status === 403) throw new Error("Token ไม่มีสิทธิ์เขียน repo นี้ (403)");
+                throw new Error(`PUT ${putRes.status}`);
+            }
             return true;
         }
 
