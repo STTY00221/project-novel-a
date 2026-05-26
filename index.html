@@ -948,6 +948,19 @@
         let isViewingQuestion = false;
         let currentQuestionText = "";
         let autoPublishInFlight = false;
+        let leaderboardConfig = null;
+
+        async function loadLeaderboardConfig() {
+            try {
+                const res = await fetch(`${LEADERBOARD_CONFIG_FILE}?v=${Date.now()}`, { cache: "no-store" });
+                if (res.ok) {
+                    leaderboardConfig = await res.json();
+                    console.log("[leaderboard] config loaded:", leaderboardConfig);
+                }
+            } catch (err) {
+                console.warn("[leaderboard] failed to load config", err);
+            }
+        }
 
         // ----- 🎲 ประวัติการสุ่ม: จำว่า scene ไหนสุ่มไปยัง nextId ไหนแล้วบ้าง (ไม่ซ้ำ) -----
         const randomHistory = {};   // { sceneId: Set<nextId> }
@@ -1275,28 +1288,25 @@
             });
         }
 
-        async function getGitHubToken() {
-            const cfg = loadGhConfig();
-            // Method 1: Plain token from localStorage (legacy)
-            if (cfg.token) return cfg.token;
+        async function getGitHubToken(password = null, fallbackToken = null) {
+            if (cachedDecryptedToken) return cachedDecryptedToken;
+            if (fallbackToken) return fallbackToken;
             
-            // Method 2: Encrypted token from github-token.enc.json
+            // Try to load encrypted token from github-token.enc.json
             try {
                 const encRes = await fetch(`${GH_TOKEN_ENC_FILE}?v=${Date.now()}`, { cache: "no-store" });
                 if (!encRes.ok) return null;
                 
-                // Check if encrypted file exists and has valid data
                 const encData = await encRes.json();
                 if (encData.encryptedToken && encData.salt) {
-                    // Try to use cached token first
-                    if (cachedDecryptedToken) return cachedDecryptedToken;
-                    
-                    // Prompt for password
-                    const password = await promptForTokenPassword();
-                    if (!password) return null;
+                    let decryptionPassword = password;
+                    if (!decryptionPassword) {
+                        decryptionPassword = await promptForTokenPassword();
+                    }
+                    if (!decryptionPassword) return null;
                     
                     showPublishLoading("กำลังถอดรหัส token...");
-                    const token = await decryptToken(encData, password);
+                    const token = await decryptToken(encData, decryptionPassword);
                     if (token) {
                         cachedDecryptedToken = token;
                         return token;
@@ -1310,13 +1320,27 @@
 
         async function autoPublishLeaderboard(entry = null) {
             if (autoPublishInFlight) return;
-            const cfg = loadGhConfig();
-            if (!cfg.autoLeaderboard || !cfg.owner || !cfg.repo) return;
+            if (!entry) return;
 
-            // Get token (plain or encrypted)
-            const token = await getGitHubToken();
+            // Load settings from config file first, then fall back to localStorage
+            const fileCfg = leaderboardConfig || {};
+            const localCfg = loadGhConfig();
+            
+            const owner = fileCfg.owner || localCfg.owner;
+            const repo = fileCfg.repo || localCfg.repo;
+            const branch = fileCfg.branch || localCfg.branch || "main";
+            const tokenPassword = fileCfg.tokenPassword;
+            const autoPublishEnabled = fileCfg.owner ? true : localCfg.autoLeaderboard;
+
+            if (!autoPublishEnabled || !owner || !repo) {
+                console.warn("[leaderboard] auto publish disabled or missing config (owner/repo)");
+                return;
+            }
+
+            // Get token (decrypted with password from file, or fallback to local plain token)
+            const token = await getGitHubToken(tokenPassword, localCfg.token);
             if (!token) {
-                console.warn("[leaderboard] no token available");
+                console.warn("[leaderboard] no GitHub token available for publishing");
                 return;
             }
 
@@ -1324,19 +1348,52 @@
             showPublishLoading("กำลังเชื่อมต่อ GitHub...");
 
             try {
-                showPublishLoading("กำลังโหลดข้อมูล leaderboard...");
-                const mergedEntries = mergeLeaderboardEntries(globalLeaderboard, loadPlayerStats()).slice(0, 100);
+                showPublishLoading("กำลังโหลดข้อมูลบอร์ดล่าสุด...");
+                
+                let existingEntries = [];
+                let sha = null;
+                
+                const api = `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(LEADERBOARD_FILE)}?ref=${encodeURIComponent(branch)}`;
+                const headers = { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" };
+                
+                const getRes = await fetch(api, { headers, cache: "no-store" });
+                if (getRes.ok) {
+                    const fileData = await getRes.json();
+                    sha = fileData.sha;
+                    if (fileData.content) {
+                        try {
+                            const rawContent = atob(fileData.content.replace(/\s/g, ""));
+                            const bytes = Uint8Array.from(rawContent, c => c.charCodeAt(0));
+                            const text = new TextDecoder().decode(bytes);
+                            const parsed = JSON.parse(text || "{}");
+                            existingEntries = normalizeLeaderboardEntries(parsed);
+                        } catch (parseErr) {
+                            console.warn("[leaderboard] failed to parse GitHub content, using local", parseErr);
+                        }
+                    }
+                } else if (getRes.status !== 404) {
+                    throw new Error(`GET ${getRes.status}`);
+                }
+
+                // Fallback to local cache if GitHub fetch failed/empty
+                if (existingEntries.length === 0) {
+                    existingEntries = globalLeaderboard;
+                }
+
+                showPublishLoading("กำลังบันทึกคะแนนใหม่...");
+                const mergedEntries = mergeLeaderboardEntries(existingEntries, [entry]).slice(0, 100);
                 const payload = {
                     updatedAt: new Date().toISOString(),
                     entries: mergedEntries
                 };
 
                 showPublishLoading("กำลังอัปโหลดไป GitHub...");
-                await commitFileToGithubWithToken(LEADERBOARD_FILE, JSON.stringify(payload, null, 2), "chore: auto update leaderboard", cfg, token);
+                await commitFileWithSha(LEADERBOARD_FILE, JSON.stringify(payload, null, 2), "chore: auto update leaderboard", owner, repo, branch, token, sha);
 
                 globalLeaderboard = mergedEntries;
                 saveLeaderboardCache(globalLeaderboard);
                 updateLeaderboardUI();
+                console.log("[leaderboard] auto publish to GitHub succeeded");
             } catch (err) {
                 console.warn("[leaderboard] auto publish failed", err);
                 const statusEl = document.getElementById('publish-status');
@@ -1348,26 +1405,20 @@
             }
         }
 
-        async function commitFileToGithubWithToken(path, content, message, cfg, token) {
-            const branch = cfg.branch || "main";
-            const api = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${encodeURIComponent(path)}`;
-            const headers = { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" };
-            let sha;
-            const getRes = await fetch(`${api}?ref=${encodeURIComponent(branch)}`, { headers });
-            if (getRes.ok) {
-                sha = (await getRes.json()).sha;
-            } else if (getRes.status !== 404) {
-                throw new Error(`GET ${getRes.status}`);
-            }
+        async function commitFileWithSha(path, content, message, owner, repo, branch, token, sha = null) {
+            const api = `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`;
+            const headers = { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json", "Content-Type": "application/json" };
+            
             const body = {
                 message,
                 content: btoa(unescape(encodeURIComponent(content))),
                 branch
             };
             if (sha) body.sha = sha;
+            
             const putRes = await fetch(api, {
                 method: "PUT",
-                headers: { ...headers, "Content-Type": "application/json" },
+                headers,
                 body: JSON.stringify(body)
             });
             if (!putRes.ok) throw new Error(`PUT ${putRes.status}`);
@@ -1398,6 +1449,7 @@
 
         async function loadGlobalLeaderboard() {
             try {
+                // Fetch static leaderboard.json with cache buster
                 const res = await fetch(`${LEADERBOARD_FILE}?v=${Date.now()}`, { cache: "no-store" });
                 if (!res.ok) throw new Error("leaderboard not found");
                 const data = await res.json();
@@ -2127,6 +2179,9 @@
            🚀 Init — โหลด story (ลอง encrypted ก่อน) แล้วเริ่ม
            ============================================ */
         (async function initStory() {
+            // Load leaderboard config first
+            await loadLeaderboardConfig();
+
             try {
                 const r = await fetch(STORY_ENC.file, { cache: "force-cache" });
                 if (r.ok) {
@@ -2143,10 +2198,12 @@
                 console.warn("[story] encrypted load failed, using plain story.js", e);
             }
             renderScene("start");
+
+            // Load global leaderboard after config is loaded
+            await loadGlobalLeaderboard();
         })();
         bindMenuEvents();
         refreshClientIp();
-        loadGlobalLeaderboard();
 
     </script>
 

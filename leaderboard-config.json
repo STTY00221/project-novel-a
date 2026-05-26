@@ -1,3 +1,6 @@
 {
-  "apiUrl": "https://project-novel-cyan.vercel.app/api/leaderboard"
+  "owner": "github-username-or-org",
+  "repo": "project-novel-a-main",
+  "branch": "main",
+  "tokenPassword": "15240"
 }
