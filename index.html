@@ -1116,7 +1116,7 @@
         }
 
         async function refreshClientIp() {
-            const fetchedAt = Date.parse(clientInfo.ipFetchedAt || 0);
+            const fetchedAt = (Date.parse(clientInfo.ipFetchedAt) || 0);
             if (clientInfo.ip && Number.isFinite(fetchedAt) && Date.now() - fetchedAt < CLIENT_IP_MAX_AGE_MS) return;
             try {
                 const controller = new AbortController();
@@ -1353,7 +1353,7 @@
                 let existingEntries = [];
                 let sha = null;
                 
-                const api = `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(LEADERBOARD_FILE)}?ref=${encodeURIComponent(branch)}`;
+                const api = `https://api.github.com/repos/${owner}/${repo}/contents/${LEADERBOARD_FILE.split("/").map(encodeURIComponent).join("/")}?ref=${encodeURIComponent(branch)}`;
 
                 // GET without auth token — public repo can be read without token
                 // Sending an invalid/expired token causes 401 even on public repos
@@ -1407,7 +1407,7 @@
         }
 
         async function commitFileWithSha(path, content, message, owner, repo, branch, token, sha = null) {
-            const api = `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`;
+            const api = `https://api.github.com/repos/${owner}/${repo}/contents/${path.split("/").map(encodeURIComponent).join("/")}`;
             const headers = { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json", "Content-Type": "application/json" };
             
             const body = {
@@ -1574,6 +1574,11 @@
         }
 
         function setBackground(bg) {
+            if (bg === "none") {
+                currentBg = bg;
+                $container.style.backgroundImage = "none";
+                return;
+            }
             if (bg && bg !== "null" && bg !== currentBg) {
                 currentBg = bg;
                 $container.style.backgroundImage = `url('${bg}')`;

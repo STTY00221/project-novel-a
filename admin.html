@@ -850,7 +850,7 @@ function ghSave(v){ localStorage.setItem(GH_KEY, JSON.stringify(v)); }
 async function commitFileToGithub(path, content, message){
   const cfg = ghLoad();
   if(!cfg.owner||!cfg.repo||!cfg.token) return openGhModal(), toast("Fill GitHub settings first"), false;
-  const api = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${encodeURIComponent(path)}`;
+  const api = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${path.split("/").map(encodeURIComponent).join("/")}`;
   const headers = {Authorization:`Bearer ${cfg.token}`,Accept:"application/vnd.github+json"};
   let sha;
   const g = await fetch(api+`?ref=${encodeURIComponent(cfg.branch||"main")}`,{headers});
@@ -963,7 +963,7 @@ $("#btnGithubEnc").onclick = async ()=>{
   try{
     const b64 = await buildEncryptedBlob();
     const path = STORY_ENC.file;
-    const api = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${encodeURIComponent(path)}`;
+    const api = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${path.split("/").map(encodeURIComponent).join("/")}`;
     const headers = {Authorization:`Bearer ${cfg.token}`,Accept:"application/vnd.github+json"};
     let sha;
     const g = await fetch(api+`?ref=${encodeURIComponent(cfg.branch)}`,{headers});
@@ -1007,7 +1007,7 @@ function getPlayerStats(){
 }
 
 function renderPlayerData(){
-  const stats = getPlayerStats().slice().sort((a,b)=>Date.parse(b.endedAt||0)-Date.parse(a.endedAt||0));
+  const stats = getPlayerStats().slice().sort((a,b)=>(Date.parse(b.endedAt)||0)-(Date.parse(a.endedAt)||0));
   const rows = $("#playerDataRows");
   const empty = $("#playerDataEmpty");
   const total = stats.length;

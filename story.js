@@ -141,7 +141,7 @@ const storyScript = {
         position: "center",
         speaking: true,
         typeSpeed: 40,
-        next: "Ready?"
+        next: "start"
     },
 
     "c1": {
