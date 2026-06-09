@@ -10,21 +10,14 @@
     <link rel="preload" as="image" href="image/creator-1.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- นำเข้า Font สวยๆ จาก Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;500&display=swap" rel="stylesheet">
     <style>
-        /* ============================================
-           🎨 Design Tokens
-           ============================================ */
         :root {
             --primary-color: #3b3b3b;
             --box-bg: rgba(0, 0, 0, 0.85);
             --text-color: #ffffff;
         }
 
-        /* ============================================
-           📐 Base Layout
-           ============================================ */
         body,
         html {
             margin: 0;
@@ -41,7 +34,6 @@
             width: 100vw;
             height: 100vh;
             height: 100dvh;
-            /* ใช้ dvh เพื่อแก้ปัญหา address bar บนมือถือ */
             background-size: cover;
             background-position: center;
             transition: background-image 0.8s ease-in-out;
@@ -49,12 +41,10 @@
             flex-direction: column;
             justify-content: flex-end;
             align-items: center;
-            /* ป้องกัน pull-to-refresh และ overscroll บนมือถือ */
             overscroll-behavior: none;
             touch-action: manipulation;
         }
 
-        /* Overlay สำหรับทำให้พื้นหลังมืดลงเล็กน้อยเวลาคุย */
         #game-container::before {
             content: "";
             position: absolute;
@@ -66,96 +56,34 @@
             pointer-events: none;
         }
 
-        /* ============================================
-           🧍 Character Sprite — Position System
-           ============================================ */
         #character-sprite {
             position: absolute;
             bottom: var(--sprite-bottom-offset, 10%);
             height: 50%;
             z-index: 8;
             cursor: pointer;
-            /* transition สำหรับเปลี่ยนตำแหน่ง + fade */
             transition: left 0.6s ease, right 0.6s ease, opacity 0.4s ease, transform 0.6s ease;
             will-change: transform, opacity;
         }
 
-        /* ตำแหน่ง: ซ้าย */
         #character-sprite.pos-left {
             left: 10%;
             right: auto;
             transform: translateX(0);
         }
 
-        /* ตำแหน่ง: กลาง */
         #character-sprite.pos-center {
             left: 50%;
             right: auto;
             transform: translateX(-50%);
         }
 
-        /* ตำแหน่ง: ขวา */
         #character-sprite.pos-right {
             left: auto;
             right: 10%;
             transform: translateX(0);
         }
 
-        /* ============================================
-           ⏳ Loading Screen — แสดงตอน publish leaderboard
-           ============================================ */
-        #publish-loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-
-        #publish-loading.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .loading-spinner {
-            width: 60px;
-            height: 60px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top-color: #fff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .loading-text {
-            color: #fff;
-            font-size: 18px;
-            margin-top: 20px;
-            font-family: 'Prompt', sans-serif;
-        }
-
-        .loading-status {
-            color: #aaa;
-            font-size: 14px;
-            margin-top: 10px;
-            font-family: 'Prompt', sans-serif;
-        }
-
-        /* ============================================
-           💬 Speaking Animation — เด้งขึ้นลงตอนพูด
-           ============================================ */
         @keyframes speaking-bounce {
 
             0%,
@@ -166,19 +94,6 @@
             50% {
                 transform: translateY(-8px);
             }
-        }
-
-        /* ต้อง override transform ตาม position ด้วย */
-        #character-sprite.pos-left.speaking {
-            animation: speaking-bounce-left 0.6s ease-in-out infinite;
-        }
-
-        #character-sprite.pos-center.speaking {
-            animation: speaking-bounce-center 0.6s ease-in-out infinite;
-        }
-
-        #character-sprite.pos-right.speaking {
-            animation: speaking-bounce-right 0.6s ease-in-out infinite;
         }
 
         @keyframes speaking-bounce-left {
@@ -217,9 +132,18 @@
             }
         }
 
-        /* ============================================
-           💬 Dialogue Box
-           ============================================ */
+        #character-sprite.pos-left.speaking {
+            animation: speaking-bounce-left 0.6s ease-in-out infinite;
+        }
+
+        #character-sprite.pos-center.speaking {
+            animation: speaking-bounce-center 0.6s ease-in-out infinite;
+        }
+
+        #character-sprite.pos-right.speaking {
+            animation: speaking-bounce-right 0.6s ease-in-out infinite;
+        }
+
         #dialogue-box {
             position: relative;
             width: 90%;
@@ -230,7 +154,6 @@
             border-radius: 10px;
             margin-bottom: 20px;
             margin-bottom: max(20px, env(safe-area-inset-bottom));
-            /* safe area สำหรับ notch */
             padding: 25px;
             box-sizing: border-box;
             cursor: pointer;
@@ -262,9 +185,8 @@
             white-space: pre-wrap;
         }
 
-        /* Typewriter cursor กระพริบ */
         #text-content.typing::after {
-            content: "▌";
+            content: "\258C";
             animation: cursor-blink 0.6s step-end infinite;
             color: rgba(255, 255, 255, 0.7);
             margin-left: 2px;
@@ -276,16 +198,12 @@
             }
         }
 
-        /* ============================================
-           🔘 Choices
-           ============================================ */
         #choice-container {
             position: static;
             top: auto;
             left: auto;
             transform: none;
             display: none;
-            /* ซ่อนไว้ก่อน */
             flex-direction: column;
             gap: 10px;
             width: 100%;
@@ -366,12 +284,7 @@
             background: rgba(255, 255, 255, 0.18);
         }
 
-        /* ============================================
-           📱 Responsive — โทรศัพท์แนวตั้ง (Portrait)
-           ============================================ */
         @media screen and (max-width: 480px) {
-
-            /* ตัวละครใหญ่ขึ้นหน่อย + ปรับตำแหน่ง */
             #character-sprite {
                 height: 40%;
                 bottom: var(--sprite-bottom-offset, 22%);
@@ -385,7 +298,6 @@
                 right: 2%;
             }
 
-            /* Dialogue box ปรับให้พอดีกับหน้าจอเล็ก */
             #dialogue-box {
                 width: 94%;
                 min-height: 120px;
@@ -412,7 +324,6 @@
                 right: 12px;
             }
 
-            /* Choices ปรับ width ให้พอดีจอ */
             #choice-container {
                 width: 100%;
                 gap: 8px;
@@ -433,9 +344,6 @@
             }
         }
 
-        /* ============================================
-           📱 Responsive — โทรศัพท์แนวตั้งเล็กมาก
-           ============================================ */
         @media screen and (max-width: 360px) {
             #character-sprite {
                 height: 35%;
@@ -462,9 +370,6 @@
             }
         }
 
-        /* ============================================
-           📱 Responsive — โทรศัพท์แนวนอน (Landscape)
-           ============================================ */
         @media screen and (max-height: 500px) and (orientation: landscape) {
             #character-sprite {
                 height: 60%;
@@ -510,9 +415,6 @@
             }
         }
 
-        /* ============================================
-           📱 Responsive — Tablet / iPad
-           ============================================ */
         @media screen and (min-width: 481px) and (max-width: 1024px) {
             #character-sprite {
                 height: 48%;
@@ -538,9 +440,6 @@
             }
         }
 
-        /* ============================================
-           📱 Responsive — iPad แนวตั้ง (Portrait)
-           ============================================ */
         @media screen and (min-width: 600px) and (max-width: 1024px) and (orientation: portrait) {
             #character-sprite {
                 height: 40%;
@@ -552,9 +451,6 @@
             }
         }
 
-        /* ============================================
-           🔧 Admin Button
-           ============================================ */
         #admin-btn {
             position: absolute;
             top: 12px;
@@ -574,11 +470,12 @@
             opacity: 0.85;
             transition: opacity .2s, transform .2s;
         }
-        #admin-btn:hover { opacity: 1; transform: translateY(-1px); }
 
-        /* ============================================
-           🎯 Progress Badge
-           ============================================ */
+        #admin-btn:hover {
+            opacity: 1;
+            transform: translateY(-1px);
+        }
+
         #progress-badge {
             position: absolute;
             top: 12px;
@@ -597,8 +494,16 @@
             user-select: none;
             pointer-events: none;
         }
-        #progress-badge .label { opacity: 0.7; margin-right: 6px; }
-        #progress-badge .num { font-weight: 700; color: #ffd166; }
+
+        #progress-badge .label {
+            opacity: 0.7;
+            margin-right: 6px;
+        }
+
+        #progress-badge .num {
+            font-weight: 700;
+            color: #ffd166;
+        }
 
         #start-menu {
             position: absolute;
@@ -673,18 +578,13 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .player-panel,
-        .leaderboard-panel {
+        .player-panel {
             margin-top: 18px;
             padding: 16px;
             border-radius: 18px;
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.14);
             text-align: left;
-        }
-
-        .leaderboard-panel {
-            margin-top: 14px;
         }
 
         #settings-panel {
@@ -734,77 +634,6 @@
             line-height: 1.45;
         }
 
-        .leaderboard-title {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 10px;
-            color: #ffd166;
-            font-weight: 700;
-            font-size: 0.92rem;
-        }
-
-        .leaderboard-list {
-            display: grid;
-            gap: 8px;
-        }
-
-        .leaderboard-row {
-            display: grid;
-            grid-template-columns: auto 1fr auto;
-            gap: 10px;
-            align-items: center;
-            padding: 9px 10px;
-            border-radius: 12px;
-            background: rgba(0, 0, 0, 0.24);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .leaderboard-rank {
-            width: 28px;
-            height: 28px;
-            display: grid;
-            place-items: center;
-            border-radius: 999px;
-            background: rgba(255, 209, 102, 0.16);
-            color: #ffd166;
-            font-size: 0.78rem;
-            font-weight: 700;
-        }
-
-        .leaderboard-name {
-            min-width: 0;
-            overflow: hidden;
-            color: #fff;
-            font-size: 0.86rem;
-            font-weight: 700;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .leaderboard-meta {
-            color: rgba(255, 255, 255, 0.62);
-            font-size: 0.72rem;
-        }
-
-        .leaderboard-score {
-            color: #ffd166;
-            font-size: 0.82rem;
-            font-weight: 800;
-            text-align: right;
-            white-space: nowrap;
-        }
-
-        .empty-leaderboard {
-            padding: 12px;
-            border-radius: 12px;
-            background: rgba(0, 0, 0, 0.22);
-            color: rgba(255, 255, 255, 0.62);
-            font-size: 0.82rem;
-            text-align: center;
-        }
-
         .settings-actions {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -818,9 +647,6 @@
             font-size: 0.92rem;
         }
 
-        /* ============================================
-           ✨ Hints & Misc
-           ============================================ */
         .click-hint {
             position: absolute;
             bottom: 10px;
@@ -840,42 +666,37 @@
 
 <body>
 
-    <!-- Loading Screen for Leaderboard Publish -->
-    <div id="publish-loading">
-        <div class="loading-spinner"></div>
-        <div class="loading-text">กำลังอัปโหลดคะแนน...</div>
-        <div class="loading-status" id="publish-status">กรุณารอสักครู่</div>
-    </div>
-
     <div id="game-container" style="background-image: url('image/bg.png');">
 
-        <div id="progress-badge"><span class="label">🎯 ข้อที่</span><span class="num" id="progress-num">0 / 0</span></div>
+        <div id="progress-badge"><span class="label">🎯 ข้อที่</span><span class="num"
+                id="progress-num">0 / 0</span></div>
 
         <div id="start-menu">
             <a id="admin-btn" href="admin.html" title="Admin Panel">⚙️ Admin</a>
             <div class="start-menu-card">
                 <h1 class="start-menu-title">Game Math</h1>
-                <p class="start-menu-subtitle">ผู้สอน: <span id="menu-teacher-name">Mr.EAKAPOT</span></p>
+                <p class="start-menu-subtitle">ผู้สอน: <span
+                        id="menu-teacher-name">Mr.EAKAPOT</span></p>
                 <div class="player-panel">
-                    <label class="settings-label" for="player-name-input">ชื่อผู้เล่น</label>
-                    <input id="player-name-input" type="text" maxlength="32" autocomplete="off" placeholder="ใส่ชื่อของคุณ">
-                    <div class="stat-note">ระบบจะจำชื่อ คะแนน เวลา และข้อมูลเครื่องไว้ในเครื่องนี้</div>
-                </div>
-                <div class="leaderboard-panel">
-                    <div class="leaderboard-title">
-                        <span>🏆 จัดอันดับสูงสุด</span>
-                        <span id="leaderboard-count">0 รอบ</span>
+                    <label class="settings-label"
+                        for="player-name-input">ชื่อผู้เล่น</label>
+                    <input id="player-name-input" type="text" maxlength="32" autocomplete="off"
+                        placeholder="ใส่ชื่อของคุณ">
+                    <div class="stat-note">
+                        ระบบจะจำชื่อ คะแนน เวลา และข้อมูลเครื่องไว้ในเครื่องนี้
                     </div>
-                    <div id="leaderboard-list" class="leaderboard-list"></div>
                 </div>
                 <button id="play-btn" class="menu-button primary" type="button">▶ Play</button>
                 <button id="settings-btn" class="menu-button secondary" type="button">⚙ Setting</button>
                 <div id="settings-panel" hidden>
-                    <label class="settings-label" for="username-input">เปลี่ยนชื่อของ Mr.EAKAPOT</label>
+                    <label class="settings-label"
+                        for="username-input">เปลี่ยนชื่อของ Mr.EAKAPOT</label>
                     <input id="username-input" type="text" maxlength="32" autocomplete="off">
                     <div class="settings-actions">
-                        <button id="save-settings-btn" class="menu-button primary" type="button">บันทึก</button>
-                        <button id="cancel-settings-btn" class="menu-button secondary" type="button">ยกเลิก</button>
+                        <button id="save-settings-btn" class="menu-button primary"
+                            type="button">บันทึก</button>
+                        <button id="cancel-settings-btn" class="menu-button secondary"
+                            type="button">ยกเลิก</button>
                     </div>
                 </div>
             </div>
@@ -885,10 +706,14 @@
 
         <div id="dialogue-box" onclick="handleInput()">
             <div id="name-tag">ระบบ</div>
-            <div id="text-content">กดเพื่อเริ่มเกม...</div>
+            <div id="text-content">
+                กดเพื่อเริ่มเกม...
+            </div>
             <div id="choice-toolbar" hidden>
-                <span id="choice-mode-label">เลือกคำตอบ</span>
-                <button id="question-toggle-btn" type="button">ดูคำถาม</button>
+                <span
+                    id="choice-mode-label">เลือกคำตอบ</span>
+                <button id="question-toggle-btn"
+                    type="button">ดูคำถาม</button>
             </div>
             <div id="choice-container"></div>
             <div class="click-hint">กด คลิก ที่กล่องข้อความเพื่อไปต่อ</div>
@@ -897,27 +722,13 @@
 
     <script src="story.js"></script>
     <script>
-        /* ============================================
-           🎮 Visual Novel Engine
-           ============================================ */
-
-        // ----- ค่า Default (ใช้ถ้าไม่ได้ตั้งค่าใน story config) -----
-        const DEFAULTS = {
-            position: "center",   // "left" | "center" | "right"
-            speaking: true,       // animation เด้งตอนพูด
-            typeSpeed: 40,        // ms ต่อตัวอักษร
-        };
+        const DEFAULTS = { position: "center", speaking: true, typeSpeed: 40 };
         const DEFAULT_TEACHER_NAME = "Mr.EAKAPOT";
         const TEACHER_NAME_STORAGE_KEY = "vn_teacher_name";
         const PLAYER_NAME_STORAGE_KEY = "vn_player_name";
         const PLAYER_STATS_STORAGE_KEY = "vn_player_stats";
         const CLIENT_INFO_STORAGE_KEY = "vn_client_info";
         const MAX_PLAYER_STATS = 100;
-        const CLIENT_IP_MAX_AGE_MS = 6 * 60 * 60 * 1000;
-        const LEADERBOARD_FILE = "leaderboard.json";
-        const LEADERBOARD_CONFIG_FILE = "leaderboard-config.json";
-        const LEADERBOARD_CACHE_STORAGE_KEY = "vn_global_leaderboard_cache";
-        const GH_KEY = "novelAdminGh";
         const STAGE_BACKGROUNDS = [
             { min: 1, max: 10, bg: "image/bg.png" },
             { min: 11, max: 15, bg: "image/bg1.png" },
@@ -926,7 +737,6 @@
             { min: 26, max: 30, bg: "image/bg4.png" },
         ];
 
-        // ----- State -----
         let currentSceneId = "start";
         let isWaitingForChoice = false;
         let isTyping = false;
@@ -939,7 +749,6 @@
         const preloadedAssets = new Set();
         let backgroundWarmupStarted = false;
         let isStartMenuOpen = true;
-        let globalLeaderboard = [];
         let teacherName = loadTeacherName();
         let playerName = loadPlayerName();
         let runStartedAt = 0;
@@ -947,52 +756,27 @@
         let hasPendingChoices = false;
         let isViewingQuestion = false;
         let currentQuestionText = "";
-        let autoPublishInFlight = false;
-        let leaderboardConfig = null;
 
-        async function loadLeaderboardConfig() {
-            try {
-                const res = await fetch(`${LEADERBOARD_CONFIG_FILE}?v=${Date.now()}`, { cache: "no-store" });
-                if (res.ok) {
-                    leaderboardConfig = await res.json();
-                    console.log("[leaderboard] config loaded:", leaderboardConfig);
-                }
-            } catch (err) {
-                console.warn("[leaderboard] failed to load config", err);
-            }
-        }
+        const randomHistory = {};
+        let lastRandomParent = null;
 
-        // ----- 🎲 ประวัติการสุ่ม: จำว่า scene ไหนสุ่มไปยัง nextId ไหนแล้วบ้าง (ไม่ซ้ำ) -----
-        const randomHistory = {};   // { sceneId: Set<nextId> }
-        let lastRandomParent = null; // sceneId ของ random ล่าสุดที่เพิ่งสุ่ม (ใช้แสดง progress)
-
-        // ----- 🏆 Best Record (เก็บใน localStorage) -----
         const STORAGE_KEY = "vn_best_record";
-        function loadRecord() {
-            try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || { best: 0, last: 0 }; }
-            catch { return { best: 0, last: 0 }; }
-        }
-        function saveRecord(rec) {
-            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(rec)); } catch {}
-        }
-        // commit คะแนนรอบนี้: เปรียบเทียบกับ best แล้วเก็บ last
-        function commitRunScore(score, outcome = "unknown") {
+        function loadRecord() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || { best: 0, last: 0 }; } catch { return { best: 0, last: 0 }; } }
+        function saveRecord(rec) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(rec)); } catch { } }
+        function commitRunScore(score, outcome) {
             score = Math.max(0, Number(score) || 0);
             const rec = loadRecord();
             rec.last = score;
             if (score > rec.best) rec.best = score;
             saveRecord(rec);
-            savePlayerRun(score, outcome);
-            updateLeaderboardUI();
+            savePlayerStats(score, outcome);
         }
 
-        // ----- ฉากลับ: นับจำนวนคลิกที่ตัวละคร -----
         let secretClickCount = 0;
-        const SECRET_CLICKS_NEEDED = 10;  // จำนวนคลิกที่ต้องกด
-        const SECRET_TRIGGER_SCENE = "1"; // scene ที่ trigger ฉากลับได้
-        const SECRET_TARGET_SCENE = "s1"; // scene ที่จะไปเมื่อกดครบ
+        const SECRET_CLICKS_NEEDED = 10;
+        const SECRET_TRIGGER_SCENE = "1";
+        const SECRET_TARGET_SCENE = "s1";
 
-        // ----- DOM Elements -----
         const $container = document.getElementById('game-container');
         const $sprite = document.getElementById('character-sprite');
         const $nameTag = document.getElementById('name-tag');
@@ -1011,855 +795,193 @@
         const $cancelSettingsBtn = document.getElementById('cancel-settings-btn');
         const $menuTeacherName = document.getElementById('menu-teacher-name');
         const $playerNameInput = document.getElementById('player-name-input');
-        const $leaderboardList = document.getElementById('leaderboard-list');
-        const $leaderboardCount = document.getElementById('leaderboard-count');
         const $choiceToolbar = document.getElementById('choice-toolbar');
         const $questionToggleBtn = document.getElementById('question-toggle-btn');
         const $choiceModeLabel = document.getElementById('choice-mode-label');
 
         function loadTeacherName() {
-            try {
-                const saved = localStorage.getItem(TEACHER_NAME_STORAGE_KEY);
-                return saved && saved.trim() ? saved.trim() : DEFAULT_TEACHER_NAME;
-            } catch {
-                return DEFAULT_TEACHER_NAME;
-            }
+            try { const saved = localStorage.getItem(TEACHER_NAME_STORAGE_KEY); return saved && saved.trim() ? saved.trim() : DEFAULT_TEACHER_NAME; } catch { return DEFAULT_TEACHER_NAME; }
         }
+        function saveTeacherName(name) { teacherName = name && name.trim() ? name.trim() : DEFAULT_TEACHER_NAME; try { localStorage.setItem(TEACHER_NAME_STORAGE_KEY, teacherName); } catch { } updateTeacherNameUI(); }
+        function updateTeacherNameUI() { $menuTeacherName.textContent = teacherName; if ($usernameInput) $usernameInput.value = teacherName; }
+        function resolveSceneName(name) { return name === DEFAULT_TEACHER_NAME ? teacherName : (name || ""); }
+        function loadPlayerName() { try { const saved = localStorage.getItem(PLAYER_NAME_STORAGE_KEY); return saved && saved.trim() ? saved.trim() : "Player"; } catch { return "Player"; } }
+        function savePlayerName(name) { playerName = name && name.trim() ? name.trim() : "Player"; try { localStorage.setItem(PLAYER_NAME_STORAGE_KEY, playerName); } catch { } updatePlayerNameUI(); }
+        function updatePlayerNameUI() { if ($playerNameInput) $playerNameInput.value = playerName; }
 
-        function saveTeacherName(name) {
-            teacherName = name && name.trim() ? name.trim() : DEFAULT_TEACHER_NAME;
-            try { localStorage.setItem(TEACHER_NAME_STORAGE_KEY, teacherName); } catch {}
-            updateTeacherNameUI();
-        }
-
-        function updateTeacherNameUI() {
-            $menuTeacherName.textContent = teacherName;
-            if ($usernameInput) $usernameInput.value = teacherName;
-        }
-
-        function resolveSceneName(name) {
-            return name === DEFAULT_TEACHER_NAME ? teacherName : (name || "");
-        }
-
-        function loadPlayerName() {
-            try {
-                const saved = localStorage.getItem(PLAYER_NAME_STORAGE_KEY);
-                return saved && saved.trim() ? saved.trim() : "Player";
-            } catch {
-                return "Player";
-            }
-        }
-
-        function savePlayerName(name) {
-            playerName = name && name.trim() ? name.trim() : "Player";
-            try { localStorage.setItem(PLAYER_NAME_STORAGE_KEY, playerName); } catch {}
-            updatePlayerNameUI();
-        }
-
-        function updatePlayerNameUI() {
-            if ($playerNameInput) $playerNameInput.value = playerName;
-        }
-
-        function loadPlayerStats() {
-            try {
-                const stats = JSON.parse(localStorage.getItem(PLAYER_STATS_STORAGE_KEY) || "[]");
-                return Array.isArray(stats) ? stats : [];
-            } catch {
-                return [];
-            }
-        }
-
-        function savePlayerStats(stats) {
-            try { localStorage.setItem(PLAYER_STATS_STORAGE_KEY, JSON.stringify(stats)); } catch {}
-        }
-
-        function parseChromeVersion(userAgent) {
-            const match = String(userAgent).match(/(?:Chrome|CriOS)\/([\d.]+)/);
-            return match ? match[1] : "unknown";
-        }
-
-        function parseDeviceModel(userAgent) {
-            const ua = String(userAgent);
+        function parseChromeVersion(ua) { const m = String(ua).match(/(?:Chrome|CriOS)\/([\d.]+)/); return m ? m[1] : "unknown"; }
+        function parseDeviceModel(ua) {
             const ios = ua.match(/\((iPhone|iPad|iPod)[^)]*\)/);
             const android = ua.match(/Android[^;)]*;\s*([^;)]+)/);
             if (ios) return ios[1];
             if (android) return android[1].replace(/\s+Build\/.*$/i, "").trim();
             return navigator.platform || "unknown";
         }
-
-        function createClientId() {
-            return `client-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
-        }
-
-        function saveClientInfo(info) {
-            try { localStorage.setItem(CLIENT_INFO_STORAGE_KEY, JSON.stringify(info)); } catch {}
-        }
-
+        function createClientId() { return "client-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8); }
+        function saveClientInfo(info) { try { localStorage.setItem(CLIENT_INFO_STORAGE_KEY, JSON.stringify(info)); } catch { } }
         function loadClientInfo() {
             let saved = {};
-            try { saved = JSON.parse(localStorage.getItem(CLIENT_INFO_STORAGE_KEY) || "{}") || {}; } catch {}
-            const userAgent = navigator.userAgent || "";
-            const info = {
-                ...saved,
+            try { saved = JSON.parse(localStorage.getItem(CLIENT_INFO_STORAGE_KEY) || "{}") || {}; } catch { }
+            const ua = navigator.userAgent || "";
+            const info = Object.assign({}, saved, {
                 id: saved.id || createClientId(),
-                deviceModel: parseDeviceModel(userAgent),
-                chromeVersion: parseChromeVersion(userAgent),
+                deviceModel: parseDeviceModel(ua),
+                chromeVersion: parseChromeVersion(ua),
                 platform: navigator.platform || "unknown",
                 language: navigator.language || "unknown",
-                screen: `${screen.width}x${screen.height}`,
-                userAgent,
+                screen: screen.width + "x" + screen.height,
+                userAgent: ua,
                 timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "unknown",
                 updatedAt: new Date().toISOString(),
-            };
+            });
             saveClientInfo(info);
             return info;
         }
 
-        async function refreshClientIp() {
-            const fetchedAt = (Date.parse(clientInfo.ipFetchedAt) || 0);
-            if (clientInfo.ip && Number.isFinite(fetchedAt) && Date.now() - fetchedAt < CLIENT_IP_MAX_AGE_MS) return;
-            try {
-                const controller = new AbortController();
-                const timer = setTimeout(() => controller.abort(), 1500);
-                const res = await fetch("https://api.ipify.org?format=json", { cache: "no-store", signal: controller.signal });
-                clearTimeout(timer);
-                if (!res.ok) return;
-                const data = await res.json();
-                if (!data.ip) return;
-                clientInfo = {
-                    ...clientInfo,
-                    ip: data.ip,
-                    ipFetchedAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString()
-                };
-                saveClientInfo(clientInfo);
-            } catch {}
-        }
+        function formatDuration(ms) { var s = Math.max(0, Math.round((Number(ms) || 0) / 1000)); var m = Math.floor(s / 60); var r = s % 60; return m > 0 ? m + "\u0E19 " + r + "\u0E27\u0E34" : r + "\u0E27\u0E34"; }
 
-        function formatDuration(ms) {
-            const seconds = Math.max(0, Math.round((Number(ms) || 0) / 1000));
-            const minutes = Math.floor(seconds / 60);
-            const rest = seconds % 60;
-            return minutes > 0 ? `${minutes}น ${rest}วิ` : `${rest}วิ`;
-        }
+        function loadPlayerStatsFromStorage() { try { var stats = JSON.parse(localStorage.getItem(PLAYER_STATS_STORAGE_KEY) || "[]"); return Array.isArray(stats) ? stats : []; } catch { return []; } }
+        function savePlayerStatsToStorage(stats) { try { localStorage.setItem(PLAYER_STATS_STORAGE_KEY, JSON.stringify(stats)); } catch { } }
 
-        function escapeHtml(value) {
-            return String(value ?? "")
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        }
+        function getStatKey(rec) { return [String(rec.deviceId || "unknown").trim().toLowerCase(), String(rec.name || "").trim().toLowerCase(), String(rec.ip || "unknown").trim().toLowerCase()].join("|"); }
+        function isBetterRun(n, o) { var ns = Number(n.score) || 0, os = Number(o.score) || 0; if (ns !== os) return ns > os; var nt = Number(n.durationMs) || 0, ot = Number(o.durationMs) || 0; if (nt !== ot) return nt < ot; return (Date.parse(n.endedAt) || 0) > (Date.parse(o.endedAt) || 0); }
+        function sortStats(entries) { return entries.slice().sort(function (a, b) { return (Number(b.score) || 0) - (Number(a.score) || 0) || (Number(a.durationMs) || 0) - (Number(b.durationMs) || 0) || (Date.parse(b.endedAt || b.updatedAt) || 0) - (Date.parse(a.endedAt || a.updatedAt) || 0); }); }
 
-        function normalizeStatValue(value) {
-            return String(value ?? "unknown").trim().toLowerCase() || "unknown";
-        }
-
-        function getPlayerStatKey(record) {
-            return [
-                normalizeStatValue(record.deviceId),
-                normalizeStatValue(record.name),
-                normalizeStatValue(record.ip)
-            ].join("|");
-        }
-
-        function isBetterRun(newRecord, oldRecord) {
-            const newScore = Number(newRecord.score) || 0;
-            const oldScore = Number(oldRecord.score) || 0;
-            if (newScore !== oldScore) return newScore > oldScore;
-            const newTime = Number(newRecord.durationMs) || 0;
-            const oldTime = Number(oldRecord.durationMs) || 0;
-            if (newTime !== oldTime) return newTime < oldTime;
-            return (Date.parse(newRecord.endedAt) || 0) > (Date.parse(oldRecord.endedAt) || 0);
-        }
-
-        function sortLeaderboardEntries(entries) {
-            return entries.slice().sort((a, b) =>
-                (Number(b.score) || 0) - (Number(a.score) || 0)
-                || (Number(a.durationMs) || 0) - (Number(b.durationMs) || 0)
-                || (Date.parse(b.endedAt || b.updatedAt) || 0) - (Date.parse(a.endedAt || a.updatedAt) || 0)
-            );
-        }
-
-        function normalizeLeaderboardEntries(data) {
-            const entries = Array.isArray(data) ? data : (Array.isArray(data?.entries) ? data.entries : []);
-            return sortLeaderboardEntries(entries.filter(item => item && typeof item === "object"));
-        }
-
-        function loadLeaderboardCache() {
-            try {
-                return normalizeLeaderboardEntries(JSON.parse(localStorage.getItem(LEADERBOARD_CACHE_STORAGE_KEY) || "null"));
-            } catch {
-                return [];
-            }
-        }
-
-        function saveLeaderboardCache(entries) {
-            try {
-                localStorage.setItem(LEADERBOARD_CACHE_STORAGE_KEY, JSON.stringify({
-                    updatedAt: new Date().toISOString(),
-                    entries: sortLeaderboardEntries(entries).slice(0, 100)
-                }));
-            } catch {}
-        }
-
-        function loadGhConfig() {
-            try {
-                return JSON.parse(localStorage.getItem(GH_KEY) || "{}");
-            } catch {
-                return {};
-            }
-        }
-
-        // GitHub Token Encryption/Decryption (AES-256-GCM with PBKDF2)
-        const GH_TOKEN_ENC_FILE = "github-token.enc.json";
-        let cachedDecryptedToken = null;
-
-        async function deriveKey(password, salt, iterations = 210000) {
-            const enc = new TextEncoder();
-            const keyMaterial = await crypto.subtle.importKey(
-                "raw", enc.encode(password), "PBKDF2", false, ["deriveBits", "deriveKey"]
-            );
-            const saltBuffer = Uint8Array.from(atob(salt), c => c.charCodeAt(0));
-            return await crypto.subtle.deriveKey(
-                { name: "PBKDF2", salt: saltBuffer, iterations, hash: "SHA-256" },
-                keyMaterial,
-                { name: "AES-GCM", length: 256 },
-                false,
-                ["decrypt"]
-            );
-        }
-
-        async function decryptToken(encryptedData, password) {
-            try {
-                const key = await deriveKey(password, encryptedData.salt, encryptedData.iterations);
-                const iv = Uint8Array.from(atob(encryptedData.iv), c => c.charCodeAt(0));
-                const encrypted = Uint8Array.from(atob(encryptedData.encryptedToken), c => c.charCodeAt(0));
-                const authTag = Uint8Array.from(atob(encryptedData.authTag), c => c.charCodeAt(0));
-                // Combine encrypted data + auth tag for AES-GCM
-                const ciphertext = new Uint8Array(encrypted.length + authTag.length);
-                ciphertext.set(encrypted);
-                ciphertext.set(authTag, encrypted.length);
-                const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, ciphertext);
-                return new TextDecoder().decode(decrypted).trim();
-            } catch (err) {
-                throw new Error("Invalid password or corrupted data");
-            }
-        }
-
-        async function loadEncryptedToken(password) {
-            if (cachedDecryptedToken) return cachedDecryptedToken;
-            try {
-                const res = await fetch(`${GH_TOKEN_ENC_FILE}?v=${Date.now()}`, { cache: "no-store" });
-                if (!res.ok) throw new Error("Token file not found");
-                const data = await res.json();
-                const token = await decryptToken(data, password);
-                cachedDecryptedToken = token;
-                return token;
-            } catch (err) {
-                console.warn("[token] decrypt failed:", err);
-                return null;
-            }
-        }
-
-        function clearCachedToken() {
-            cachedDecryptedToken = null;
-        }
-
-        // Loading screen helpers
-        function showPublishLoading(status = "กรุณารอสักครู่") {
-            const loading = document.getElementById('publish-loading');
-            const statusEl = document.getElementById('publish-status');
-            if (statusEl) statusEl.textContent = status;
-            if (loading) loading.classList.add('active');
-        }
-
-        function hidePublishLoading() {
-            const loading = document.getElementById('publish-loading');
-            if (loading) loading.classList.remove('active');
-        }
-
-        // Password prompt for encrypted token
-        function promptForTokenPassword() {
-            return new Promise(resolve => {
-                const password = prompt("Enter password to decrypt GitHub token:");
-                resolve(password || null);
-            });
-        }
-
-        async function getGitHubToken(password = null, fallbackToken = null) {
-            if (cachedDecryptedToken) return cachedDecryptedToken;
-            if (fallbackToken) return fallbackToken;
-            
-            // Try to load encrypted token from github-token.enc.json
-            try {
-                const encRes = await fetch(`${GH_TOKEN_ENC_FILE}?v=${Date.now()}`, { cache: "no-store" });
-                if (!encRes.ok) return null;
-                
-                const encData = await encRes.json();
-                if (encData.encryptedToken && encData.salt) {
-                    let decryptionPassword = password;
-                    if (!decryptionPassword) {
-                        decryptionPassword = await promptForTokenPassword();
-                    }
-                    if (!decryptionPassword) return null;
-                    
-                    showPublishLoading("กำลังถอดรหัส token...");
-                    const token = await decryptToken(encData, decryptionPassword);
-                    if (token) {
-                        cachedDecryptedToken = token;
-                        return token;
-                    }
-                }
-            } catch (err) {
-                console.warn("[token] failed to load encrypted:", err);
-            }
-            return null;
-        }
-
-        async function autoPublishLeaderboard(entry = null) {
-            if (autoPublishInFlight) return;
-            if (!entry) return;
-
-            // Load settings from config file first, then fall back to localStorage
-            const fileCfg = leaderboardConfig || {};
-            const localCfg = loadGhConfig();
-            
-            const owner = fileCfg.owner || localCfg.owner;
-            const repo = fileCfg.repo || localCfg.repo;
-            const branch = fileCfg.branch || localCfg.branch || "main";
-            const tokenPassword = fileCfg.tokenPassword;
-            const autoPublishEnabled = fileCfg.owner ? true : localCfg.autoLeaderboard;
-
-            if (!autoPublishEnabled || !owner || !repo) {
-                console.warn("[leaderboard] auto publish disabled or missing config (owner/repo)");
-                return;
-            }
-
-            // Get token (decrypted with password from file, or fallback to local plain token)
-            const token = await getGitHubToken(tokenPassword, localCfg.token);
-            if (!token) {
-                console.warn("[leaderboard] no GitHub token available for publishing");
-                return;
-            }
-
-            autoPublishInFlight = true;
-            showPublishLoading("กำลังเชื่อมต่อ GitHub...");
-
-            try {
-                showPublishLoading("กำลังโหลดข้อมูลบอร์ดล่าสุด...");
-                
-                let existingEntries = [];
-                let sha = null;
-                
-                const api = `https://api.github.com/repos/${owner}/${repo}/contents/${LEADERBOARD_FILE.split("/").map(encodeURIComponent).join("/")}?ref=${encodeURIComponent(branch)}`;
-
-                // GET without auth token — public repo can be read without token
-                // Sending an invalid/expired token causes 401 even on public repos
-                const getRes = await fetch(api, { headers: { Accept: "application/vnd.github+json" }, cache: "no-store" });
-                if (getRes.ok) {
-                    const fileData = await getRes.json();
-                    sha = fileData.sha;
-                    if (fileData.content) {
-                        try {
-                            const rawContent = atob(fileData.content.replace(/\s/g, ""));
-                            const bytes = Uint8Array.from(rawContent, c => c.charCodeAt(0));
-                            const text = new TextDecoder().decode(bytes);
-                            const parsed = JSON.parse(text || "{}");
-                            existingEntries = normalizeLeaderboardEntries(parsed);
-                        } catch (parseErr) {
-                            console.warn("[leaderboard] failed to parse GitHub content, using local", parseErr);
-                        }
-                    }
-                } else if (getRes.status !== 404) {
-                    console.warn("[leaderboard] GET failed:", getRes.status, "- using local cache");
-                }
-
-                // Fallback to local cache if GitHub fetch failed/empty
-                if (existingEntries.length === 0) {
-                    existingEntries = globalLeaderboard;
-                }
-
-                showPublishLoading("กำลังบันทึกคะแนนใหม่...");
-                const mergedEntries = mergeLeaderboardEntries(existingEntries, [entry]).slice(0, 100);
-                const payload = {
-                    updatedAt: new Date().toISOString(),
-                    entries: mergedEntries
-                };
-
-                showPublishLoading("กำลังอัปโหลดไป GitHub...");
-                await commitFileWithSha(LEADERBOARD_FILE, JSON.stringify(payload, null, 2), "chore: auto update leaderboard", owner, repo, branch, token, sha);
-
-                globalLeaderboard = mergedEntries;
-                saveLeaderboardCache(globalLeaderboard);
-                updateLeaderboardUI();
-                console.log("[leaderboard] auto publish to GitHub succeeded");
-            } catch (err) {
-                console.warn("[leaderboard] auto publish failed", err);
-                const statusEl = document.getElementById('publish-status');
-                if (statusEl) statusEl.textContent = "อัปโหลดไม่สำเร็จ: " + (err.message || "unknown error");
-                await new Promise(resolve => setTimeout(resolve, 2000));
-            } finally {
-                hidePublishLoading();
-                autoPublishInFlight = false;
-            }
-        }
-
-        async function commitFileWithSha(path, content, message, owner, repo, branch, token, sha = null) {
-            const api = `https://api.github.com/repos/${owner}/${repo}/contents/${path.split("/").map(encodeURIComponent).join("/")}`;
-            const headers = { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json", "Content-Type": "application/json" };
-            
-            const body = {
-                message,
-                content: btoa(unescape(encodeURIComponent(content))),
-                branch
+        function savePlayerStats(score, outcome) {
+            var endedAt = Date.now();
+            var startedAt = runStartedAt || endedAt;
+            var durationMs = Math.max(0, endedAt - startedAt);
+            var record = {
+                id: "run-" + endedAt.toString(36) + "-" + Math.random().toString(36).slice(2, 8),
+                name: playerName, score: score, outcome: outcome, durationMs: durationMs,
+                seconds: Math.round(durationMs / 1000), minutes: Number((durationMs / 60000).toFixed(2)),
+                startedAt: new Date(startedAt).toISOString(), endedAt: new Date(endedAt).toISOString(),
+                deviceId: clientInfo.id, deviceModel: clientInfo.deviceModel, chromeVersion: clientInfo.chromeVersion,
+                ip: clientInfo.ip || "unknown", platform: clientInfo.platform, screen: clientInfo.screen, userAgent: clientInfo.userAgent,
             };
-            if (sha) body.sha = sha;
-            
-            const putRes = await fetch(api, {
-                method: "PUT",
-                headers,
-                body: JSON.stringify(body)
-            });
-            if (!putRes.ok) {
-                if (putRes.status === 401) throw new Error("Token หมดอายุหรือไม่ถูกต้อง (401)");
-                if (putRes.status === 403) throw new Error("Token ไม่มีสิทธิ์เขียน repo นี้ (403)");
-                throw new Error(`PUT ${putRes.status}`);
-            }
-            return true;
-        }
-
-        function mergeLeaderboardEntries(...groups) {
-            const merged = new Map();
-            groups.flat().forEach(item => {
-                if (!item || typeof item !== "object") return;
-                const key = getPlayerStatKey(item);
-                const current = merged.get(key);
-                if (!current || isBetterRun(item, current)) {
-                    merged.set(key, {
-                        ...current,
-                        ...item,
-                        attempts: Math.max(Number(current?.attempts) || 1, Number(item.attempts) || 1)
-                    });
-                } else {
-                    merged.set(key, {
-                        ...current,
-                        attempts: Math.max(Number(current.attempts) || 1, Number(item.attempts) || 1)
-                    });
-                }
-            });
-            return sortLeaderboardEntries([...merged.values()]);
-        }
-
-        async function loadGlobalLeaderboard() {
-            try {
-                // Fetch static leaderboard.json with cache buster
-                const res = await fetch(`${LEADERBOARD_FILE}?v=${Date.now()}`, { cache: "no-store" });
-                if (!res.ok) throw new Error("leaderboard not found");
-                const data = await res.json();
-                globalLeaderboard = normalizeLeaderboardEntries(data);
-                saveLeaderboardCache(globalLeaderboard);
-            } catch {
-                globalLeaderboard = loadLeaderboardCache();
-            }
-            updateLeaderboardUI();
-        }
-
-        function savePlayerRun(score, outcome) {
-            const endedAt = Date.now();
-            const startedAt = runStartedAt || endedAt;
-            const durationMs = Math.max(0, endedAt - startedAt);
-            const record = {
-                id: `run-${endedAt.toString(36)}-${Math.random().toString(36).slice(2, 8)}`,
-                name: playerName,
-                score,
-                outcome,
-                durationMs,
-                seconds: Math.round(durationMs / 1000),
-                minutes: Number((durationMs / 60000).toFixed(2)),
-                startedAt: new Date(startedAt).toISOString(),
-                endedAt: new Date(endedAt).toISOString(),
-                deviceId: clientInfo.id,
-                deviceModel: clientInfo.deviceModel,
-                chromeVersion: clientInfo.chromeVersion,
-                ip: clientInfo.ip || "unknown",
-                platform: clientInfo.platform,
-                screen: clientInfo.screen,
-                userAgent: clientInfo.userAgent,
-            };
-            const stats = loadPlayerStats();
-            let savedRecord = record;
-            const recordKey = getPlayerStatKey(record);
-            const existingIndex = stats.findIndex(item => getPlayerStatKey(item) === recordKey);
+            var stats = loadPlayerStatsFromStorage();
+            var key = getStatKey(record);
+            var existingIndex = stats.findIndex(function (item) { return getStatKey(item) === key; });
             if (existingIndex >= 0) {
-                const existing = stats[existingIndex];
+                var existing = stats[existingIndex];
                 if (isBetterRun(record, existing)) {
-                    stats[existingIndex] = {
-                        ...existing,
-                        ...record,
-                        id: existing.id || record.id,
-                        firstPlayedAt: existing.firstPlayedAt || existing.startedAt || record.startedAt,
-                        updatedAt: record.endedAt,
-                        attempts: (Number(existing.attempts) || 1) + 1,
-                    };
-                    savedRecord = stats[existingIndex];
+                    stats[existingIndex] = Object.assign({}, existing, record, {
+                        id: existing.id || record.id, firstPlayedAt: existing.firstPlayedAt || existing.startedAt || record.startedAt,
+                        updatedAt: record.endedAt, attempts: (Number(existing.attempts) || 1) + 1
+                    });
                 } else {
-                    stats[existingIndex] = {
-                        ...existing,
-                        lastAttemptAt: record.endedAt,
-                        attempts: (Number(existing.attempts) || 1) + 1,
-                    };
-                    savedRecord = stats[existingIndex];
+                    stats[existingIndex] = Object.assign({}, existing, { lastAttemptAt: record.endedAt, attempts: (Number(existing.attempts) || 1) + 1 });
                 }
             } else {
-                savedRecord = {
-                    ...record,
-                    firstPlayedAt: record.startedAt,
-                    updatedAt: record.endedAt,
-                    attempts: 1,
-                };
-                stats.push(savedRecord);
+                record.firstPlayedAt = record.startedAt; record.updatedAt = record.endedAt; record.attempts = 1;
+                stats.push(record);
             }
-            const sortedStats = sortLeaderboardEntries(stats).slice(0, MAX_PLAYER_STATS);
-            savePlayerStats(sortedStats);
-            globalLeaderboard = mergeLeaderboardEntries(globalLeaderboard, sortedStats).slice(0, 100);
-            saveLeaderboardCache(globalLeaderboard);
+            var sorted = sortStats(stats).slice(0, MAX_PLAYER_STATS);
+            savePlayerStatsToStorage(sorted);
             runStartedAt = 0;
-            autoPublishLeaderboard(savedRecord);
         }
 
-        function updateLeaderboardUI() {
-            if (!$leaderboardList || !$leaderboardCount) return;
-            const stats = loadPlayerStats();
-            const entries = mergeLeaderboardEntries(globalLeaderboard, stats);
-            const sourceText = globalLeaderboard.length && stats.length
-                ? "ทั่วเว็บ + เครื่องนี้"
-                : (globalLeaderboard.length ? "ทั่วเว็บ" : "ในเครื่องนี้");
-            $leaderboardCount.textContent = `${entries.length} สถิติ`;
-            if (!entries.length) {
-                $leaderboardList.innerHTML = `<div class="empty-leaderboard">ยังไม่มีอันดับ เริ่มเล่นเพื่อบันทึกคะแนนแรก</div>`;
-                return;
-            }
-            const top = entries.slice(0, 5);
-            $leaderboardList.innerHTML = top.map((item, index) => `
-                <div class="leaderboard-row">
-                    <div class="leaderboard-rank">${index + 1}</div>
-                    <div>
-                        <div class="leaderboard-name">${escapeHtml(item.name || "Player")}</div>
-                        <div class="leaderboard-meta">${formatDuration(item.durationMs)} • ${sourceText} • เล่น ${Number(item.attempts) || 1} ครั้ง</div>
-                    </div>
-                    <div class="leaderboard-score">${Number(item.score) || 0} ข้อ</div>
-                </div>
-            `).join("");
-        }
-
-        function getStageBackground(stageNumber) {
-            const stage = Number(stageNumber) || 0;
-            const matched = STAGE_BACKGROUNDS.find(item => stage >= item.min && stage <= item.max);
-            return matched ? matched.bg : "";
-        }
-
+        function getStageBackground(stageNumber) { var stage = Number(stageNumber) || 0; var matched = STAGE_BACKGROUNDS.find(function (item) { return stage >= item.min && stage <= item.max; }); return matched ? matched.bg : ""; }
         function getCurrentStageNumber(sceneId) {
-            const parent = lastRandomParent;
-            if (parent && parent !== sceneId && randomHistory[parent] && sceneId !== "start" && sceneId !== "lose" && sceneId !== "win") {
-                return randomHistory[parent].size;
-            }
-            const match = /^c(\d+)$/.exec(sceneId);
-            return match ? Number(match[1]) : 0;
+            var parent = lastRandomParent;
+            if (parent && parent !== sceneId && randomHistory[parent] && sceneId !== "start" && sceneId !== "lose" && sceneId !== "win") { return randomHistory[parent].size; }
+            var match = /^c(\d+)$/.exec(sceneId); return match ? Number(match[1]) : 0;
         }
-
-        function resolveSceneBackground(sceneId, scene) {
-            return getStageBackground(getCurrentStageNumber(sceneId)) || scene.bg;
-        }
-
+        function resolveSceneBackground(sceneId, scene) { return getStageBackground(getCurrentStageNumber(sceneId)) || scene.bg; }
         function setBackground(bg) {
-            if (bg === "none") {
-                currentBg = bg;
-                $container.style.backgroundImage = "none";
-                return;
-            }
-            if (bg && bg !== "null" && bg !== currentBg) {
-                currentBg = bg;
-                $container.style.backgroundImage = `url('${bg}')`;
-            }
+            if (bg === "none") { currentBg = bg; $container.style.backgroundImage = "none"; return; }
+            if (bg && bg !== "null" && bg !== currentBg) { currentBg = bg; $container.style.backgroundImage = "url('" + bg + "')"; }
         }
 
         function showStartMenu() {
-            isStartMenuOpen = true;
-            stopTypewriter();
-            clearTimeout(spriteFadeTimer);
-            setBackground("image/bg.png");
-            updateTeacherNameUI();
-            updatePlayerNameUI();
-            updateLeaderboardUI();
-            loadGlobalLeaderboard();
-            $settingsPanel.hidden = true;
-            $startMenu.style.display = 'flex';
-            $dialogueBox.style.display = 'none';
-            $choiceContainer.style.display = 'none';
-            $clickHint.style.display = 'none';
-            $sprite.style.opacity = 0;
-            $sprite.classList.remove('speaking');
-            currentSprite = "";
-            isWaitingForChoice = false;
-            isTyping = false;
-            resetChoiceMode();
+            isStartMenuOpen = true; stopTypewriter(); clearTimeout(spriteFadeTimer); setBackground("image/bg.png");
+            updateTeacherNameUI(); updatePlayerNameUI(); $settingsPanel.hidden = true;
+            $startMenu.style.display = 'flex'; $dialogueBox.style.display = 'none'; $choiceContainer.style.display = 'none';
+            $clickHint.style.display = 'none'; $sprite.style.opacity = 0; $sprite.classList.remove('speaking');
+            currentSprite = ""; isWaitingForChoice = false; isTyping = false; resetChoiceMode();
         }
-
-        function hideStartMenu() {
-            isStartMenuOpen = false;
-            $startMenu.style.display = 'none';
-            $dialogueBox.style.display = 'block';
-        }
-
-        function startGame() {
-            savePlayerName($playerNameInput.value);
-            runStartedAt = Date.now();
-            hideStartMenu();
-            warmupLaterStageBackgrounds();
-            currentSceneId = "1";
-            renderScene(currentSceneId);
-        }
-
-        function openSettings() {
-            updateTeacherNameUI();
-            $settingsPanel.hidden = false;
-            $usernameInput.focus();
-            $usernameInput.select();
-        }
-
-        function closeSettings() {
-            $settingsPanel.hidden = true;
-            updateTeacherNameUI();
-        }
-
+        function hideStartMenu() { isStartMenuOpen = false; $startMenu.style.display = 'none'; $dialogueBox.style.display = 'block'; }
+        function startGame() { savePlayerName($playerNameInput.value); runStartedAt = Date.now(); hideStartMenu(); warmupLaterStageBackgrounds(); currentSceneId = "1"; renderScene(currentSceneId); }
+        function openSettings() { updateTeacherNameUI(); $settingsPanel.hidden = false; $usernameInput.focus(); $usernameInput.select(); }
+        function closeSettings() { $settingsPanel.hidden = true; updateTeacherNameUI(); }
         function bindMenuEvents() {
             $playBtn.addEventListener('click', startGame);
             $settingsBtn.addEventListener('click', openSettings);
-            $saveSettingsBtn.addEventListener('click', () => {
-                saveTeacherName($usernameInput.value);
-                closeSettings();
-            });
+            $saveSettingsBtn.addEventListener('click', function () { saveTeacherName($usernameInput.value); closeSettings(); });
             $cancelSettingsBtn.addEventListener('click', closeSettings);
-            $usernameInput.addEventListener('keydown', (e) => {
-                if (e.key === "Enter") {
-                    saveTeacherName($usernameInput.value);
-                    closeSettings();
-                }
-                if (e.key === "Escape") closeSettings();
-            });
-            $playerNameInput.addEventListener('change', () => savePlayerName($playerNameInput.value));
-            $playerNameInput.addEventListener('keydown', (e) => {
-                if (e.key === "Enter") startGame();
-            });
+            $usernameInput.addEventListener('keydown', function (e) { if (e.key === "Enter") { saveTeacherName($usernameInput.value); closeSettings(); } if (e.key === "Escape") closeSettings(); });
+            $playerNameInput.addEventListener('change', function () { savePlayerName($playerNameInput.value); });
+            $playerNameInput.addEventListener('keydown', function (e) { if (e.key === "Enter") startGame(); });
         }
 
-        function resetChoiceMode() {
-            hasPendingChoices = false;
-            isViewingQuestion = false;
-            currentQuestionText = "";
-            $dialogueBox.classList.remove('choice-mode');
-            $textContent.classList.remove('is-hidden');
-            $choiceToolbar.hidden = true;
-            $questionToggleBtn.textContent = "ดูคำถาม";
-            $choiceModeLabel.textContent = "เลือกคำตอบ";
-            $choiceContainer.innerHTML = '';
-            $choiceContainer.style.display = 'none';
-            syncSpriteWithDialogue();
-        }
-
-        function prepareChoiceQuestion() {
-            if (!hasPendingChoices) return;
-            isViewingQuestion = true;
-            $dialogueBox.classList.add('choice-mode');
-            $textContent.textContent = currentQuestionText;
-            $textContent.classList.remove('is-hidden');
-            $choiceToolbar.hidden = false;
-            $choiceContainer.style.display = 'none';
-            $questionToggleBtn.textContent = "ไปตอบ";
-            $choiceModeLabel.textContent = "คำถาม";
-            $clickHint.style.display = 'block';
-            syncSpriteWithDialogue();
-        }
-
-        function showChoicesInDialogue() {
-            if (!hasPendingChoices) return;
-            isViewingQuestion = false;
-            $dialogueBox.classList.add('choice-mode');
-            $textContent.classList.add('is-hidden');
-            $choiceToolbar.hidden = false;
-            $choiceContainer.style.display = 'flex';
-            $questionToggleBtn.textContent = "ดูคำถาม";
-            $choiceModeLabel.textContent = "เลือกคำตอบ";
-            $clickHint.style.display = 'none';
-            syncSpriteWithDialogue();
-        }
-
-        function showQuestionInDialogue() {
-            if (!hasPendingChoices) return;
-            isViewingQuestion = true;
-            $dialogueBox.classList.add('choice-mode');
-            $textContent.textContent = currentQuestionText;
-            $textContent.classList.remove('is-hidden');
-            $choiceToolbar.hidden = false;
-            $choiceContainer.style.display = 'none';
-            $questionToggleBtn.textContent = "กลับไปตอบ";
-            $choiceModeLabel.textContent = "คำถาม";
-            $clickHint.style.display = 'none';
-            syncSpriteWithDialogue();
-        }
-
-        function toggleQuestionView(event) {
-            if (event) event.stopPropagation();
-            if (isViewingQuestion) {
-                showChoicesInDialogue();
-            } else {
-                showQuestionInDialogue();
-            }
-        }
-
+        function resetChoiceMode() { hasPendingChoices = false; isViewingQuestion = false; currentQuestionText = ""; $dialogueBox.classList.remove('choice-mode'); $textContent.classList.remove('is-hidden'); $choiceToolbar.hidden = true; $questionToggleBtn.textContent = "\u0E14\u0E39\u0E04\u0E33\u0E16\u0E32\u0E21"; $choiceModeLabel.textContent = "\u0E40\u0E25\u0E37\u0E2D\u0E01\u0E04\u0E33\u0E15\u0E2D\u0E1A"; $choiceContainer.innerHTML = ''; $choiceContainer.style.display = 'none'; syncSpriteWithDialogue(); }
+        function prepareChoiceQuestion() { if (!hasPendingChoices) return; isViewingQuestion = true; $dialogueBox.classList.add('choice-mode'); $textContent.textContent = currentQuestionText; $textContent.classList.remove('is-hidden'); $choiceToolbar.hidden = false; $choiceContainer.style.display = 'none'; $questionToggleBtn.textContent = "\u0E44\u0E1B\u0E15\u0E2D\u0E1A"; $choiceModeLabel.textContent = "\u0E04\u0E33\u0E16\u0E32\u0E21"; $clickHint.style.display = 'block'; syncSpriteWithDialogue(); }
+        function showChoicesInDialogue() { if (!hasPendingChoices) return; isViewingQuestion = false; $dialogueBox.classList.add('choice-mode'); $textContent.classList.add('is-hidden'); $choiceToolbar.hidden = false; $choiceContainer.style.display = 'flex'; $questionToggleBtn.textContent = "\u0E14\u0E39\u0E04\u0E33\u0E16\u0E32\u0E21"; $choiceModeLabel.textContent = "\u0E40\u0E25\u0E37\u0E2D\u0E01\u0E04\u0E33\u0E15\u0E2D\u0E1A"; $clickHint.style.display = 'none'; syncSpriteWithDialogue(); }
+        function showQuestionInDialogue() { if (!hasPendingChoices) return; isViewingQuestion = true; $dialogueBox.classList.add('choice-mode'); $textContent.textContent = currentQuestionText; $textContent.classList.remove('is-hidden'); $choiceToolbar.hidden = false; $choiceContainer.style.display = 'none'; $questionToggleBtn.textContent = "\u0E01\u0E25\u0E31\u0E1A\u0E44\u0E1B\u0E15\u0E2D\u0E1A"; $choiceModeLabel.textContent = "\u0E04\u0E33\u0E16\u0E32\u0E21"; $clickHint.style.display = 'none'; syncSpriteWithDialogue(); }
+        function toggleQuestionView(event) { if (event) event.stopPropagation(); if (isViewingQuestion) showChoicesInDialogue(); else showQuestionInDialogue(); }
         function syncSpriteWithDialogue() {
-            if (isStartMenuOpen || $dialogueBox.style.display === 'none') {
-                $sprite.style.removeProperty('--sprite-bottom-offset');
-                return;
-            }
-            requestAnimationFrame(() => {
-                const containerRect = $container.getBoundingClientRect();
-                const dialogueRect = $dialogueBox.getBoundingClientRect();
-                const spriteRect = $sprite.getBoundingClientRect();
-                if (!dialogueRect.height || !spriteRect.height) return;
-                const safeGap = Math.max(24, Math.round(containerRect.height * 0.035));
-                const targetOffset = containerRect.bottom - dialogueRect.top + safeGap;
-                $sprite.style.setProperty('--sprite-bottom-offset', `${Math.ceil(targetOffset)}px`);
+            if (isStartMenuOpen || $dialogueBox.style.display === 'none') { $sprite.style.removeProperty('--sprite-bottom-offset'); return; }
+            requestAnimationFrame(function () {
+                var cr = $container.getBoundingClientRect();
+                var dr = $dialogueBox.getBoundingClientRect();
+                if (!dr.height) return;
+                var gap = Math.max(24, Math.round(cr.height * 0.035));
+                $sprite.style.setProperty('--sprite-bottom-offset', Math.ceil(cr.bottom - dr.top + gap) + 'px');
             });
         }
+        function syncSpriteAfterLayout() { syncSpriteWithDialogue(); requestAnimationFrame(syncSpriteWithDialogue); }
+        function preloadImage(src) { if (!src || src === "null" || preloadedAssets.has(src)) return; preloadedAssets.add(src); var img = new Image(); img.decoding = "async"; img.src = src; }
+        function scheduleIdleTask(task, timeout) { if (timeout === void 0) timeout = 1500; if ("requestIdleCallback" in window) { requestIdleCallback(task, { timeout: timeout }); return; } setTimeout(task, Math.min(timeout, 800)); }
+        function warmupLaterStageBackgrounds() { if (backgroundWarmupStarted) return; backgroundWarmupStarted = true; var lbs = STAGE_BACKGROUNDS.map(function (item) { return item.bg; }).filter(function (bg) { return bg && bg !== "image/bg.png"; }); lbs.forEach(function (bg, index) { scheduleIdleTask(function () { preloadImage(bg); }, 1800 + index * 700); }); }
+        function preloadSceneAssets(scene, sceneId) { preloadImage(resolveSceneBackground(sceneId, scene)); preloadImage(scene.sprite); if (scene.next && storyScript[scene.next]) { preloadImage(resolveSceneBackground(scene.next, storyScript[scene.next])); preloadImage(storyScript[scene.next].sprite); } }
 
-        function syncSpriteAfterLayout() {
-            syncSpriteWithDialogue();
-            requestAnimationFrame(syncSpriteWithDialogue);
-        }
-
-        function preloadImage(src) {
-            if (!src || src === "null" || preloadedAssets.has(src)) return;
-            preloadedAssets.add(src);
-            const img = new Image();
-            img.decoding = "async";
-            img.src = src;
-        }
-
-        function scheduleIdleTask(task, timeout = 1500) {
-            if ("requestIdleCallback" in window) {
-                requestIdleCallback(task, { timeout });
-                return;
-            }
-            setTimeout(task, Math.min(timeout, 800));
-        }
-
-        function warmupLaterStageBackgrounds() {
-            if (backgroundWarmupStarted) return;
-            backgroundWarmupStarted = true;
-            const laterBackgrounds = STAGE_BACKGROUNDS
-                .map(item => item.bg)
-                .filter(bg => bg && bg !== "image/bg.png");
-            laterBackgrounds.forEach((bg, index) => {
-                scheduleIdleTask(() => preloadImage(bg), 1800 + index * 700);
-            });
-        }
-
-        function preloadSceneAssets(scene, sceneId) {
-            preloadImage(resolveSceneBackground(sceneId, scene));
-            preloadImage(scene.sprite);
-            if (scene.next && storyScript[scene.next]) {
-                preloadImage(resolveSceneBackground(scene.next, storyScript[scene.next]));
-                preloadImage(storyScript[scene.next].sprite);
-            }
-        }
-
-        /* ============================================
-           📖 Render Scene
-           ============================================ */
         function renderScene(sceneId) {
-            const scene = storyScript[sceneId];
+            var scene = storyScript[sceneId];
             if (!scene) return;
 
-            // 🏆 เมื่อเข้า scene "lose"/"win" → commit คะแนนรอบนี้
             if (sceneId === "lose" || sceneId === "win") {
-                const parent = lastRandomParent;
+                var parent = lastRandomParent;
                 if (parent && randomHistory[parent]) {
-                    let score = randomHistory[parent].size;
-                    // ตอบผิด → ครั้งล่าสุดที่สุ่มยังไม่ได้นับ (ถูก mark used แล้ว) ต้องลบ 1
+                    var score = randomHistory[parent].size;
                     if (sceneId === "lose") score = Math.max(0, score - 1);
                     commitRunScore(score, sceneId);
                 }
-                lastRandomParent = null; // กัน commit ซ้ำตอนเข้า start
-            }
-
-            // 🔄 รีเซ็ตประวัติการสุ่ม เมื่อกลับมาที่หน้า start (เล่นใหม่)
-            if (sceneId === "start") {
-                resetRandomHistory();
                 lastRandomParent = null;
             }
 
-            // 🎯 อัปเดต progress badge + best record UI
+            if (sceneId === "start") { resetRandomHistory(); lastRandomParent = null; }
+
             updateOverlayUI(sceneId);
 
-            if (sceneId === "start") {
-                showStartMenu();
-                return;
-            }
+            if (sceneId === "start") { showStartMenu(); return; }
 
             if (isStartMenuOpen) hideStartMenu();
             resetChoiceMode();
 
-            // อ่านค่า config + ใช้ default ถ้าไม่มี
-            const position = scene.position || DEFAULTS.position;
-            const speaking = scene.speaking !== undefined ? scene.speaking : DEFAULTS.speaking;
-            const typeSpeed = scene.typeSpeed !== undefined ? scene.typeSpeed : DEFAULTS.typeSpeed;
+            var position = scene.position || DEFAULTS.position;
+            var speaking = scene.speaking !== void 0 ? scene.speaking : DEFAULTS.speaking;
+            var typeSpeed = scene.typeSpeed !== void 0 ? scene.typeSpeed : DEFAULTS.typeSpeed;
             preloadSceneAssets(scene, sceneId);
 
-            // --- ชื่อตัวละคร ---
             $nameTag.textContent = resolveSceneName(scene.name);
-
-            // --- Background ---
             setBackground(resolveSceneBackground(sceneId, scene));
 
-            // --- Character Sprite ---
             if (scene.sprite && scene.sprite !== "null") {
-                // ลบ class position เก่า
                 $sprite.classList.remove('pos-left', 'pos-center', 'pos-right', 'speaking');
                 clearTimeout(spriteFadeTimer);
-
-                const showSprite = () => {
+                var showSprite = function () {
                     $sprite.onload = syncSpriteAfterLayout;
                     $sprite.src = scene.sprite;
                     currentSprite = scene.sprite;
-                    $sprite.classList.add(`pos-${position}`);
+                    $sprite.classList.add('pos-' + position);
                     $sprite.style.opacity = 1;
                     syncSpriteAfterLayout();
-
-                    // เริ่ม speaking animation ถ้าเปิด
-                    if (speaking) {
-                        $sprite.classList.add('speaking');
-                    }
+                    if (speaking) $sprite.classList.add('speaking');
                 };
+                if (scene.sprite !== currentSprite) { $sprite.style.opacity = 0; spriteFadeTimer = setTimeout(showSprite, 120); }
+                else { showSprite(); }
+            } else if (scene.sprite === "null") { clearTimeout(spriteFadeTimer); currentSprite = ""; $sprite.style.opacity = 0; $sprite.classList.remove('speaking'); $sprite.onload = null; }
 
-                if (scene.sprite !== currentSprite) {
-                    $sprite.style.opacity = 0;
-                    spriteFadeTimer = setTimeout(showSprite, 120);
-                } else {
-                    showSprite();
-                }
-            } else if (scene.sprite === "null") {
-                // ซ่อน sprite ถ้าตั้งค่าเป็น "null"
-                clearTimeout(spriteFadeTimer);
-                currentSprite = "";
-                $sprite.style.opacity = 0;
-                $sprite.classList.remove('speaking');
-                $sprite.onload = null;
-            }
-
-            // --- Choices ---
             if (scene.choices) {
                 isWaitingForChoice = true;
                 hasPendingChoices = true;
@@ -1867,353 +989,144 @@
                 $choiceContainer.innerHTML = '';
                 $choiceContainer.style.display = 'none';
 
-                // 🔀 Shuffle ลำดับตัวเลือก (default: true เพื่อกันการจำตำแหน่ง)
-                //    ปิดด้วย scene.shuffle === false
-                const shouldShuffle = scene.shuffle !== false;
-                const items = shouldShuffle ? shuffleArray(scene.choices) : scene.choices;
+                var shouldShuffle = scene.shuffle !== false;
+                var items = shouldShuffle ? shuffleArray(scene.choices) : scene.choices;
+                var onCorrect = scene.onCorrect || "random";
+                var onWrong = scene.onWrong || "lose";
 
-                // 🎯 ปลายทางเมื่อตอบถูก/ผิด (สำหรับ choice ที่ใช้ correct flag)
-                const onCorrect = scene.onCorrect || "random";
-                const onWrong  = scene.onWrong  || "lose";
-
-                const fragment = document.createDocumentFragment();
-                items.forEach(choice => {
-                    const btn = document.createElement('div');
+                var fragment = document.createDocumentFragment();
+                items.forEach(function (choice) {
+                    var btn = document.createElement('div');
                     btn.className = 'choice-button';
                     btn.textContent = choice.text;
-                    // รองรับทั้งแบบเก่า (nextId ตรงๆ) และแบบใหม่ (correct: true → onCorrect, อื่นๆ → onWrong)
-                    const target = choice.nextId
-                        ? choice.nextId
-                        : (choice.correct ? onCorrect : onWrong);
-                    btn.onclick = (event) => {
-                        event.stopPropagation();
-                        selectChoice(target);
-                    };
+                    var target = choice.nextId ? choice.nextId : (choice.correct ? onCorrect : onWrong);
+                    btn.onclick = function (event) { event.stopPropagation(); selectChoice(target); };
                     fragment.appendChild(btn);
                 });
                 $choiceContainer.appendChild(fragment);
                 $questionToggleBtn.onclick = toggleQuestionView;
-
-                // ซ่อน click hint ตอนมี choices
                 $clickHint.style.display = 'none';
             } else {
                 isWaitingForChoice = false;
                 $clickHint.style.display = 'block';
             }
 
-            // --- Typewriter Effect ---
             startTypewriter(scene.text || "", typeSpeed, speaking);
             syncSpriteAfterLayout();
         }
 
-        /* ============================================
-           ⌨️ Typewriter System
-           ============================================ */
         function startTypewriter(text, speed, speakingEnabled) {
-            // หยุด typewriter เก่า (ถ้ามี)
             stopTypewriter();
-
-            currentFullText = text;
-            isTyping = true;
-            $textContent.textContent = "";
-            $textContent.classList.add('typing');
-
-            let charIndex = 0;
-            let lastTick = performance.now();
-            let visibleText = "";
-
-            const tick = (now) => {
+            currentFullText = text; isTyping = true;
+            $textContent.textContent = ""; $textContent.classList.add('typing');
+            var charIndex = 0, lastTick = performance.now(), visibleText = "";
+            var tick = function (now) {
                 if (!isTyping) return;
-                const elapsed = now - lastTick;
-                const charsToAdd = Math.max(1, Math.floor(elapsed / Math.max(1, speed)));
-                if (elapsed < speed) {
-                    typewriterFrame = requestAnimationFrame(tick);
-                    return;
-                }
+                var elapsed = now - lastTick;
+                var charsToAdd = Math.max(1, Math.floor(elapsed / Math.max(1, speed)));
+                if (elapsed < speed) { typewriterFrame = requestAnimationFrame(tick); return; }
                 lastTick = now;
                 if (charIndex < currentFullText.length) {
-                    const nextIndex = Math.min(currentFullText.length, charIndex + charsToAdd);
+                    var nextIndex = Math.min(currentFullText.length, charIndex + charsToAdd);
                     visibleText += currentFullText.slice(charIndex, nextIndex);
                     charIndex = nextIndex;
                     $textContent.textContent = visibleText;
                     syncSpriteWithDialogue();
                     typewriterFrame = requestAnimationFrame(tick);
-                } else {
-                    // พิมพ์เสร็จแล้ว!
-                    finishTypewriter();
-                }
+                } else { finishTypewriter(); }
             };
-
             typewriterFrame = requestAnimationFrame(tick);
         }
+        function skipTypewriter() { stopTypewriter(); $textContent.textContent = currentFullText; syncSpriteWithDialogue(); finishTypewriter(); }
+        function stopTypewriter() { if (typewriterInterval) { clearInterval(typewriterInterval); typewriterInterval = null; } if (typewriterFrame) { cancelAnimationFrame(typewriterFrame); typewriterFrame = null; } }
+        function finishTypewriter() { stopTypewriter(); isTyping = false; $textContent.classList.remove('typing'); $sprite.classList.remove('speaking'); if (hasPendingChoices) prepareChoiceQuestion(); syncSpriteWithDialogue(); }
 
-        function skipTypewriter() {
-            // แสดงข้อความทั้งหมดทันที
-            stopTypewriter();
-            $textContent.textContent = currentFullText;
-            syncSpriteWithDialogue();
-            finishTypewriter();
-        }
-
-        function stopTypewriter() {
-            if (typewriterInterval) {
-                clearInterval(typewriterInterval);
-                typewriterInterval = null;
-            }
-            if (typewriterFrame) {
-                cancelAnimationFrame(typewriterFrame);
-                typewriterFrame = null;
-            }
-        }
-
-        function finishTypewriter() {
-            stopTypewriter();
-            isTyping = false;
-            $textContent.classList.remove('typing');
-
-            // หยุด speaking animation เมื่อพิมพ์เสร็จ
-            $sprite.classList.remove('speaking');
-
-            if (hasPendingChoices) {
-                prepareChoiceQuestion();
-            }
-            syncSpriteWithDialogue();
-        }
-
-        /* ============================================
-           🖱️ Input Handler
-           ============================================ */
         function handleInput() {
-            // ถ้ากำลังพิมพ์อยู่ → Skip!
-            if (isTyping) {
-                skipTypewriter();
-                return;
-            }
-
-            // ถ้ามีตัวเลือก → ไม่ทำอะไร (รอเลือก)
-            if (hasPendingChoices && isViewingQuestion) {
-                showChoicesInDialogue();
-                return;
-            }
+            if (isTyping) { skipTypewriter(); return; }
+            if (hasPendingChoices && isViewingQuestion) { showChoicesInDialogue(); return; }
             if (isWaitingForChoice) return;
-
-            // ไป scene ถัดไป
-            const currentScene = storyScript[currentSceneId];
+            var currentScene = storyScript[currentSceneId];
             if (!currentScene) return;
-
-            // 🎲 ถ้ามี random list → สุ่มเลือก next scene (ไม่ซ้ำของเดิม)
             if (Array.isArray(currentScene.random) && currentScene.random.length) {
-                const nextId = pickRandomNext(currentScene.random, currentSceneId, currentScene);
-                if (nextId) {
-                    currentSceneId = nextId;
-                    renderScene(currentSceneId);
-                }
+                var nextId = pickRandomNext(currentScene.random, currentSceneId, currentScene);
+                if (nextId) { currentSceneId = nextId; renderScene(currentSceneId); }
                 return;
             }
-
-            if (currentScene.next) {
-                currentSceneId = currentScene.next;
-                renderScene(currentSceneId);
-            } else if (currentScene.next === null) {
-                // จบเรื่อง — ไม่ทำอะไร หรือจะ reset ก็ได้
-            }
+            if (currentScene.next) { currentSceneId = currentScene.next; renderScene(currentSceneId); }
         }
 
-        /* ============================================
-           🎲 Random Next — รองรับ string หรือ {nextId, weight}
-           ✨ ไม่ซ้ำของเดิม: จำว่าเคยสุ่มอะไรไปแล้วจาก scene นี้ (randomHistory)
-           🏆 winCount: ถ้าตั้งค่า → เมื่อสุ่มไปแล้วครบ N ครั้ง จะ fallback ไป scene.next ทันที
-              (ไม่ต้องสุ่มครบทุกข้อ — ใช้ทำเงื่อนไข "ชนะเมื่อตอบถูก N ข้อ")
-           - ถ้าหมดตัวเลือก → fallback ไป scene.next (ถ้ามี) ไม่งั้นรีเซ็ตแล้วสุ่มใหม่
-           ============================================ */
         function pickRandomNext(list, sceneId, scene) {
-            const items = list
-                .map(x => typeof x === "string"
-                    ? { nextId: x, weight: 1 }
-                    : { nextId: x.nextId, weight: Number(x.weight) || 1 })
-                .filter(it => it.nextId);
+            var items = list.map(function (x) { return typeof x === "string" ? { nextId: x, weight: 1 } : { nextId: x.nextId, weight: Number(x.weight) || 1 }; }).filter(function (it) { return it.nextId; });
             if (!items.length) return null;
-
             scene = scene || (storyScript[sceneId] || {});
-            const used = randomHistory[sceneId] || (randomHistory[sceneId] = new Set());
-
-            // 🏆 ถึงเกณฑ์ชนะแล้ว → ออกไป scene.next ทันที (ไม่ต้องสุ่มต่อ)
-            const winCount = Number(scene.winCount) || 0;
-            if (winCount > 0 && used.size >= winCount && scene.next) {
-                return scene.next;
-            }
-
-            let pool = items.filter(it => !used.has(it.nextId));
-
-            // หมดทุกตัวเลือกแล้ว
-            if (!pool.length) {
-                if (scene.next) return scene.next;       // ออกไป scene.next
-                used.clear();                            // ไม่งั้น reset แล้วเริ่มสุ่มใหม่
-                pool = items;
-            }
-
-            const total = pool.reduce((s, i) => s + i.weight, 0);
-            let r = Math.random() * total;
-            let picked = pool[pool.length - 1].nextId;
-            for (const it of pool) {
-                r -= it.weight;
-                if (r <= 0) { picked = it.nextId; break; }
-            }
+            var used = randomHistory[sceneId] || (randomHistory[sceneId] = new Set());
+            var winCount = Number(scene.winCount) || 0;
+            if (winCount > 0 && used.size >= winCount && scene.next) return scene.next;
+            var pool = items.filter(function (it) { return !used.has(it.nextId); });
+            if (!pool.length) { if (scene.next) return scene.next; used.clear(); pool = items; }
+            var total = pool.reduce(function (s, i) { return s + i.weight; }, 0);
+            var r = Math.random() * total;
+            var picked = pool[pool.length - 1].nextId;
+            for (var i = 0; i < pool.length; i++) { r -= pool[i].weight; if (r <= 0) { picked = pool[i].nextId; break; } }
             used.add(picked);
-            lastRandomParent = sceneId; // 📊 จำว่าครั้งล่าสุดเรามาจาก random scene ไหน
+            lastRandomParent = sceneId;
             return picked;
         }
+        function resetRandomHistory() { for (var k in randomHistory) delete randomHistory[k]; }
+        function shuffleArray(arr) { var a = arr.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
 
-        // รีเซ็ตประวัติการสุ่มทั้งหมด (เรียกเมื่อเริ่มเกมใหม่)
-        function resetRandomHistory() {
-            for (const k in randomHistory) delete randomHistory[k];
-        }
-
-        /* ============================================
-           🔀 Fisher–Yates Shuffle — สุ่มลำดับตัวเลือก
-           ============================================ */
-        function shuffleArray(arr) {
-            const a = arr.slice();
-            for (let i = a.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [a[i], a[j]] = [a[j], a[i]];
-            }
-            return a;
-        }
-
-        /* ============================================
-           🎯 Overlay UI — Progress Badge
-           ============================================ */
         function updateOverlayUI(sceneId) {
-            // 🎯 Progress badge: โชว์ตอนอยู่ใน random round
-            const parent = lastRandomParent;
-            const inRandomRound = parent
-                && randomHistory[parent]
-                && sceneId !== "start" && sceneId !== "lose" && sceneId !== "win";
+            var parent = lastRandomParent;
+            var inRandomRound = parent && randomHistory[parent] && sceneId !== "start" && sceneId !== "lose" && sceneId !== "win";
             if (inRandomRound) {
-                const parentScene = storyScript[parent] || {};
-                const total = Number(parentScene.winCount) > 0
-                    ? Number(parentScene.winCount)
-                    : (Array.isArray(parentScene.random) ? parentScene.random.length : 0);
-                const done = randomHistory[parent].size; // ข้อปัจจุบันที่กำลังเล่น
-                $progNum.textContent = `${done} / ${total || '?'}`;
+                var parentScene = storyScript[parent] || {};
+                var total = Number(parentScene.winCount) > 0 ? Number(parentScene.winCount) : (Array.isArray(parentScene.random) ? parentScene.random.length : 0);
+                var done = randomHistory[parent].size;
+                $progNum.textContent = done + " / " + (total || '?');
                 $progress.style.display = 'inline-block';
-            } else {
-                $progress.style.display = 'none';
-            }
+            } else { $progress.style.display = 'none'; }
         }
+        function selectChoice(nextId) { currentSceneId = nextId; isWaitingForChoice = false; resetChoiceMode(); renderScene(currentSceneId); }
 
-        function selectChoice(nextId) {
-            currentSceneId = nextId;
-            isWaitingForChoice = false;
-            resetChoiceMode();
-            renderScene(currentSceneId);
-        }
-
-        /* ============================================
-           ⌨️ Keyboard Support
-           ============================================ */
-        window.addEventListener('keydown', (e) => {
+        window.addEventListener('keydown', function (e) {
             if (isStartMenuOpen) return;
-            if (["BUTTON", "INPUT", "TEXTAREA"].includes(e.target?.tagName)) return;
-            if (e.code === "Space" || e.code === "Enter") {
-                e.preventDefault();
-                handleInput();
-            }
+            if (["BUTTON", "INPUT", "TEXTAREA"].indexOf(e.target ? e.target.tagName : "") >= 0) return;
+            if (e.code === "Space" || e.code === "Enter") { e.preventDefault(); handleInput(); }
         });
-
         window.addEventListener('resize', syncSpriteAfterLayout);
 
-        /* ============================================
-           🔒 Secret Scene — คลิกที่ตัวละครเพื่อเข้าฉากลับ
-           ============================================ */
         function handleSpriteClick(event) {
-            // ไม่ให้ event ลงไปที่ dialogue box
             event.stopPropagation();
-
-            // เช็คว่าอยู่ scene ที่ trigger ได้ไหม
-            if (currentSceneId !== SECRET_TRIGGER_SCENE) {
-                secretClickCount = 0;
-                return;
-            }
-
+            if (currentSceneId !== SECRET_TRIGGER_SCENE) { secretClickCount = 0; return; }
             secretClickCount++;
-
-            // feedback เล็กๆ ตอนกด (ตัวละครสั่นนิดหน่อย)
-            $sprite.style.filter = `brightness(${1 + secretClickCount * 0.1})`;
-            setTimeout(() => {
-                $sprite.style.filter = 'brightness(1)';
-            }, 150);
-
-            // กดครบ → เข้าฉากลับ!
-            if (secretClickCount >= SECRET_CLICKS_NEEDED) {
-                secretClickCount = 0;
-                currentSceneId = SECRET_TARGET_SCENE;
-                renderScene(currentSceneId);
-            }
+            $sprite.style.filter = "brightness(" + (1 + secretClickCount * 0.1) + ")";
+            setTimeout(function () { $sprite.style.filter = 'brightness(1)'; }, 150);
+            if (secretClickCount >= SECRET_CLICKS_NEEDED) { secretClickCount = 0; currentSceneId = SECRET_TARGET_SCENE; renderScene(currentSceneId); }
         }
 
-        /* ============================================
-           � Story Encryption (AES-GCM + PBKDF2)
-           ป้องกันคนเปิด DevTools เห็นเฉลย — เปลี่ยน pass/salt ถ้า fork โปรเจกต์
-           ⚠️ ไม่ใช่ security จริง — แค่ obfuscation กัน casual peek
-           ============================================ */
-        const STORY_ENC = {
-            pass: "novel-quiz-mr-eakapot-2026",
-            salt: new Uint8Array([78,111,118,101,108,81,117,105,122,83,97,108,116,33,50,54]),
-            iterations: 100000,
-            file: "story.enc.txt"
-        };
-        async function _deriveStoryKey() {
-            const baseKey = await crypto.subtle.importKey(
-                "raw", new TextEncoder().encode(STORY_ENC.pass),
-                "PBKDF2", false, ["deriveKey"]
-            );
-            return crypto.subtle.deriveKey(
-                { name: "PBKDF2", salt: STORY_ENC.salt, iterations: STORY_ENC.iterations, hash: "SHA-256" },
-                baseKey,
-                { name: "AES-GCM", length: 256 },
-                false, ["encrypt", "decrypt"]
-            );
-        }
-        async function decryptStoryText(b64) {
-            const key = await _deriveStoryKey();
-            const data = Uint8Array.from(atob(b64.trim()), c => c.charCodeAt(0));
-            const iv = data.slice(0, 12);
-            const ct = data.slice(12);
-            const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, ct);
-            return new TextDecoder().decode(pt);
-        }
-
-        /* ============================================
-           🚀 Init — โหลด story (ลอง encrypted ก่อน) แล้วเริ่ม
-           ============================================ */
         (async function initStory() {
-            // Load leaderboard config first
-            await loadLeaderboardConfig();
-
+            var pass = "novel-quiz-mr-eakapot-2026";
+            var salt = new Uint8Array([78, 111, 118, 101, 108, 81, 117, 105, 122, 83, 97, 108, 116, 33, 50, 54]);
             try {
-                const r = await fetch(STORY_ENC.file, { cache: "force-cache" });
+                var r = await fetch("story.enc.txt", { cache: "force-cache" });
                 if (r.ok) {
-                    const b64 = (await r.text()).trim();
+                    var b64 = (await r.text()).trim();
                     if (b64) {
-                        const json = await decryptStoryText(b64);
-                        const obj = JSON.parse(json);
-                        for (const k in storyScript) delete storyScript[k];
-                        for (const k in obj) storyScript[k] = obj[k];
-                        console.log("[story] loaded encrypted");
+                        var baseKey = await crypto.subtle.importKey("raw", new TextEncoder().encode(pass), "PBKDF2", false, ["deriveKey"]);
+                        var key = await crypto.subtle.deriveKey({ name: "PBKDF2", salt: salt, iterations: 100000, hash: "SHA-256" }, baseKey, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+                        var data = Uint8Array.from(atob(b64.trim()), function (c) { return c.charCodeAt(0); });
+                        var iv = data.slice(0, 12);
+                        var ct = data.slice(12);
+                        var pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: iv }, key, ct);
+                        var json = JSON.parse(new TextDecoder().decode(pt));
+                        for (var k in storyScript) delete storyScript[k];
+                        for (var k in json) storyScript[k] = json[k];
                     }
                 }
-            } catch (e) {
-                console.warn("[story] encrypted load failed, using plain story.js", e);
-            }
+            } catch (e) { }
             renderScene("start");
-
-            // Load global leaderboard after config is loaded
-            await loadGlobalLeaderboard();
         })();
         bindMenuEvents();
-        refreshClientIp();
 
     </script>
 
