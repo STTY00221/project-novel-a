@@ -918,7 +918,7 @@
         }
 
         var currentBgm = null;
-        function playSceneBgm(soundUrl) {
+        function playSceneBgm(soundUrl, shouldLoop) {
             if (!soundUrl) return;
             if (soundUrl === "null" || soundUrl === "none") {
                 if (currentBgm) {
@@ -929,12 +929,18 @@
             }
             var tempAudio = new Audio(soundUrl);
             if (currentBgm) {
-                if (currentBgm.src === tempAudio.src) return;
+                if (currentBgm.src === tempAudio.src && !currentBgm.ended) {
+                    currentBgm.loop = !!shouldLoop;
+                    return;
+                }
                 currentBgm.pause();
             }
             currentBgm = tempAudio;
-            currentBgm.loop = true;
+            currentBgm.loop = !!shouldLoop;
             currentBgm.volume = 0.5;
+            currentBgm.onended = function () {
+                if (currentBgm === tempAudio) currentBgm = null;
+            };
             currentBgm.play().catch(function(err) {
                 console.warn("Audio play blocked:", err);
             });
@@ -1049,9 +1055,9 @@
 
             // Sound
             if (stageSound) {
-                playSceneBgm(stageSound.sound);
+                playSceneBgm(stageSound.sound, stageSound.loop === true || stageSound.loop === "true");
             } else if (scene.sound !== undefined) {
-                playSceneBgm(scene.sound);
+                playSceneBgm(scene.sound, scene.soundLoop === true);
             }
 
             var spriteUrl = stageSprite ? stageSprite.sprite : scene.sprite;

@@ -1228,7 +1228,7 @@
     const STORY_META_KEYS = new Set(["_stageBackgrounds", "_stageSounds", "_stageSprites", "_stageShakes"]);
     const STAGE_RULES = {
       backgrounds: { key: "_stageBackgrounds", field: "bg", label: "Background", hint: "Use a background image for every scene in this stage range.", placeholder: "image/bg1.png", defaultItem: () => ({ min: 1, max: 10, bg: "" }) },
-      sounds: { key: "_stageSounds", field: "sound", label: "Sound", hint: "Play or stop BGM/SFX in this stage range. Use none or null to stop audio.", placeholder: "sound/bgm.mp3 or none", defaultItem: () => ({ min: 1, max: 10, sound: "" }) },
+      sounds: { key: "_stageSounds", field: "sound", label: "Sound", hint: "Play or stop BGM/SFX in this stage range. Use none or null to stop audio. Enable loop only for BGM that should repeat.", placeholder: "sound/bgm.mp3 or none", defaultItem: () => ({ min: 1, max: 10, sound: "", loop: false }) },
       sprites: { key: "_stageSprites", field: "sprite", label: "Character image", hint: "Use a character image in this stage range. Use null to hide the character.", placeholder: "image/creator.png or null", defaultItem: () => ({ min: 1, max: 10, sprite: "", position: "", speaking: "" }) },
       shakes: { key: "_stageShakes", field: "duration", label: "Shake", hint: "Shake the screen in this stage range. Duration is milliseconds, intensity is pixels.", placeholder: "duration ms", defaultItem: () => ({ min: 1, max: 10, duration: 500, intensity: 5 }) }
     };
@@ -1396,7 +1396,7 @@
         lines.push("");
       };
       writeStageRules("_stageBackgrounds", item => `{ min: ${Number(item.min) || 0}, max: ${Number(item.max) || 0}, bg: "${esc(item.bg)}" }`);
-      writeStageRules("_stageSounds", item => `{ min: ${Number(item.min) || 0}, max: ${Number(item.max) || 0}, sound: "${esc(item.sound)}" }`);
+      writeStageRules("_stageSounds", item => `{ min: ${Number(item.min) || 0}, max: ${Number(item.max) || 0}, sound: "${esc(item.sound)}", loop: ${item.loop === true || item.loop === "true"} }`);
       writeStageRules("_stageSprites", item => {
         const parts = [`min: ${Number(item.min) || 0}`, `max: ${Number(item.max) || 0}`, `sprite: "${esc(item.sprite)}"`];
         if (item.position) parts.push(`position: "${esc(item.position)}"`);
@@ -1417,6 +1417,7 @@
         if (s.speaking !== undefined) push("speaking", `${!!s.speaking}`);
         if (s.typeSpeed !== undefined && s.typeSpeed !== "") push("typeSpeed", `${Number(s.typeSpeed)}`);
         if (s.sound !== undefined && s.sound !== "") push("sound", `"${esc(s.sound)}"`);
+        if (s.soundLoop !== undefined) push("soundLoop", `${!!s.soundLoop}`);
         if (s.shakeDuration !== undefined && s.shakeDuration !== "") push("shakeDuration", `${Number(s.shakeDuration)}`);
         if (s.shakeIntensity !== undefined && s.shakeIntensity !== "") push("shakeIntensity", `${Number(s.shakeIntensity)}`);
         if (Array.isArray(s.choices) && s.choices.length) {
@@ -1648,6 +1649,10 @@
         <input id="fSound" value="${escapeHtml(s.sound ?? "")}" placeholder="เช่น sound/bgm.mp3">
       </div>
       <div class="field">
+        <label>Sound loop</label>
+        <div class="switch"><input id="fSoundLoop" type="checkbox" ${s.soundLoop ? "checked" : ""}><span class="muted">repeat this sound</span></div>
+      </div>
+      <div class="field">
         <label>Shake Screen (Duration in ms)</label>
         <input id="fShakeDuration" type="number" min="0" placeholder="เช่น 500" value="${s.shakeDuration ?? ''}">
       </div>
@@ -1746,6 +1751,10 @@
       bind("#fSound", "input", e => {
         const v = e.target.value.trim();
         if (v === "") delete s.sound; else s.sound = v;
+        renderPreview(); renderAudit(); renderList(); renderRaw();
+      });
+      bind("#fSoundLoop", "change", e => {
+        if (e.target.checked) s.soundLoop = true; else delete s.soundLoop;
         renderPreview(); renderAudit(); renderList(); renderRaw();
       });
       bind("#fShakeDuration", "input", e => {
@@ -2519,6 +2528,16 @@
           <div class="muted">ms / px</div>
         `;
       }
+      if (kind === "sounds") {
+        return `
+          <input class="wide" type="text" data-k="sound" placeholder="sound/bgm.mp3 or none" value="${escapeHtml(item.sound || '')}">
+          <select data-k="loop">
+            <option value="false" ${item.loop === false || item.loop === "false" || item.loop === undefined ? "selected" : ""}>play once</option>
+            <option value="true" ${item.loop === true || item.loop === "true" ? "selected" : ""}>loop</option>
+          </select>
+          <div class="muted">loop</div>
+        `;
+      }
       const rule = STAGE_RULES[kind];
       const options = kind === "backgrounds" ? getAssetOptions("bg") : [];
       const listAttr = options.length ? `list="stageValueOpts"` : "";
@@ -2568,6 +2587,7 @@
         const max = Number(item.max) || 0;
         if (kind === "sprites") return { min, max, sprite: String(item.sprite || "").trim(), position: item.position || "", speaking: item.speaking ?? "" };
         if (kind === "shakes") return { min, max, duration: Number(item.duration) || 0, intensity: Number(item.intensity) || 0 };
+        if (kind === "sounds") return { min, max, sound: String(item.sound || "").trim(), loop: item.loop === true || item.loop === "true" };
         return { min, max, [rule.field]: String(item[rule.field] || "").trim() };
       }).filter(item => {
         if (!item.min || !item.max) return false;
