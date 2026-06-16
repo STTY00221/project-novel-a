@@ -380,6 +380,23 @@
     }
 
     /* Preview */
+    .preview-stage.shake-active {
+      animation: screen-shake 0.1s infinite;
+    }
+
+    @keyframes screen-shake {
+      0%, 100% { transform: translate(0, 0); }
+      10% { transform: translate(calc(-1 * var(--shake-intensity, 5px)), calc(-1 * var(--shake-intensity, 5px))); }
+      20% { transform: translate(var(--shake-intensity, 5px), 0px); }
+      30% { transform: translate(0px, var(--shake-intensity, 5px)); }
+      40% { transform: translate(calc(-1 * var(--shake-intensity, 5px)), var(--shake-intensity, 5px)); }
+      50% { transform: translate(var(--shake-intensity, 5px), calc(-1 * var(--shake-intensity, 5px))); }
+      60% { transform: translate(calc(-1 * var(--shake-intensity, 5px)), 0px); }
+      70% { transform: translate(0px, calc(-1 * var(--shake-intensity, 5px))); }
+      80% { transform: translate(var(--shake-intensity, 5px), var(--shake-intensity, 5px)); }
+      90% { transform: translate(calc(-1 * var(--shake-intensity, 5px)), calc(-1 * var(--shake-intensity, 5px))); }
+    }
+
     .preview-stage {
       position: relative;
       width: 100%;
@@ -997,6 +1014,9 @@
           <input id="newSceneId" placeholder="new scene id...">
           <button class="btn sm primary" id="btnAddScene">+ Add</button>
         </div>
+        <div class="side-actions">
+          <button class="btn" id="btnStageBgs" style="width:100%; text-align:center;">🖼️ ตั้งค่า BG แยกตามด่าน</button>
+        </div>
         <div class="side-actions stack">
           <input id="sceneSearch" placeholder="ค้นหา scene id หรือชื่อตัวละคร...">
         </div>
@@ -1032,6 +1052,23 @@
           readonly></textarea>
       </section>
     </main>
+  </div>
+
+  <!-- Stage Backgrounds Modal -->
+  <div class="modal" id="modalStageBgs">
+    <div class="box">
+      <h3>🖼️ ตั้งค่า Background แยกตามด่าน</h3>
+      <div class="muted" style="margin-bottom:10px">
+        กำหนดว่าด่านที่เท่าไหร่ถึงเท่าไหร่ ให้ใช้ background รูปไหน
+      </div>
+      <div id="stageBgsList" style="display:flex; flex-direction:column; gap:8px; max-height:260px; overflow-y:auto; margin-bottom:12px; padding-right:4px;">
+      </div>
+      <button class="btn sm" id="btnAddStageBg">+ เพิ่มช่วงด่าน</button>
+      <div class="footer">
+        <button class="btn ghost" id="stageBgsCancel">ปิด</button>
+        <button class="btn primary" id="stageBgsSave">บันทึก</button>
+      </div>
+    </div>
   </div>
 
   <!-- GitHub Settings Modal -->
@@ -1155,7 +1192,7 @@
     }
 
     function storyStats() {
-      const scenes = Object.values(story);
+      const scenes = Object.entries(story).filter(([k]) => k !== "_stageBackgrounds").map(([k, v]) => v);
       const choices = scenes.reduce((sum, s) => sum + (Array.isArray(s.choices) ? s.choices.length : 0), 0);
       const randomTargets = scenes.reduce((sum, s) => sum + (Array.isArray(s.random) ? s.random.length : 0), 0);
       return {
@@ -1177,7 +1214,7 @@
 
     function validateStory() {
       const issues = [];
-      const ids = Object.keys(story);
+      const ids = Object.keys(story).filter(id => id !== "_stageBackgrounds");
       ids.forEach(id => {
         const s = story[id] || {};
         const mode = getSceneMode(s);
@@ -1261,7 +1298,15 @@
     function serialize() {
       const esc = s => String(s).replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\n/g, "\\n").replace(/\r/g, "");
       const lines = ["const storyScript = {", ""];
-      const ids = Object.keys(story);
+      if (Array.isArray(story._stageBackgrounds) && story._stageBackgrounds.length) {
+        lines.push('    "_stageBackgrounds": [');
+        story._stageBackgrounds.forEach((item, idx) => {
+          lines.push(`        { min: ${Number(item.min) || 0}, max: ${Number(item.max) || 0}, bg: "${esc(item.bg)}" }${idx < story._stageBackgrounds.length - 1 ? ',' : ''}`);
+        });
+        lines.push('    ],');
+        lines.push("");
+      }
+      const ids = Object.keys(story).filter(id => id !== "_stageBackgrounds");
       ids.forEach((id, idx) => {
         const s = story[id];
         lines.push(`    "${id}": {`);
@@ -1273,6 +1318,9 @@
         if (s.position) push("position", `"${s.position}"`);
         if (s.speaking !== undefined) push("speaking", `${!!s.speaking}`);
         if (s.typeSpeed !== undefined && s.typeSpeed !== "") push("typeSpeed", `${Number(s.typeSpeed)}`);
+        if (s.sound !== undefined && s.sound !== "") push("sound", `"${esc(s.sound)}"`);
+        if (s.shakeDuration !== undefined && s.shakeDuration !== "") push("shakeDuration", `${Number(s.shakeDuration)}`);
+        if (s.shakeIntensity !== undefined && s.shakeIntensity !== "") push("shakeIntensity", `${Number(s.shakeIntensity)}`);
         if (Array.isArray(s.choices) && s.choices.length) {
           // 🔀 shuffle (default true → เก็บเฉพาะตอน false)
           if (s.shuffle === false) push("shuffle", "false");
@@ -1325,9 +1373,9 @@
         const { header, script } = parseStoryJs(txt);
         sourceHeader = header;
         story = script;
-        currentId = Object.keys(story)[0] || null;
+        currentId = Object.keys(story).filter(id => id !== "_stageBackgrounds")[0] || null;
         renderAll();
-        $("#fileStatus").textContent = `story.js: loaded (${Object.keys(story).length} scenes)`;
+        $("#fileStatus").textContent = `story.js: loaded (${Object.keys(story).filter(id => id !== "_stageBackgrounds").length} scenes)`;
         toast("Loaded story.js");
       } catch (e) {
         toast("Load failed: " + e.message, 2800);
@@ -1340,7 +1388,7 @@
         try {
           const { header, script } = parseStoryJs(r.result);
           sourceHeader = header; story = script;
-          currentId = Object.keys(story)[0] || null;
+          currentId = Object.keys(story).filter(id => id !== "_stageBackgrounds")[0] || null;
           renderAll();
           toast("Imported " + file.name);
         } catch (e) { toast("Parse failed: " + e.message, 2800); }
@@ -1400,7 +1448,7 @@
         <div class="side-stat"><span>Sprites</span><b>${stats.sprites}</b></div>`;
       $$("#sceneFilters button").forEach(btn => btn.classList.toggle("active", btn.dataset.filter === sceneFilter));
       const q = ($("#sceneSearch")?.value || "").trim().toLowerCase();
-      const ids = Object.keys(story).filter(id => {
+      const ids = Object.keys(story).filter(id => id !== "_stageBackgrounds").filter(id => {
         const mode = getSceneMode(story[id]);
         if (sceneFilter === "choices" && mode !== "choices") return false;
         if (sceneFilter === "dialogue" && mode !== "dialogue") return false;
@@ -1460,7 +1508,7 @@
     ${renderDashboard()}
     <div class="scene-tools">
       <div>
-        <h2>${escapeHtml(currentId)}</h2>
+        <h2 style="display:flex; align-items:center; gap:8px;">${escapeHtml(currentId)} <button class="btn sm" id="btnCopyId" title="Copy Scene ID">📋 Copy ID</button></h2>
         <div class="muted">${getSceneModeLabel(s)} scene · จัดการ dialogue, visual, typewriter และ flow ของฉากนี้</div>
       </div>
       <div class="row">
@@ -1496,6 +1544,18 @@
         <label>Sprite URL (or "null")</label>
         <input id="fSprite" value="${escapeHtml(s.sprite ?? "")}" list="spriteOpts">
         <datalist id="spriteOpts">${spriteOptions}</datalist>
+      </div>
+      <div class="field">
+        <label>Sound URL (BGM/SFX, or empty)</label>
+        <input id="fSound" value="${escapeHtml(s.sound ?? "")}" placeholder="เช่น sound/bgm.mp3">
+      </div>
+      <div class="field">
+        <label>Shake Screen (Duration in ms)</label>
+        <input id="fShakeDuration" type="number" min="0" placeholder="เช่น 500" value="${s.shakeDuration ?? ''}">
+      </div>
+      <div class="field">
+        <label>Shake Screen (Intensity in px)</label>
+        <input id="fShakeIntensity" type="number" min="0" placeholder="เช่น 5" value="${s.shakeIntensity ?? ''}">
       </div>
       <div class="field">
         <label>Type speed (ms/char)</label>
@@ -1577,6 +1637,29 @@
       // Bind field events
       const bind = (sel, ev, fn) => { const el = $(sel); if (el) el.addEventListener(ev, fn); };
       const update = (key, val) => { s[key] = val; renderPreview(); renderAudit(); renderList(); renderRaw(); };
+
+      bind("#btnCopyId", "click", () => {
+        navigator.clipboard.writeText(currentId).then(() => {
+          toast("คัดลอก Scene ID สำเร็จ: " + currentId);
+        }).catch(err => {
+          toast("คัดลอกไม่สำเร็จ: " + err.message);
+        });
+      });
+      bind("#fSound", "input", e => {
+        const v = e.target.value.trim();
+        if (v === "") delete s.sound; else s.sound = v;
+        renderPreview(); renderAudit(); renderList(); renderRaw();
+      });
+      bind("#fShakeDuration", "input", e => {
+        const v = e.target.value.trim();
+        if (v === "" || Number(v) <= 0) delete s.shakeDuration; else s.shakeDuration = Number(v);
+        renderPreview(); renderAudit(); renderList(); renderRaw();
+      });
+      bind("#fShakeIntensity", "input", e => {
+        const v = e.target.value.trim();
+        if (v === "" || Number(v) <= 0) delete s.shakeIntensity; else s.shakeIntensity = Number(v);
+        renderPreview(); renderAudit(); renderList(); renderRaw();
+      });
 
       bind("#fName", "input", e => update("name", e.target.value));
       bind("#fText", "input", e => update("text", e.target.value));
@@ -1765,6 +1848,20 @@
         return;
       }
       const s = story[currentId];
+      const pvStage = $("#previewStage");
+      if (s.shakeDuration && Number(s.shakeDuration) > 0) {
+        const intensity = s.shakeIntensity !== undefined ? Number(s.shakeIntensity) : 5;
+        pvStage.style.setProperty('--shake-intensity', intensity + 'px');
+        pvStage.classList.remove("shake-active");
+        void pvStage.offsetWidth; // trigger reflow
+        pvStage.classList.add("shake-active");
+        if (window.pvShakeTimeout) clearTimeout(window.pvShakeTimeout);
+        window.pvShakeTimeout = setTimeout(() => {
+          pvStage.classList.remove("shake-active");
+        }, Number(s.shakeDuration));
+      } else {
+        pvStage.classList.remove("shake-active");
+      }
       const bg = $("#pvBg"), sp = $("#pvSprite");
       const bgUrl = s.bg && s.bg !== "null" ? s.bg : "";
       bg.style.backgroundImage = bgUrl ? `url("${bgUrl}")` : "linear-gradient(135deg,#1a2340,#0a0f1c)";
@@ -2004,7 +2101,7 @@
             const obj = JSON.parse(json);
             sourceHeader = sourceHeader || "";
             story = obj;
-            currentId = Object.keys(story)[0] || null;
+            currentId = Object.keys(story).filter(id => id !== "_stageBackgrounds")[0] || null;
             renderAll();
             toast("Imported encrypted file");
           } catch (e) { toast("Decrypt failed: " + e.message, 2800); }
@@ -2275,6 +2372,69 @@
       renderPlayerData();
       toast("Player data cleared");
     }
+
+    let tempStageBgs = [];
+
+    function openStageBgsModal() {
+      tempStageBgs = JSON.parse(JSON.stringify(story._stageBackgrounds || []));
+      renderStageBgsList();
+      $("#modalStageBgs").classList.add("show");
+    }
+
+    function renderStageBgsList() {
+      const container = $("#stageBgsList");
+      container.innerHTML = "";
+      if (!tempStageBgs.length) {
+        container.innerHTML = `<div class="muted" style="padding:12px; text-align:center;">ยังไม่มีการตั้งค่าช่วงด่าน</div>`;
+        return;
+      }
+      tempStageBgs.forEach((item, idx) => {
+        const row = document.createElement("div");
+        row.className = "choice";
+        row.style.gridTemplateColumns = "70px 70px 1fr auto";
+        row.style.alignItems = "center";
+        row.style.gap = "8px";
+        row.innerHTML = `
+          <input type="number" data-k="min" placeholder="Min" min="1" value="${item.min || ''}" style="width:100%;">
+          <input type="number" data-k="max" placeholder="Max" min="1" value="${item.max || ''}" style="width:100%;">
+          <input type="text" data-k="bg" placeholder="URL รูปพื้นหลัง เช่น image/bg1.png" value="${escapeHtml(item.bg || '')}" style="width:100%;">
+          <button class="btn sm danger">✕</button>
+        `;
+        row.querySelectorAll("input").forEach(inp => {
+          inp.addEventListener("input", e => {
+            const k = e.target.dataset.k;
+            if (k === "bg") {
+              item[k] = e.target.value.trim();
+            } else {
+              item[k] = Number(e.target.value) || 0;
+            }
+          });
+        });
+        row.querySelector("button").onclick = () => {
+          tempStageBgs.splice(idx, 1);
+          renderStageBgsList();
+        };
+        container.appendChild(row);
+      });
+    }
+
+    $("#btnStageBgs").onclick = openStageBgsModal;
+    $("#stageBgsCancel").onclick = () => $("#modalStageBgs").classList.remove("show");
+    $("#btnAddStageBg").onclick = () => {
+      tempStageBgs.push({ min: 1, max: 10, bg: "" });
+      renderStageBgsList();
+    };
+    $("#stageBgsSave").onclick = () => {
+      const cleaned = tempStageBgs.filter(item => item.bg);
+      if (cleaned.length) {
+        story._stageBackgrounds = cleaned;
+      } else {
+        delete story._stageBackgrounds;
+      }
+      $("#modalStageBgs").classList.remove("show");
+      renderRaw();
+      toast("บันทึกการตั้งค่า Background สำเร็จ");
+    };
 
     $("#btnPlayerData").onclick = openPlayerData;
     $("#playerDataClose").onclick = () => $("#modalPlayerData").classList.remove("show");

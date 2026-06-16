@@ -29,6 +29,23 @@
             font-family: 'Prompt', 'Segoe UI', Tahoma, sans-serif;
         }
 
+        #game-container.shake-active {
+            animation: screen-shake 0.1s infinite;
+        }
+
+        @keyframes screen-shake {
+            0%, 100% { transform: translate(0, 0); }
+            10% { transform: translate(calc(-1 * var(--shake-intensity, 5px)), calc(-1 * var(--shake-intensity, 5px))); }
+            20% { transform: translate(var(--shake-intensity, 5px), 0px); }
+            30% { transform: translate(0px, var(--shake-intensity, 5px)); }
+            40% { transform: translate(calc(-1 * var(--shake-intensity, 5px)), var(--shake-intensity, 5px)); }
+            50% { transform: translate(var(--shake-intensity, 5px), calc(-1 * var(--shake-intensity, 5px))); }
+            60% { transform: translate(calc(-1 * var(--shake-intensity, 5px)), 0px); }
+            70% { transform: translate(0px, calc(-1 * var(--shake-intensity, 5px))); }
+            80% { transform: translate(var(--shake-intensity, 5px), var(--shake-intensity, 5px)); }
+            90% { transform: translate(calc(-1 * var(--shake-intensity, 5px)), calc(-1 * var(--shake-intensity, 5px))); }
+        }
+
         #game-container {
             position: relative;
             width: 100vw;
@@ -893,12 +910,39 @@
             if (bg && bg !== "null" && bg !== currentBg) { currentBg = bg; $container.style.backgroundImage = "url('" + bg + "')"; }
         }
 
+        var currentBgm = null;
+        function playSceneBgm(soundUrl) {
+            if (!soundUrl) return;
+            if (soundUrl === "null" || soundUrl === "none") {
+                if (currentBgm) {
+                    currentBgm.pause();
+                    currentBgm = null;
+                }
+                return;
+            }
+            var tempAudio = new Audio(soundUrl);
+            if (currentBgm) {
+                if (currentBgm.src === tempAudio.src) return;
+                currentBgm.pause();
+            }
+            currentBgm = tempAudio;
+            currentBgm.loop = true;
+            currentBgm.volume = 0.5;
+            currentBgm.play().catch(function(err) {
+                console.warn("Audio play blocked:", err);
+            });
+        }
+
         function showStartMenu() {
             isStartMenuOpen = true; stopTypewriter(); clearTimeout(spriteFadeTimer); setBackground("image/bg.png");
             updateTeacherNameUI(); updatePlayerNameUI(); $settingsPanel.hidden = true;
             $startMenu.style.display = 'flex'; $dialogueBox.style.display = 'none'; $choiceContainer.style.display = 'none';
             $clickHint.style.display = 'none'; $sprite.style.opacity = 0; $sprite.classList.remove('speaking');
             currentSprite = ""; isWaitingForChoice = false; isTyping = false; resetChoiceMode();
+            if (currentBgm) {
+                currentBgm.pause();
+                currentBgm = null;
+            }
         }
         function hideStartMenu() { isStartMenuOpen = false; $startMenu.style.display = 'none'; $dialogueBox.style.display = 'block'; }
         function startGame() { savePlayerName($playerNameInput.value); runStartedAt = Date.now(); hideStartMenu(); warmupLaterStageBackgrounds(); currentSceneId = "1"; renderScene(currentSceneId); }
@@ -957,6 +1001,26 @@
 
             if (isStartMenuOpen) hideStartMenu();
             resetChoiceMode();
+
+            // Screen Shake
+            if (scene.shakeDuration && Number(scene.shakeDuration) > 0) {
+                var intensity = scene.shakeIntensity !== undefined ? Number(scene.shakeIntensity) : 5;
+                $container.style.setProperty('--shake-intensity', intensity + 'px');
+                $container.classList.remove('shake-active');
+                void $container.offsetWidth; // trigger reflow
+                $container.classList.add('shake-active');
+                if (window.shakeTimeout) clearTimeout(window.shakeTimeout);
+                window.shakeTimeout = setTimeout(function() {
+                    $container.classList.remove('shake-active');
+                }, Number(scene.shakeDuration));
+            } else {
+                $container.classList.remove('shake-active');
+            }
+
+            // Sound
+            if (scene.sound !== undefined) {
+                playSceneBgm(scene.sound);
+            }
 
             var position = scene.position || DEFAULTS.position;
             var speaking = scene.speaking !== void 0 ? scene.speaking : DEFAULTS.speaking;
@@ -1124,6 +1188,9 @@
                     }
                 }
             } catch (e) { }
+            if (storyScript._stageBackgrounds) {
+                STAGE_BACKGROUNDS = storyScript._stageBackgrounds;
+            }
             renderScene("start");
         })();
         bindMenuEvents();
