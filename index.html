@@ -902,7 +902,7 @@
         function getCurrentStageNumber(sceneId) {
             var parent = lastRandomParent;
             if (parent && parent !== sceneId && randomHistory[parent] && sceneId !== "start" && sceneId !== "lose" && sceneId !== "win") { return randomHistory[parent].size; }
-            var match = /^c(\d+)$/.exec(sceneId); return match ? Number(match[1]) : 0;
+            var match = /^c?(\d+)$/.exec(sceneId); return match ? Number(match[1]) : 0;
         }
         function resolveSceneBackground(sceneId, scene) { return getStageBackground(getCurrentStageNumber(sceneId)) || scene.bg; }
         function setBackground(bg) {
