@@ -33,6 +33,20 @@ const storyScript = {
         { min: 21, max: 30, bg: "image/newbg2.png" }
     ],
 
+    "_stageSounds": [
+        { min: 20, max: 20, sound: "sound/bowser-laught.mp3" }
+    ],
+
+    "_stageSprites": [
+        { min: 1, max: 10, sprite: "image/creator.png", position: "left", speaking: true },
+        { min: 11, max: 20, sprite: "image/mr1.png", position: "left", speaking: true },
+        { min: 21, max: 30, sprite: "image/mr2.png", position: "left", speaking: true }
+    ],
+
+    "_stageShakes": [
+        { min: 1, max: 1, duration: 500, intensity: 5 }
+    ],
+
     "1": {
         name: "Creator",
         text: "ไงพวกเองคนตกคณิตใช่ไหมละ...ถึงได้มาเล่นเกมนี้\n(ไม่มี save นะ) ",
