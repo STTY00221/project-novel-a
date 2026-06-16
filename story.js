@@ -28,7 +28,7 @@
 const storyScript = {
 
     "_stageBackgrounds": [
-        { min: 1, max: 10, bg: "image/bg1.png" },
+        { min: 1, max: 10, bg: "image/bg.png" },
         { min: 11, max: 20, bg: "image/newbg1.png" },
         { min: 21, max: 30, bg: "image/newbg2.png" }
     ],
@@ -303,7 +303,6 @@ const storyScript = {
     "c11": {
         name: "Mr.EAKAPOT",
         text: "การสำรวจความคิดเห็นเป็นการเก็บข้อมูลแบบใด",
-        bg: "image/bg1.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -319,7 +318,6 @@ const storyScript = {
     "c12": {
         name: "Mr.EAKAPOT",
         text: "ข้อมูลที่เป็นตัวเลขเรียกว่าอะไร",
-        bg: "image/bg1.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -335,7 +333,6 @@ const storyScript = {
     "c13": {
         name: "Mr.EAKAPOT",
         text: "ข้อใดเป็นตัวอย่างของข้อมูล",
-        bg: "image/bg1.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -351,7 +348,6 @@ const storyScript = {
     "c14": {
         name: "Mr.EAKAPOT",
         text: "สถิติศาสตร์เกี่ยวข้องกับอะไร",
-        bg: "image/bg1.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -367,7 +363,6 @@ const storyScript = {
     "c15": {
         name: "Mr.EAKAPOT",
         text: "ข้อมูลที่ได้จากการวัดเรียกว่าอะไร",
-        bg: "image/bg1.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -383,7 +378,6 @@ const storyScript = {
     "c16": {
         name: "Mr.EAKAPOT",
         text: "การใช้สถิติช่วยให้เกิดอะไร",
-        bg: "image/bg1.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -399,7 +393,6 @@ const storyScript = {
     "c17": {
         name: "Mr.EAKAPOT",
         text: "ข้อใดเป็นข้อมูลเชิงคุณภาพ",
-        bg: "image/bg1.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -415,7 +408,6 @@ const storyScript = {
     "c18": {
         name: "Mr.EAKAPOT",
         text: "ข้อมูลอายุของนักเรียนเป็นข้อมูลแบบใด",
-        bg: "image/bg1.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -431,7 +423,6 @@ const storyScript = {
     "c19": {
         name: "Mr.EAKAPOT",
         text: "การเก็บข้อมูลโดยดูพฤติกรรมเรียกว่าอะไร",
-        bg: "image/bg1.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -447,7 +438,6 @@ const storyScript = {
     "c20": {
         name: "Mr.EAKAPOT",
         text: "ข้อใดไม่ใช่ข้อมูลเชิงปริมาณ",
-        bg: "image/bg1.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -463,7 +453,6 @@ const storyScript = {
     "c21": {
         name: "Mr.EAKAPOT",
         text: "จุดประสงค์สำคัญของสถิติศาสตร์คืออะไร",
-        bg: "image/bg2.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -479,7 +468,6 @@ const storyScript = {
     "c22": {
         name: "Mr.EAKAPOT",
         text: "“นักเรียนชอบสีอะไร” เป็นข้อมูลประเภทใด",
-        bg: "image/bg2.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -495,7 +483,6 @@ const storyScript = {
     "c23": {
         name: "Mr.EAKAPOT",
         text: "ข้อใดเป็นข้อมูลเชิงปริมาณ",
-        bg: "image/bg2.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -511,7 +498,6 @@ const storyScript = {
     "c24": {
         name: "Mr.EAKAPOT",
         text: "การแจกแจงข้อมูลช่วยเรื่องใด",
-        bg: "image/bg2.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -527,7 +513,6 @@ const storyScript = {
     "c25": {
         name: "Mr.EAKAPOT",
         text: "ข้อใดเป็นตัวอย่างข้อมูลไม่ต่อเนื่อง",
-        bg: "image/bg2.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -543,7 +528,6 @@ const storyScript = {
     "c26": {
         name: "Mr.EAKAPOT",
         text: "ข้อมูลทุติยภูมิคืออะไร",
-        bg: "image/bg2.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -559,7 +543,6 @@ const storyScript = {
     "c27": {
         name: "Mr.EAKAPOT",
         text: "ข้อใดเป็นข้อมูลเชิงคุณภาพ",
-        bg: "image/bg2.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -575,7 +558,6 @@ const storyScript = {
     "c28": {
         name: "Mr.EAKAPOT",
         text: "การใช้แบบสอบถามเป็นการเก็บข้อมูลแบบใด",
-        bg: "image/bg2.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -591,7 +573,6 @@ const storyScript = {
     "c29": {
         name: "Mr.EAKAPOT",
         text: "ข้อมูลที่เป็นข้อความจัดเป็นข้อมูลแบบใด",
-        bg: "image/bg2.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -607,7 +588,6 @@ const storyScript = {
     "c30": {
         name: "Mr.EAKAPOT",
         text: "ข้อใดคือตัวอย่างข้อมูลต่อเนื่อง",
-        bg: "image/bg2.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -623,7 +603,6 @@ const storyScript = {
     "c31": {
         name: "Mr.EAKAPOT",
         text: "สถิติศาสตร์มีประโยชน์ต่อใคร",
-        bg: "image/bg3.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -639,7 +618,6 @@ const storyScript = {
     "c32": {
         name: "Mr.EAKAPOT",
         text: "ข้อมูลที่ถูกต้องควรมีลักษณะอย่างไร",
-        bg: "image/bg3.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -655,7 +633,6 @@ const storyScript = {
     "c33": {
         name: "Mr.EAKAPOT",
         text: "ข้อใดเป็นข้อมูลจากการทดลอง",
-        bg: "image/bg3.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -671,7 +648,6 @@ const storyScript = {
     "c34": {
         name: "Mr.EAKAPOT",
         text: "การวิเคราะห์ข้อมูลมีจุดประสงค์ใด",
-        bg: "image/bg3.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -687,7 +663,6 @@ const storyScript = {
     "c35": {
         name: "Mr.EAKAPOT",
         text: "“จำนวนสมาชิกในครอบครัว” เป็นข้อมูลประเภทใด",
-        bg: "image/bg3.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -703,7 +678,6 @@ const storyScript = {
     "c36": {
         name: "Mr.EAKAPOT",
         text: "ข้อใดเป็นข้อมูลเชิงคุณภาพ",
-        bg: "image/bg3.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -719,7 +693,6 @@ const storyScript = {
     "c37": {
         name: "Mr.EAKAPOT",
         text: "การสรุปผลข้อมูลช่วยอะไร",
-        bg: "image/bg3.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -735,7 +708,6 @@ const storyScript = {
     "c38": {
         name: "Mr.EAKAPOT",
         text: "ข้อใดไม่ใช่ตัวอย่างข้อมูล",
-        bg: "image/bg3.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -751,7 +723,6 @@ const storyScript = {
     "c39": {
         name: "Mr.EAKAPOT",
         text: "การเก็บข้อมูลต้องคำนึงถึงอะไร",
-        bg: "image/bg3.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -767,7 +738,6 @@ const storyScript = {
     "c40": {
         name: "Mr.EAKAPOT",
         text: "ข้อมูลที่ได้จากการสัมภาษณ์เป็นข้อมูลแบบใด",
-        bg: "image/bg3.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -783,7 +753,6 @@ const storyScript = {
     "c41": {
         name: "Mr.EAKAPOT",
         text: "ข้อใดเป็นข้อมูลเชิงปริมาณ",
-        bg: "image/bg4.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -799,7 +768,6 @@ const storyScript = {
     "c42": {
         name: "Mr.EAKAPOT",
         text: "สถิติศาสตร์เกี่ยวข้องกับการทำงานขั้นใด",
-        bg: "image/bg4.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -815,7 +783,6 @@ const storyScript = {
     "c43": {
         name: "Mr.EAKAPOT",
         text: "“อุณหภูมิวันนี้” เป็นข้อมูลประเภทใด",
-        bg: "image/bg4.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -831,7 +798,6 @@ const storyScript = {
     "c44": {
         name: "Mr.EAKAPOT",
         text: "ข้อใดเป็นข้อมูลไม่ต่อเนื่อง",
-        bg: "image/bg4.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -847,7 +813,6 @@ const storyScript = {
     "c45": {
         name: "Mr.EAKAPOT",
         text: "การใช้สถิติช่วยในด้านใด",
-        bg: "image/bg4.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -863,7 +828,6 @@ const storyScript = {
     "c46": {
         name: "Mr.EAKAPOT",
         text: "ข้อมูลที่มีความน่าเชื่อถือควรเป็นอย่างไร",
-        bg: "image/bg4.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -879,7 +843,6 @@ const storyScript = {
     "c47": {
         name: "Mr.EAKAPOT",
         text: "ข้อใดเป็นตัวอย่างข้อมูลเชิงคุณภาพ",
-        bg: "image/bg4.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -895,7 +858,6 @@ const storyScript = {
     "c48": {
         name: "Mr.EAKAPOT",
         text: "ข้อใดคือหน้าที่ของสถิติศาสตร์",
-        bg: "image/bg4.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -911,7 +873,6 @@ const storyScript = {
     "c49": {
         name: "Mr.EAKAPOT",
         text: "การเก็บข้อมูลจำนวนมากควรใช้อะไรช่วย",
-        bg: "image/bg4.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -927,7 +888,6 @@ const storyScript = {
     "c50": {
         name: "Mr.EAKAPOT",
         text: "ข้อใดกล่าวถูกต้องเกี่ยวกับข้อมูล",
-        bg: "image/bg4.png",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
@@ -943,8 +903,6 @@ const storyScript = {
     "lose": {
         name: "Creator",
         text: "Woww... ไปทำมาใหม่นะ..",
-        bg: "none",
-        sprite: "image/creator-1.png",
         position: "center",
         speaking: true,
         typeSpeed: 30,
