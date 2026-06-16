@@ -34,7 +34,7 @@ const storyScript = {
     ],
 
     "_stageSounds": [
-        { min: 20, max: 20, sound: "sound/bowser-laught.mp3" }
+        { min: 1, max: 1, sound: "sound/bowser-laught.mp3" }
     ],
 
     "_stageSprites": [
