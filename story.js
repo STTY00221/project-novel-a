@@ -34,7 +34,7 @@ const storyScript = {
     ],
 
     "_stageSounds": [
-        { min: 1, max: 1, sound: "sound/bowser-laught.mp3", loop: false }
+        { min: 21, max: 21, sound: "sound/bowser-laught.mp3", loop: false }
     ],
 
     "_stageSprites": [
@@ -44,7 +44,7 @@ const storyScript = {
     ],
 
     "_stageShakes": [
-        { min: 1, max: 1, duration: 500, intensity: 5 }
+        { min: 21, max: 21, duration: 500, intensity: 5 }
     ],
 
     "1": {
