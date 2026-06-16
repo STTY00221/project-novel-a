@@ -28,7 +28,7 @@
 const storyScript = {
 
     "_stageBackgrounds": [
-        { min: 1, max: 10, bg: "image/bg.png" },
+        { min: 1, max: 10, bg: "image/bg1.png" },
         { min: 11, max: 20, bg: "image/newbg1.png" },
         { min: 21, max: 30, bg: "image/newbg2.png" }
     ],
