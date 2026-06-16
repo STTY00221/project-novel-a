@@ -903,6 +903,7 @@ const storyScript = {
     "lose": {
         name: "Creator",
         text: "Woww... ไปทำมาใหม่นะ..",
+        bg: "image/gameover.png",
         position: "center",
         speaking: true,
         typeSpeed: 30,
