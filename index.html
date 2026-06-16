@@ -902,7 +902,7 @@
         function getCurrentStageNumber(sceneId) {
             var parent = lastRandomParent;
             if (parent && parent !== sceneId && randomHistory[parent] && sceneId !== "start" && sceneId !== "lose" && sceneId !== "win") { return randomHistory[parent].size; }
-            var match = /^c?(\d+)$/.exec(sceneId); return match ? Number(match[1]) : 0;
+            var match = /^c(\d+)$/.exec(sceneId); return match ? Number(match[1]) : 0;
         }
         function resolveSceneBackground(sceneId, scene) { return getStageBackground(getCurrentStageNumber(sceneId)) || scene.bg; }
         function setBackground(bg) {
@@ -1171,6 +1171,8 @@
         (async function initStory() {
             var pass = "novel-quiz-mr-eakapot-2026";
             var salt = new Uint8Array([78, 111, 118, 101, 108, 81, 117, 105, 122, 83, 97, 108, 116, 33, 50, 54]);
+            // Snapshot _stageBackgrounds from story.js before encrypted story potentially wipes it
+            var savedStageBgs = Array.isArray(storyScript._stageBackgrounds) ? storyScript._stageBackgrounds.slice() : null;
             try {
                 var r = await fetch("story.enc.txt", { cache: "force-cache" });
                 if (r.ok) {
@@ -1188,8 +1190,12 @@
                     }
                 }
             } catch (e) { }
+            // Apply stage backgrounds: prefer from encrypted story, fall back to story.js snapshot
             if (storyScript._stageBackgrounds) {
                 STAGE_BACKGROUNDS = storyScript._stageBackgrounds;
+            } else if (savedStageBgs) {
+                STAGE_BACKGROUNDS = savedStageBgs;
+                storyScript._stageBackgrounds = savedStageBgs;
             }
             renderScene("start");
         })();
