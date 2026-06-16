@@ -753,6 +753,9 @@
             { min: 21, max: 25, bg: "image/bg3.png" },
             { min: 26, max: 30, bg: "image/bg4.png" },
         ];
+        let STAGE_SOUNDS = [];
+        let STAGE_SPRITES = [];
+        let STAGE_SHAKES = [];
 
         let currentSceneId = "start";
         let isWaitingForChoice = false;
@@ -898,7 +901,11 @@
             runStartedAt = 0;
         }
 
-        function getStageBackground(stageNumber) { var stage = Number(stageNumber) || 0; var matched = STAGE_BACKGROUNDS.find(function (item) { return stage >= item.min && stage <= item.max; }); return matched ? matched.bg : ""; }
+        function getStageRule(list, stageNumber) { var stage = Number(stageNumber) || 0; return (list || []).find(function (item) { return stage >= Number(item.min) && stage <= Number(item.max); }) || null; }
+        function getStageBackground(stageNumber) { var matched = getStageRule(STAGE_BACKGROUNDS, stageNumber); return matched ? matched.bg : ""; }
+        function getStageSound(stageNumber) { return getStageRule(STAGE_SOUNDS, stageNumber); }
+        function getStageSprite(stageNumber) { return getStageRule(STAGE_SPRITES, stageNumber); }
+        function getStageShake(stageNumber) { return getStageRule(STAGE_SHAKES, stageNumber); }
         function getCurrentStageNumber(sceneId) {
             var parent = lastRandomParent;
             if (parent && parent !== sceneId && randomHistory[parent] && sceneId !== "start" && sceneId !== "lose" && sceneId !== "win") { return randomHistory[parent].size; }
@@ -976,8 +983,26 @@
         function syncSpriteAfterLayout() { syncSpriteWithDialogue(); requestAnimationFrame(syncSpriteWithDialogue); }
         function preloadImage(src) { if (!src || src === "null" || preloadedAssets.has(src)) return; preloadedAssets.add(src); var img = new Image(); img.decoding = "async"; img.src = src; }
         function scheduleIdleTask(task, timeout) { if (timeout === void 0) timeout = 1500; if ("requestIdleCallback" in window) { requestIdleCallback(task, { timeout: timeout }); return; } setTimeout(task, Math.min(timeout, 800)); }
-        function warmupLaterStageBackgrounds() { if (backgroundWarmupStarted) return; backgroundWarmupStarted = true; var lbs = STAGE_BACKGROUNDS.map(function (item) { return item.bg; }).filter(function (bg) { return bg && bg !== "image/bg.png"; }); lbs.forEach(function (bg, index) { scheduleIdleTask(function () { preloadImage(bg); }, 1800 + index * 700); }); }
-        function preloadSceneAssets(scene, sceneId) { preloadImage(resolveSceneBackground(sceneId, scene)); preloadImage(scene.sprite); if (scene.next && storyScript[scene.next]) { preloadImage(resolveSceneBackground(scene.next, storyScript[scene.next])); preloadImage(storyScript[scene.next].sprite); } }
+        function warmupLaterStageBackgrounds() {
+            if (backgroundWarmupStarted) return;
+            backgroundWarmupStarted = true;
+            var assets = STAGE_BACKGROUNDS.map(function (item) { return item.bg; })
+                .concat(STAGE_SPRITES.map(function (item) { return item.sprite; }))
+                .filter(function (src) { return src && src !== "image/bg.png" && src !== "null"; });
+            assets.forEach(function (src, index) { scheduleIdleTask(function () { preloadImage(src); }, 1800 + index * 700); });
+        }
+        function preloadSceneAssets(scene, sceneId) {
+            var stage = getCurrentStageNumber(sceneId);
+            var stageSprite = getStageSprite(stage);
+            preloadImage(resolveSceneBackground(sceneId, scene));
+            preloadImage(stageSprite ? stageSprite.sprite : scene.sprite);
+            if (scene.next && storyScript[scene.next]) {
+                var nextStage = getCurrentStageNumber(scene.next);
+                var nextStageSprite = getStageSprite(nextStage);
+                preloadImage(resolveSceneBackground(scene.next, storyScript[scene.next]));
+                preloadImage(nextStageSprite ? nextStageSprite.sprite : storyScript[scene.next].sprite);
+            }
+        }
 
         function renderScene(sceneId) {
             var scene = storyScript[sceneId];
@@ -1001,10 +1026,15 @@
 
             if (isStartMenuOpen) hideStartMenu();
             resetChoiceMode();
+            var currentStage = getCurrentStageNumber(sceneId);
+            var stageShake = getStageShake(currentStage);
+            var stageSound = getStageSound(currentStage);
+            var stageSprite = getStageSprite(currentStage);
 
             // Screen Shake
-            if (scene.shakeDuration && Number(scene.shakeDuration) > 0) {
-                var intensity = scene.shakeIntensity !== undefined ? Number(scene.shakeIntensity) : 5;
+            var shakeDuration = stageShake ? Number(stageShake.duration) : Number(scene.shakeDuration);
+            if (shakeDuration && shakeDuration > 0) {
+                var intensity = stageShake ? Number(stageShake.intensity) || 5 : (scene.shakeIntensity !== undefined ? Number(scene.shakeIntensity) : 5);
                 $container.style.setProperty('--shake-intensity', intensity + 'px');
                 $container.classList.remove('shake-active');
                 void $container.offsetWidth; // trigger reflow
@@ -1012,39 +1042,43 @@
                 if (window.shakeTimeout) clearTimeout(window.shakeTimeout);
                 window.shakeTimeout = setTimeout(function() {
                     $container.classList.remove('shake-active');
-                }, Number(scene.shakeDuration));
+                }, shakeDuration);
             } else {
                 $container.classList.remove('shake-active');
             }
 
             // Sound
-            if (scene.sound !== undefined) {
+            if (stageSound) {
+                playSceneBgm(stageSound.sound);
+            } else if (scene.sound !== undefined) {
                 playSceneBgm(scene.sound);
             }
 
-            var position = scene.position || DEFAULTS.position;
+            var spriteUrl = stageSprite ? stageSprite.sprite : scene.sprite;
+            var position = (stageSprite && stageSprite.position) || scene.position || DEFAULTS.position;
             var speaking = scene.speaking !== void 0 ? scene.speaking : DEFAULTS.speaking;
+            if (stageSprite && stageSprite.speaking !== undefined && stageSprite.speaking !== "") speaking = stageSprite.speaking === true || stageSprite.speaking === "true";
             var typeSpeed = scene.typeSpeed !== void 0 ? scene.typeSpeed : DEFAULTS.typeSpeed;
             preloadSceneAssets(scene, sceneId);
 
             $nameTag.textContent = resolveSceneName(scene.name);
             setBackground(resolveSceneBackground(sceneId, scene));
 
-            if (scene.sprite && scene.sprite !== "null") {
+            if (spriteUrl && spriteUrl !== "null") {
                 $sprite.classList.remove('pos-left', 'pos-center', 'pos-right', 'speaking');
                 clearTimeout(spriteFadeTimer);
                 var showSprite = function () {
                     $sprite.onload = syncSpriteAfterLayout;
-                    $sprite.src = scene.sprite;
-                    currentSprite = scene.sprite;
+                    $sprite.src = spriteUrl;
+                    currentSprite = spriteUrl;
                     $sprite.classList.add('pos-' + position);
                     $sprite.style.opacity = 1;
                     syncSpriteAfterLayout();
                     if (speaking) $sprite.classList.add('speaking');
                 };
-                if (scene.sprite !== currentSprite) { $sprite.style.opacity = 0; spriteFadeTimer = setTimeout(showSprite, 120); }
+                if (spriteUrl !== currentSprite) { $sprite.style.opacity = 0; spriteFadeTimer = setTimeout(showSprite, 120); }
                 else { showSprite(); }
-            } else if (scene.sprite === "null") { clearTimeout(spriteFadeTimer); currentSprite = ""; $sprite.style.opacity = 0; $sprite.classList.remove('speaking'); $sprite.onload = null; }
+            } else if (spriteUrl === "null") { clearTimeout(spriteFadeTimer); currentSprite = ""; $sprite.style.opacity = 0; $sprite.classList.remove('speaking'); $sprite.onload = null; }
 
             if (scene.choices) {
                 isWaitingForChoice = true;
@@ -1171,8 +1205,11 @@
         (async function initStory() {
             var pass = "novel-quiz-mr-eakapot-2026";
             var salt = new Uint8Array([78, 111, 118, 101, 108, 81, 117, 105, 122, 83, 97, 108, 116, 33, 50, 54]);
-            // Snapshot _stageBackgrounds from story.js before encrypted story potentially wipes it
+            // Snapshot stage rules from story.js before encrypted story potentially wipes them
             var savedStageBgs = Array.isArray(storyScript._stageBackgrounds) ? storyScript._stageBackgrounds.slice() : null;
+            var savedStageSounds = Array.isArray(storyScript._stageSounds) ? storyScript._stageSounds.slice() : null;
+            var savedStageSprites = Array.isArray(storyScript._stageSprites) ? storyScript._stageSprites.slice() : null;
+            var savedStageShakes = Array.isArray(storyScript._stageShakes) ? storyScript._stageShakes.slice() : null;
             try {
                 var r = await fetch("story.enc.txt", { cache: "force-cache" });
                 if (r.ok) {
@@ -1196,6 +1233,24 @@
             } else if (savedStageBgs) {
                 STAGE_BACKGROUNDS = savedStageBgs;
                 storyScript._stageBackgrounds = savedStageBgs;
+            }
+            if (storyScript._stageSounds) {
+                STAGE_SOUNDS = storyScript._stageSounds;
+            } else if (savedStageSounds) {
+                STAGE_SOUNDS = savedStageSounds;
+                storyScript._stageSounds = savedStageSounds;
+            }
+            if (storyScript._stageSprites) {
+                STAGE_SPRITES = storyScript._stageSprites;
+            } else if (savedStageSprites) {
+                STAGE_SPRITES = savedStageSprites;
+                storyScript._stageSprites = savedStageSprites;
+            }
+            if (storyScript._stageShakes) {
+                STAGE_SHAKES = storyScript._stageShakes;
+            } else if (savedStageShakes) {
+                STAGE_SHAKES = savedStageShakes;
+                storyScript._stageShakes = savedStageShakes;
             }
             renderScene("start");
         })();

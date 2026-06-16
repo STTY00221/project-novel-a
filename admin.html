@@ -699,6 +699,12 @@
       padding: 18px
     }
 
+    .modal .box.stage-config-box {
+      width: min(860px, 94vw);
+      max-height: 86vh;
+      overflow: auto
+    }
+
     .modal .box.analytics-box {
       width: min(1120px, 94vw);
       max-height: 86vh;
@@ -719,6 +725,60 @@
       justify-content: flex-end;
       gap: 8px;
       margin-top: 12px
+    }
+
+    .stage-tabs {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 6px;
+      margin: 12px 0
+    }
+
+    .stage-tabs .btn {
+      padding: 8px 6px;
+      border-radius: 6px
+    }
+
+    .stage-tabs .btn.active {
+      border-color: var(--accent);
+      background: rgba(106, 169, 255, .14);
+      color: #fff
+    }
+
+    .stage-config-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 340px;
+      overflow-y: auto;
+      margin-bottom: 12px;
+      padding-right: 4px
+    }
+
+    .stage-config-row {
+      display: grid;
+      grid-template-columns: 76px 76px 1fr 120px 120px auto;
+      gap: 8px;
+      align-items: center;
+      background: var(--panel2);
+      border: 1px solid var(--line);
+      padding: 8px;
+      border-radius: 8px
+    }
+
+    .stage-config-row input,
+    .stage-config-row select {
+      width: 100%;
+      background: #131722;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 6px 8px;
+      font-size: 12px;
+      color: var(--text)
+    }
+
+    .stage-config-row .wide {
+      min-width: 0
     }
 
     .analytics-head {
@@ -1015,7 +1075,7 @@
           <button class="btn sm primary" id="btnAddScene">+ Add</button>
         </div>
         <div class="side-actions">
-          <button class="btn" id="btnStageBgs" style="width:100%; text-align:center;">🖼️ ตั้งค่า BG แยกตามด่าน</button>
+          <button class="btn" id="btnStageConfig" style="width:100%; text-align:center;">Stage Rules: BG / Sound / Sprite / Shake</button>
         </div>
         <div class="side-actions stack">
           <input id="sceneSearch" placeholder="ค้นหา scene id หรือชื่อตัวละคร...">
@@ -1054,19 +1114,25 @@
     </main>
   </div>
 
-  <!-- Stage Backgrounds Modal -->
-  <div class="modal" id="modalStageBgs">
-    <div class="box">
-      <h3>🖼️ ตั้งค่า Background แยกตามด่าน</h3>
+  <!-- Stage Rules Modal -->
+  <div class="modal" id="modalStageConfig">
+    <div class="box stage-config-box">
+      <h3>Stage Rules</h3>
       <div class="muted" style="margin-bottom:10px">
-        กำหนดว่าด่านที่เท่าไหร่ถึงเท่าไหร่ ให้ใช้ background รูปไหน
+        Set which stages use specific background, sound, character image, or screen shake. These rules override per-scene values only when the current stage is inside the selected range.
       </div>
-      <div id="stageBgsList" style="display:flex; flex-direction:column; gap:8px; max-height:260px; overflow-y:auto; margin-bottom:12px; padding-right:4px;">
+      <div class="stage-tabs" id="stageConfigTabs">
+        <button class="btn active" data-kind="backgrounds">Background</button>
+        <button class="btn" data-kind="sounds">Sound</button>
+        <button class="btn" data-kind="sprites">Character</button>
+        <button class="btn" data-kind="shakes">Shake</button>
       </div>
-      <button class="btn sm" id="btnAddStageBg">+ เพิ่มช่วงด่าน</button>
+      <div id="stageConfigHint" class="muted" style="margin-bottom:10px"></div>
+      <div id="stageConfigList" class="stage-config-list"></div>
+      <button class="btn sm" id="btnAddStageConfig">+ Add stage range</button>
       <div class="footer">
-        <button class="btn ghost" id="stageBgsCancel">ปิด</button>
-        <button class="btn primary" id="stageBgsSave">บันทึก</button>
+        <button class="btn ghost" id="stageConfigCancel">Close</button>
+        <button class="btn primary" id="stageConfigSave">Save rules</button>
       </div>
     </div>
   </div>
@@ -1159,6 +1225,13 @@
     const PLAYER_STATS_STORAGE_KEY = "vn_player_stats";
     const CLIENT_INFO_STORAGE_KEY = "vn_client_info";
     const PLAYER_NAME_STORAGE_KEY = "vn_player_name";
+    const STORY_META_KEYS = new Set(["_stageBackgrounds", "_stageSounds", "_stageSprites", "_stageShakes"]);
+    const STAGE_RULES = {
+      backgrounds: { key: "_stageBackgrounds", field: "bg", label: "Background", hint: "Use a background image for every scene in this stage range.", placeholder: "image/bg1.png", defaultItem: () => ({ min: 1, max: 10, bg: "" }) },
+      sounds: { key: "_stageSounds", field: "sound", label: "Sound", hint: "Play or stop BGM/SFX in this stage range. Use none or null to stop audio.", placeholder: "sound/bgm.mp3 or none", defaultItem: () => ({ min: 1, max: 10, sound: "" }) },
+      sprites: { key: "_stageSprites", field: "sprite", label: "Character image", hint: "Use a character image in this stage range. Use null to hide the character.", placeholder: "image/creator.png or null", defaultItem: () => ({ min: 1, max: 10, sprite: "", position: "", speaking: "" }) },
+      shakes: { key: "_stageShakes", field: "duration", label: "Shake", hint: "Shake the screen in this stage range. Duration is milliseconds, intensity is pixels.", placeholder: "duration ms", defaultItem: () => ({ min: 1, max: 10, duration: 500, intensity: 5 }) }
+    };
 
     function escapeHtml(value) {
       return String(value ?? "")
@@ -1175,6 +1248,14 @@
       return "dialogue";
     }
 
+    function isSceneId(id) {
+      return !STORY_META_KEYS.has(id);
+    }
+
+    function sceneIds() {
+      return Object.keys(story).filter(isSceneId);
+    }
+
     function getSceneModeLabel(scene) {
       const mode = getSceneMode(scene);
       if (mode === "choices") return "choice";
@@ -1188,11 +1269,17 @@
     }
 
     function getAssetOptions(key) {
-      return [...new Set(Object.values(story).map(s => assetValue(s?.[key])).filter(Boolean))].sort();
+      const values = sceneIds().map(id => assetValue(story[id]?.[key]));
+      Object.values(STAGE_RULES).forEach(rule => {
+        if (rule.field === key && Array.isArray(story[rule.key])) {
+          story[rule.key].forEach(item => values.push(assetValue(item?.[key])));
+        }
+      });
+      return [...new Set(values.filter(Boolean))].sort();
     }
 
     function storyStats() {
-      const scenes = Object.entries(story).filter(([k]) => k !== "_stageBackgrounds").map(([k, v]) => v);
+      const scenes = sceneIds().map(id => story[id]);
       const choices = scenes.reduce((sum, s) => sum + (Array.isArray(s.choices) ? s.choices.length : 0), 0);
       const randomTargets = scenes.reduce((sum, s) => sum + (Array.isArray(s.random) ? s.random.length : 0), 0);
       return {
@@ -1214,7 +1301,7 @@
 
     function validateStory() {
       const issues = [];
-      const ids = Object.keys(story).filter(id => id !== "_stageBackgrounds");
+      const ids = sceneIds();
       ids.forEach(id => {
         const s = story[id] || {};
         const mode = getSceneMode(s);
@@ -1298,15 +1385,26 @@
     function serialize() {
       const esc = s => String(s).replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\n/g, "\\n").replace(/\r/g, "");
       const lines = ["const storyScript = {", ""];
-      if (Array.isArray(story._stageBackgrounds) && story._stageBackgrounds.length) {
-        lines.push('    "_stageBackgrounds": [');
-        story._stageBackgrounds.forEach((item, idx) => {
-          lines.push(`        { min: ${Number(item.min) || 0}, max: ${Number(item.max) || 0}, bg: "${esc(item.bg)}" }${idx < story._stageBackgrounds.length - 1 ? ',' : ''}`);
+      const writeStageRules = (key, writer) => {
+        const items = Array.isArray(story[key]) ? story[key] : [];
+        if (!items.length) return;
+        lines.push(`    "${key}": [`);
+        items.forEach((item, idx) => {
+          lines.push(`        ${writer(item)}${idx < items.length - 1 ? ',' : ''}`);
         });
         lines.push('    ],');
         lines.push("");
-      }
-      const ids = Object.keys(story).filter(id => id !== "_stageBackgrounds");
+      };
+      writeStageRules("_stageBackgrounds", item => `{ min: ${Number(item.min) || 0}, max: ${Number(item.max) || 0}, bg: "${esc(item.bg)}" }`);
+      writeStageRules("_stageSounds", item => `{ min: ${Number(item.min) || 0}, max: ${Number(item.max) || 0}, sound: "${esc(item.sound)}" }`);
+      writeStageRules("_stageSprites", item => {
+        const parts = [`min: ${Number(item.min) || 0}`, `max: ${Number(item.max) || 0}`, `sprite: "${esc(item.sprite)}"`];
+        if (item.position) parts.push(`position: "${esc(item.position)}"`);
+        if (item.speaking !== "" && item.speaking !== undefined) parts.push(`speaking: ${item.speaking === true || item.speaking === "true"}`);
+        return `{ ${parts.join(", ")} }`;
+      });
+      writeStageRules("_stageShakes", item => `{ min: ${Number(item.min) || 0}, max: ${Number(item.max) || 0}, duration: ${Number(item.duration) || 0}, intensity: ${Number(item.intensity) || 0} }`);
+      const ids = sceneIds();
       ids.forEach((id, idx) => {
         const s = story[id];
         lines.push(`    "${id}": {`);
@@ -1373,9 +1471,9 @@
         const { header, script } = parseStoryJs(txt);
         sourceHeader = header;
         story = script;
-        currentId = Object.keys(story).filter(id => id !== "_stageBackgrounds")[0] || null;
+        currentId = sceneIds()[0] || null;
         renderAll();
-        $("#fileStatus").textContent = `story.js: loaded (${Object.keys(story).filter(id => id !== "_stageBackgrounds").length} scenes)`;
+        $("#fileStatus").textContent = `story.js: loaded (${sceneIds().length} scenes)`;
         toast("Loaded story.js");
       } catch (e) {
         toast("Load failed: " + e.message, 2800);
@@ -1388,7 +1486,7 @@
         try {
           const { header, script } = parseStoryJs(r.result);
           sourceHeader = header; story = script;
-          currentId = Object.keys(story).filter(id => id !== "_stageBackgrounds")[0] || null;
+          currentId = sceneIds()[0] || null;
           renderAll();
           toast("Imported " + file.name);
         } catch (e) { toast("Parse failed: " + e.message, 2800); }
@@ -1448,7 +1546,7 @@
         <div class="side-stat"><span>Sprites</span><b>${stats.sprites}</b></div>`;
       $$("#sceneFilters button").forEach(btn => btn.classList.toggle("active", btn.dataset.filter === sceneFilter));
       const q = ($("#sceneSearch")?.value || "").trim().toLowerCase();
-      const ids = Object.keys(story).filter(id => id !== "_stageBackgrounds").filter(id => {
+      const ids = sceneIds().filter(id => {
         const mode = getSceneMode(story[id]);
         if (sceneFilter === "choices" && mode !== "choices") return false;
         if (sceneFilter === "dialogue" && mode !== "dialogue") return false;
@@ -1482,7 +1580,7 @@
           if (e.target.classList.contains("del")) {
             if (confirm(`Delete scene "${id}"?`)) {
               delete story[id];
-              if (currentId === id) currentId = Object.keys(story)[0] || null;
+              if (currentId === id) currentId = sceneIds()[0] || null;
               renderAll();
             }
             return;
@@ -1585,7 +1683,7 @@
       <div class="field">
         <label>Next scene id (blank = none, "null" literal = end)</label>
         <input id="fNext" value="${s.next === null ? 'null' : (s.next ?? '')}" list="sceneOpts">
-        <datalist id="sceneOpts">${Object.keys(story).map(id => `<option value="${id}">`).join("")}</datalist>
+        <datalist id="sceneOpts">${sceneIds().map(id => `<option value="${id}">`).join("")}</datalist>
       </div>
     </div>
 
@@ -1705,7 +1803,7 @@
       bind("#btnDel", "click", () => {
         if (confirm("Delete scene " + currentId + "?")) {
           delete story[currentId];
-          currentId = Object.keys(story)[0] || null;
+          currentId = sceneIds()[0] || null;
           renderAll();
         }
       });
@@ -2101,7 +2199,7 @@
             const obj = JSON.parse(json);
             sourceHeader = sourceHeader || "";
             story = obj;
-            currentId = Object.keys(story).filter(id => id !== "_stageBackgrounds")[0] || null;
+            currentId = sceneIds()[0] || null;
             renderAll();
             toast("Imported encrypted file");
           } catch (e) { toast("Decrypt failed: " + e.message, 2800); }
@@ -2373,67 +2471,132 @@
       toast("Player data cleared");
     }
 
-    let tempStageBgs = [];
+    let tempStageRules = {};
+    let activeStageRule = "backgrounds";
 
-    function openStageBgsModal() {
-      tempStageBgs = JSON.parse(JSON.stringify(story._stageBackgrounds || []));
-      renderStageBgsList();
-      $("#modalStageBgs").classList.add("show");
+    function cloneStageRules() {
+      const data = {};
+      Object.entries(STAGE_RULES).forEach(([kind, rule]) => {
+        data[kind] = JSON.parse(JSON.stringify(story[rule.key] || []));
+      });
+      return data;
     }
 
-    function renderStageBgsList() {
-      const container = $("#stageBgsList");
+    function openStageConfigModal() {
+      tempStageRules = cloneStageRules();
+      activeStageRule = "backgrounds";
+      renderStageConfigList();
+      $("#modalStageConfig").classList.add("show");
+    }
+
+    function updateStageRuleItem(item, key, value) {
+      if (key === "min" || key === "max" || key === "duration" || key === "intensity") item[key] = Number(value) || 0;
+      else if (key === "speaking") item[key] = value;
+      else item[key] = value.trim();
+    }
+
+    function renderStageConfigFields(kind, item) {
+      if (kind === "sprites") {
+        const spriteOptions = getAssetOptions("sprite").map(v => `<option value="${escapeHtml(v)}">`).join("");
+        return `
+          <input class="wide" type="text" data-k="sprite" list="stageSpriteOpts" placeholder="image/creator.png or null" value="${escapeHtml(item.sprite || '')}">
+          <select data-k="position">
+            <option value="" ${!item.position ? "selected" : ""}>scene position</option>
+            ${["left", "center", "right"].map(p => `<option value="${p}" ${item.position === p ? "selected" : ""}>${p}</option>`).join("")}
+          </select>
+          <select data-k="speaking">
+            <option value="" ${item.speaking === "" || item.speaking === undefined ? "selected" : ""}>scene speaking</option>
+            <option value="true" ${item.speaking === true || item.speaking === "true" ? "selected" : ""}>speaking on</option>
+            <option value="false" ${item.speaking === false || item.speaking === "false" ? "selected" : ""}>speaking off</option>
+          </select>
+          <datalist id="stageSpriteOpts">${spriteOptions}</datalist>
+        `;
+      }
+      if (kind === "shakes") {
+        return `
+          <input type="number" data-k="duration" min="0" placeholder="duration ms" value="${item.duration || ''}">
+          <input type="number" data-k="intensity" min="0" placeholder="intensity px" value="${item.intensity || ''}">
+          <div class="muted">ms / px</div>
+        `;
+      }
+      const rule = STAGE_RULES[kind];
+      const options = kind === "backgrounds" ? getAssetOptions("bg") : [];
+      const listAttr = options.length ? `list="stageValueOpts"` : "";
+      return `
+        <input class="wide" type="text" data-k="${rule.field}" ${listAttr} placeholder="${escapeHtml(rule.placeholder)}" value="${escapeHtml(item[rule.field] || '')}">
+        <div class="muted">${escapeHtml(rule.label)}</div>
+        ${options.length ? `<datalist id="stageValueOpts">${options.map(v => `<option value="${escapeHtml(v)}">`).join("")}</datalist>` : ""}
+      `;
+    }
+
+    function renderStageConfigList() {
+      const rule = STAGE_RULES[activeStageRule];
+      const items = tempStageRules[activeStageRule] || [];
+      $("#stageConfigHint").textContent = rule.hint;
+      $$("#stageConfigTabs button").forEach(btn => btn.classList.toggle("active", btn.dataset.kind === activeStageRule));
+      const container = $("#stageConfigList");
       container.innerHTML = "";
-      if (!tempStageBgs.length) {
-        container.innerHTML = `<div class="muted" style="padding:12px; text-align:center;">ยังไม่มีการตั้งค่าช่วงด่าน</div>`;
+      if (!items.length) {
+        container.innerHTML = `<div class="muted" style="padding:16px; text-align:center; border:1px dashed var(--line); border-radius:8px;">No stage ranges yet.</div>`;
         return;
       }
-      tempStageBgs.forEach((item, idx) => {
+      items.forEach((item, idx) => {
         const row = document.createElement("div");
-        row.className = "choice";
-        row.style.gridTemplateColumns = "70px 70px 1fr auto";
-        row.style.alignItems = "center";
-        row.style.gap = "8px";
+        row.className = "stage-config-row";
         row.innerHTML = `
-          <input type="number" data-k="min" placeholder="Min" min="1" value="${item.min || ''}" style="width:100%;">
-          <input type="number" data-k="max" placeholder="Max" min="1" value="${item.max || ''}" style="width:100%;">
-          <input type="text" data-k="bg" placeholder="URL รูปพื้นหลัง เช่น image/bg1.png" value="${escapeHtml(item.bg || '')}" style="width:100%;">
-          <button class="btn sm danger">✕</button>
+          <input type="number" data-k="min" placeholder="From" min="1" value="${item.min || ''}">
+          <input type="number" data-k="max" placeholder="To" min="1" value="${item.max || ''}">
+          ${renderStageConfigFields(activeStageRule, item)}
+          <button class="btn sm danger" title="Delete">x</button>
         `;
-        row.querySelectorAll("input").forEach(inp => {
-          inp.addEventListener("input", e => {
-            const k = e.target.dataset.k;
-            if (k === "bg") {
-              item[k] = e.target.value.trim();
-            } else {
-              item[k] = Number(e.target.value) || 0;
-            }
-          });
+        row.querySelectorAll("input, select").forEach(inp => {
+          inp.addEventListener("input", e => updateStageRuleItem(item, e.target.dataset.k, e.target.value));
+          inp.addEventListener("change", e => updateStageRuleItem(item, e.target.dataset.k, e.target.value));
         });
         row.querySelector("button").onclick = () => {
-          tempStageBgs.splice(idx, 1);
-          renderStageBgsList();
+          items.splice(idx, 1);
+          renderStageConfigList();
         };
         container.appendChild(row);
       });
     }
 
-    $("#btnStageBgs").onclick = openStageBgsModal;
-    $("#stageBgsCancel").onclick = () => $("#modalStageBgs").classList.remove("show");
-    $("#btnAddStageBg").onclick = () => {
-      tempStageBgs.push({ min: 1, max: 10, bg: "" });
-      renderStageBgsList();
+    function cleanStageRules(kind, items) {
+      const rule = STAGE_RULES[kind];
+      return (items || []).map(item => {
+        const min = Number(item.min) || 0;
+        const max = Number(item.max) || 0;
+        if (kind === "sprites") return { min, max, sprite: String(item.sprite || "").trim(), position: item.position || "", speaking: item.speaking ?? "" };
+        if (kind === "shakes") return { min, max, duration: Number(item.duration) || 0, intensity: Number(item.intensity) || 0 };
+        return { min, max, [rule.field]: String(item[rule.field] || "").trim() };
+      }).filter(item => {
+        if (!item.min || !item.max) return false;
+        if (kind === "shakes") return item.duration > 0;
+        return !!item[rule.field];
+      });
+    }
+
+    $("#btnStageConfig").onclick = openStageConfigModal;
+    $("#stageConfigCancel").onclick = () => $("#modalStageConfig").classList.remove("show");
+    $("#stageConfigTabs").onclick = e => {
+      const btn = e.target.closest("button[data-kind]");
+      if (!btn) return;
+      activeStageRule = btn.dataset.kind;
+      renderStageConfigList();
     };
-    $("#stageBgsSave").onclick = () => {
-      const cleaned = tempStageBgs.filter(item => item.bg);
-      if (cleaned.length) {
-        story._stageBackgrounds = cleaned;
-      } else {
-        delete story._stageBackgrounds;
-      }
-      $("#modalStageBgs").classList.remove("show");
-      renderRaw();
-      toast("บันทึกการตั้งค่า Background สำเร็จ");
+    $("#btnAddStageConfig").onclick = () => {
+      tempStageRules[activeStageRule].push(STAGE_RULES[activeStageRule].defaultItem());
+      renderStageConfigList();
+    };
+    $("#stageConfigSave").onclick = () => {
+      Object.entries(STAGE_RULES).forEach(([kind, rule]) => {
+        const cleaned = cleanStageRules(kind, tempStageRules[kind]);
+        if (cleaned.length) story[rule.key] = cleaned;
+        else delete story[rule.key];
+      });
+      $("#modalStageConfig").classList.remove("show");
+      renderAll();
+      toast("Stage rules saved");
     };
 
     $("#btnPlayerData").onclick = openPlayerData;
