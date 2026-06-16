@@ -918,6 +918,7 @@ const storyScript = {
         name: "Creator",
         text: "Woww... ไปทำมาใหม่นะ..",
         bg: "image/gameover.png",
+        sprite: "null",
         position: "center",
         speaking: true,
         typeSpeed: 30,
