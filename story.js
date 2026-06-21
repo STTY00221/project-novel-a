@@ -918,7 +918,6 @@ const storyScript = {
         name: "Creator",
         text: "Woww... ไปทำมาใหม่นะ..",
         bg: "image/gameover.png",
-        sprite: "null",
         position: "center",
         speaking: true,
         typeSpeed: 30,
@@ -997,6 +996,26 @@ const storyScript = {
             { nextId: "c49", weight: 1 },
             { nextId: "c50", weight: 1 },
         ]
+    },
+
+    "win2": {
+        name: "Mr.EAKAPOT",
+        text: "ยินดีด้วยครับคุณแก้สอบผ่านแล้ว",
+        bg: "image/bgwin1.png",
+        sprite: "image/cwin1.png",
+        position: "center",
+        speaking: true,
+        typeSpeed: 40
+    },
+
+    "win3": {
+        name: "Mr.EAKAPOT",
+        text: "อย่าลืมส่งงานของครูให้ครบนะครับ ไม่งั้นจะโดนบอมส์นะครับ",
+        bg: "image/bgwin2.png",
+        sprite: "image/cwin2.png",
+        position: "center",
+        speaking: true,
+        typeSpeed: 40
     }
 
 };
