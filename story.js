@@ -166,751 +166,751 @@ const storyScript = {
 
     "c1": {
         name: "Mr.EAKAPOT",
-        text: "ข้อใดคือความหมายของสถิติศาสตร์",
+        text: "ข้อมูลปฐมภูมิ (Primary Data) เหมาะใช้ในสถานการณ์ใดมากที่สุด?",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "การวาดภาพ", nextId: "lose" },
-            { text: "การรวบรวมและวิเคราะห์ข้อมูล", nextId: "random" },
-            { text: "การทดลองวิทยาศาสตร์", nextId: "lose" },
-            { text: "การเขียนโปรแกรม", nextId: "lose" },
+            { text: "เมื่อต้องการข้อมูลจากหนังสือ", nextId: "lose" },
+            { text: "เมื่อต้องการข้อมูลเฉพาะและแม่นยำ", nextId: "random" },
+            { text: "เมื่อต้องการข้อมูลจากเว็บไซต์", nextId: "lose" },
+            { text: "เมื่อต้องการข้อมูลที่มีผู้รวบรวมไว้แล้ว", nextId: "lose" },
         ]
     },
 
     "c2": {
         name: "Mr.EAKAPOT",
-        text: "ข้อมูลหมายถึงอะไร",
+        text: "ความแปรปรวน (Variance) คืออะไร?",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "เรื่องราวในนิยาย", nextId: "lose" },
-            { text: "ข้อเท็จจริงที่รวบรวมไว้", nextId: "random" },
-            { text: "เพลงที่ฟัง", nextId: "lose" },
-            { text: "รูปภาพตกแต่ง", nextId: "lose" },
+            { text: "ค่าเฉลี่ยของข้อมูล", nextId: "lose" },
+            { text: "ค่าที่ได้จากการยกกำลังสองของส่วนเบี่ยงเบนมาตรฐาน (SD)", nextId: "random" },
+            { text: "ค่ามัธยฐานของข้อมูล", nextId: "lose" },
+            { text: "ค่าสูงสุดของข้อมูล", nextId: "lose" },
         ]
     },
 
     "c3": {
         name: "Mr.EAKAPOT",
-        text: "สถิติศาสตร์ช่วยในเรื่องใดมากที่สุด",
+        text: "ฮิสโตแกรม (Histogram) ใช้สำหรับแสดงข้อมูลประเภทใด?",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "การเดาสุ่ม", nextId: "lose" },
-            { text: "การตัดสินใจจากข้อมูล", nextId: "random" },
-            { text: "การเล่นกีฬา", nextId: "lose" },
-            { text: "การร้องเพลง", nextId: "lose" },
+            { text: "ข้อมูลเชิงคุณภาพ", nextId: "lose" },
+            { text: "ข้อมูลเชิงปริมาณแบบต่อเนื่อง", nextId: "random" },
+            { text: "ข้อมูลรายชื่อ", nextId: "lose" },
+            { text: "ข้อมูลความคิดเห็น", nextId: "lose" },
         ]
     },
 
     "c4": {
         name: "Mr.EAKAPOT",
-        text: "ข้อใดเป็นตัวอย่างของข้อมูลเชิงปริมาณ",
+        text: "ส่วนเบี่ยงเบนมาตรฐาน (SD) บอกอะไรเกี่ยวกับข้อมูล?",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "สีเสื้อ", nextId: "lose" },
-            { text: "เพศ", nextId: "lose" },
-            { text: "น้ำหนัก", nextId: "random" },
-            { text: "ศาสนา", nextId: "lose" },
+            { text: "จำนวนข้อมูลทั้งหมด", nextId: "lose" },
+            { text: "ค่าสูงสุดของข้อมูล", nextId: "lose" },
+            { text: "ระดับการกระจายของข้อมูล", nextId: "random" },
+            { text: "ค่าที่พบมากที่สุด", nextId: "lose" },
         ]
     },
 
     "c5": {
         name: "Mr.EAKAPOT",
-        text: "ข้อใดเป็นข้อมูลเชิงคุณภาพ",
+        text: "เปอร์เซ็นไทล์ (Percentile) คืออะไร?",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "อายุ", nextId: "lose" },
-            { text: "ส่วนสูง", nextId: "lose" },
-            { text: "คะแนนสอบ", nextId: "lose" },
-            { text: "สีตา", nextId: "random" },
+            { text: "การแบ่งข้อมูลเป็น 4 ส่วน", nextId: "lose" },
+            { text: "การแบ่งข้อมูลเป็น 10 ส่วน", nextId: "lose" },
+            { text: "การแบ่งข้อมูลเป็น 2 ส่วน", nextId: "lose" },
+            { text: "การแบ่งข้อมูลเป็น 100 ส่วนเท่า ๆ กัน", nextId: "random" },
         ]
     },
 
     "c6": {
         name: "Mr.EAKAPOT",
-        text: "การเก็บข้อมูลมีประโยชน์อย่างไร",
+        text: "แผนภูมิวงกลม (Pie Chart) เหมาะสำหรับใช้แสดงข้อมูลลักษณะใด?",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "ทำให้เสียเวลา", nextId: "lose" },
-            { text: "ใช้ในการวิเคราะห์", nextId: "random" },
-            { text: "ใช้ตกแต่งเอกสาร", nextId: "lose" },
-            { text: "ใช้แทนการคำนวณ", nextId: "lose" },
+            { text: "แนวโน้มตามเวลา", nextId: "lose" },
+            { text: "การเปรียบเทียบสัดส่วนของข้อมูลแต่ละส่วนกับทั้งหมด", nextId: "random" },
+            { text: "การกระจายของข้อมูลต่อเนื่อง", nextId: "lose" },
+            { text: " ความสัมพันธ์ระหว่างตัวแปร", nextId: "lose" },
         ]
     },
 
     "c7": {
         name: "Mr.EAKAPOT",
-        text: "ข้อใดไม่ใช่ขั้นตอนของสถิติศาสตร์",
+        text: "ฐานนิยม (Mode) คืออะไร?",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "เก็บข้อมูล", nextId: "lose" },
-            { text: "วิเคราะห์ข้อมูล", nextId: "lose" },
-            { text: "สรุปผล", nextId: "lose" },
-            { text: "แต่งเพลง", nextId: "random" },
+            { text: "ค่ากลางของข้อมูล", nextId: "lose" },
+            { text: "ค่าเฉลี่ยของข้อมูล", nextId: "lose" },
+            { text: "ค่าต่ำสุดของข้อมูล", nextId: "lose" },
+            { text: "ค่าที่ปรากฏบ่อยที่สุดในข้อมูล", nextId: "random" },
         ]
     },
 
     "c8": {
         name: "Mr.EAKAPOT",
-        text: "ข้อมูลที่ได้จากการนับเรียกว่าอะไร",
+        text: "ช่วงควอไทล์ (Interquartile Range: IQR) คืออะไร?",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "ข้อมูลต่อเนื่อง", nextId: "lose" },
-            { text: "ข้อมูลไม่ต่อเนื่อง", nextId: "random" },
-            { text: "ข้อมูลภาพ", nextId: "lose" },
-            { text: "ข้อมูลเสียง", nextId: "lose" },
+            { text: "ผลต่างระหว่าง Q1 และ Q2", nextId: "lose" },
+            { text: "ผลต่างระหว่าง Q3 และ Q1", nextId: "random" },
+            { text: "ผลต่างระหว่าง Q2 และ Q3", nextId: "lose" },
+            { text: "ผลต่างระหว่าง Q1 และ Q4", nextId: "lose" },
         ]
     },
 
     "c9": {
         name: "Mr.EAKAPOT",
-        text: "“ส่วนสูงของนักเรียน” เป็นข้อมูลประเภทใด",
+        text: "กราฟเส้น (Line Graph) เหมาะกับข้อมูลประเภทใด?",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "เชิงคุณภาพ", nextId: "lose" },
-            { text: "เชิงปริมาณ", nextId: "random" },
-            { text: "เชิงภาษา", nextId: "lose" },
-            { text: "เชิงสัญลักษณ์", nextId: "lose" },
+            { text: "ข้อมูลเชิงคุณภาพ", nextId: "lose" },
+            { text: "ข้อมูลอนุกรมเวลา (Time Series Data)", nextId: "random" },
+            { text: "ข้อมูลจำแนกประเภท", nextId: "lose" },
+            { text: "ข้อมูลสัดส่วน", nextId: "lose" },
         ]
     },
 
     "c10": {
         name: "Mr.EAKAPOT",
-        text: "ข้อใดเป็นแหล่งข้อมูลปฐมภูมิ",
+        text: "ข้อใดเป็นข้อได้เปรียบของข้อมูลทุติยภูมิ (Secondary Data)?",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "หนังสือพิมพ์", nextId: "lose" },
-            { text: "อินเทอร์เน็ต", nextId: "lose" },
-            { text: "การสอบถามโดยตรง", nextId: "random" },
-            { text: "วารสาร", nextId: "lose" },
+            { text: "มีค่าใช้จ่ายสูง", nextId: "lose" },
+            { text: "ใช้เวลารวบรวมข้อมูลนาน", nextId: "lose" },
+            { text: "ช่วยประหยัดเวลาในการเก็บรวบรวมข้อมูล", nextId: "random" },
+            { text: "ต้องเก็บข้อมูลใหม่ทุกครั้ง", nextId: "lose" },
         ]
     },
 
     "c11": {
         name: "Mr.EAKAPOT",
-        text: "การสำรวจความคิดเห็นเป็นการเก็บข้อมูลแบบใด",
+        text: "เหตุใดจึงเลือกใช้มัธยฐาน (Median) แทนค่าเฉลี่ย (Mean) ในบางกรณี?",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "การทดลอง", nextId: "lose" },
-            { text: "การสอบถาม", nextId: "random" },
-            { text: "การสังเกต", nextId: "lose" },
-            { text: "การคำนวณ", nextId: "lose" },
+            { text: "เพราะคำนวณง่ายกว่าเสมอ", nextId: "lose" },
+            { text: "เพราะไม่ได้รับผลกระทบจากค่าผิดปกติ (Outlier) มากนัก", nextId: "random" },
+            { text: "เพราะใช้ได้เฉพาะข้อมูลเชิงคุณภาพ", nextId: "lose" },
+            { text: "เพราะมีค่ามากที่สุดเสมอ", nextId: "lose" },
         ]
     },
 
     "c12": {
         name: "Mr.EAKAPOT",
-        text: "ข้อมูลที่เป็นตัวเลขเรียกว่าอะไร",
+        text: "จุดเด่นของช่วงบัญญัติ (Interval Scale) คือข้อใด?",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "ข้อมูลเชิงคุณภาพ", nextId: "lose" },
-            { text: "ข้อมูลเชิงปริมาณ", nextId: "random" },
-            { text: "ข้อมูลทั่วไป", nextId: "lose" },
-            { text: "ข้อมูลภาพ", nextId: "lose" },
+            { text: "มีศูนย์แท้", nextId: "lose" },
+            { text: "ช่วงห่างระหว่างข้อมูลมีความหมายเท่ากัน แต่ไม่มีศูนย์แท้", nextId: "random" },
+            { text: "เปรียบเทียบเป็นเท่าตัวได้", nextId: "lose" },
+            { text: "ใช้จัดอันดับเท่านั้น", nextId: "lose" },
         ]
     },
 
     "c13": {
         name: "Mr.EAKAPOT",
-        text: "ข้อใดเป็นตัวอย่างของข้อมูล",
+        text: "แผนภูมิวงกลม (Pie Chart) ใช้แสดงข้อมูลลักษณะใด?",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "หนังสือ", nextId: "lose" },
-            { text: "คะแนนสอบ", nextId: "random" },
-            { text: "ปากกา", nextId: "lose" },
-            { text: "กระเป๋า", nextId: "lose" },
+            { text: "การเปลี่ยนแปลงของข้อมูลตามเวลา", nextId: "lose" },
+            { text: "การแสดงสัดส่วนของข้อมูลในรูปวงกลม", nextId: "random" },
+            { text: "การเปรียบเทียบความสูงของข้อมูล", nextId: "lose" },
+            { text: "การกระจายของข้อมูล", nextId: "lose" },
         ]
     },
 
     "c14": {
         name: "Mr.EAKAPOT",
-        text: "สถิติศาสตร์เกี่ยวข้องกับอะไร",
+        text: "แผนภาพการกระจาย (Scatter Plot) มีวัตถุประสงค์หลักเพื่ออะไร?",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "ข้อมูล", nextId: "random" },
-            { text: "ดนตรี", nextId: "lose" },
-            { text: "กีฬา", nextId: "lose" },
-            { text: "ศิลปะ", nextId: "lose" },
+            { text: "แสดงความสัมพันธ์ของข้อมูล 2 ชุด", nextId: "random" },
+            { text: "หาค่าเฉลี่ยของข้อมูล", nextId: "lose" },
+            { text: "แสดงสัดส่วนของข้อมูล", nextId: "lose" },
+            { text: "จัดอันดับข้อมูล", nextId: "lose" },
         ]
     },
 
     "c15": {
         name: "Mr.EAKAPOT",
-        text: "ข้อมูลที่ได้จากการวัดเรียกว่าอะไร",
+        text: "เพราะเหตุใดจึงไม่ควรใช้ค่าเฉลี่ย (Mean) เมื่อข้อมูลมีค่าผิดปกติ (Outlier)?",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "ข้อมูลไม่ต่อเนื่อง", nextId: "lose" },
-            { text: "ข้อมูลต่อเนื่อง", nextId: "random" },
-            { text: "ข้อมูลเชิงคุณภาพ", nextId: "lose" },
-            { text: "ข้อมูลข้อความ", nextId: "lose" },
+            { text: "คำนวณได้ยาก", nextId: "lose" },
+            { text: "ค่าผิดปกติทำให้ค่าเฉลี่ยคลาดเคลื่อน", nextId: "random" },
+            { text: "ค่าเฉลี่ยใช้กับข้อมูลเชิงคุณภาพไม่ได้", nextId: "lose" },
+            { text: "ค่าเฉลี่ยมีค่าคงที่เสมอ", nextId: "lose" },
         ]
     },
 
     "c16": {
         name: "Mr.EAKAPOT",
-        text: "การใช้สถิติช่วยให้เกิดอะไร",
+        text: "ตารางแจกแจงความถี่ (Frequency Table) คืออะไร?",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "ความสับสน", nextId: "lose" },
-            { text: "การตัดสินใจที่มีเหตุผล", nextId: "random" },
-            { text: "การคาดเดา", nextId: "lose" },
-            { text: "ความผิดพลาดเสมอ", nextId: "lose" },
+            { text: "ตารางที่แสดงค่ากลางของข้อมูล", nextId: "lose" },
+            { text: "ตารางที่แสดงจำนวนครั้งที่ข้อมูลแต่ละค่าเกิดขึ้น", nextId: "random" },
+            { text: "ตารางที่แสดงความสัมพันธ์ของตัวแปร", nextId: "lose" },
+            { text: "ตารางที่แสดงเปอร์เซ็นไทล์", nextId: "lose" },
         ]
     },
 
     "c17": {
         name: "Mr.EAKAPOT",
-        text: "ข้อใดเป็นข้อมูลเชิงคุณภาพ",
+        text: "เพราะเหตุใดข้อมูลเชิงคุณภาพ (Qualitative Data) จึงไม่เหมาะกับการคำนวณ?",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "อายุ", nextId: "lose" },
-            { text: "รายได้", nextId: "lose" },
-            { text: "อาชีพ", nextId: "random" },
-            { text: "น้ำหนัก", nextId: "lose" },
+            { text: "เป็นข้อมูลที่มีหน่วยวัด", nextId: "lose" },
+            { text: "มีจำนวนข้อมูลมากเกินไป", nextId: "lose" },
+            { text: "เป็นข้อมูลเชิงลักษณะ ไม่ใช่ตัวเลข", nextId: "random" },
+            { text: "เป็นข้อมูลเชิงตัวเลขทั้งหมด", nextId: "lose" },
         ]
     },
 
     "c18": {
         name: "Mr.EAKAPOT",
-        text: "ข้อมูลอายุของนักเรียนเป็นข้อมูลแบบใด",
+        text: "แผนภูมิแท่ง (Bar Chart) เหมาะสำหรับใช้ในสถานการณ์ใด?",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "เชิงปริมาณ", nextId: "random" },
-            { text: " เชิงคุณภาพ", nextId: "lose" },
-            { text: "เชิงข้อความ", nextId: "lose" },
-            { text: "เชิงรูปภาพ", nextId: "lose" },
+            { text: "เปรียบเทียบข้อมูลหลายกลุ่มหรือหลายหมวดหมู่", nextId: "random" },
+            { text: "แสดงสัดส่วนของข้อมูลทั้งหมด", nextId: "lose" },
+            { text: "แสดงการเปลี่ยนแปลงตามเวลา", nextId: "lose" },
+            { text: "แสดงความสัมพันธ์ระหว่างตัวแปร", nextId: "lose" },
         ]
     },
 
     "c19": {
         name: "Mr.EAKAPOT",
-        text: "การเก็บข้อมูลโดยดูพฤติกรรมเรียกว่าอะไร",
+        text: "ข้อใดเป็นตัวอย่างของการใช้แผนภาพการกระจาย (Scatter Plot)?",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "การทดลอง", nextId: "lose" },
-            { text: " การสัมภาษณ์", nextId: "lose" },
-            { text: "การสังเกต", nextId: "random" },
-            { text: "การวิเคราะห์", nextId: "lose" },
+            { text: "เปรียบเทียบจำนวนนักเรียนแต่ละห้อง", nextId: "lose" },
+            { text: "แสดงสัดส่วนนักเรียนชายและหญิง", nextId: "lose" },
+            { text: "ศึกษาความสัมพันธ์ระหว่างชั่วโมงอ่านหนังสือกับคะแนนสอบ", nextId: "random" },
+            { text: "แสดงยอดขายรายเดือน", nextId: "lose" },
         ]
     },
 
     "c20": {
         name: "Mr.EAKAPOT",
-        text: "ข้อใดไม่ใช่ข้อมูลเชิงปริมาณ",
+        text: "หากต้องการเปรียบเทียบคะแนนเฉลี่ยของแต่ละห้องเรียน ควรใช้กราฟชนิดใด?",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "ส่วนสูง", nextId: "lose" },
-            { text: "น้ำหนัก", nextId: "lose" },
-            { text: "สีผม", nextId: "random" },
-            { text: "อายุ", nextId: "lose" },
+            { text: "Pie Chart", nextId: "lose" },
+            { text: "Scatter Plot", nextId: "lose" },
+            { text: "Bar Chart", nextId: "random" },
+            { text: "Histogram", nextId: "lose" },
         ]
     },
 
     "c21": {
         name: "Mr.EAKAPOT",
-        text: "จุดประสงค์สำคัญของสถิติศาสตร์คืออะไร",
+        text: "ข้อใดเป็นข้อมูลเชิงคุณภาพ (Qualitative Data)?",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "เพื่อจัดเก็บเอกสารให้เป็นระเบียบ", nextId: "lose" },
-            { text: "เพื่อวิเคราะห์ข้อมูล", nextId: "random" },
-            { text: "เพื่อประเมินผลการเรียนรู้", nextId: "lose" },
-            { text: "เพื่อการแข่งขันกีฬา", nextId: "lose" },
+            { text: "อายุ", nextId: "lose" },
+            { text: "สีที่ชอบ", nextId: "random" },
+            { text: "น้ำหนัก", nextId: "lose" },
+            { text: "ส่วนสูง", nextId: "lose" },
         ]
     },
 
     "c22": {
         name: "Mr.EAKAPOT",
-        text: "“นักเรียนชอบสีอะไร” เป็นข้อมูลประเภทใด",
+        text: "ตารางแจกแจงความถี่ช่วยให้ทราบอะไร?",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "ข้อมูลเชิงปริมาณ", nextId: "lose" },
-            { text: "ข้อมูลเชิงคุณภาพ", nextId: "random" },
-            { text: "ข้อมูลปฐมภูมิ", nextId: "lose" },
-            { text: "ข้อมูลทุติยภูมิ", nextId: "lose" },
+            { text: "ค่ามัธยฐาน", nextId: "lose" },
+            { text: "จำนวนครั้งที่ข้อมูลแต่ละค่าเกิดขึ้น", nextId: "random" },
+            { text: "ค่าความแปรปรวน", nextId: "lose" },
+            { text: "ค่าฐานนิยมเท่านั้น", nextId: "lose" },
         ]
     },
 
     "c23": {
         name: "Mr.EAKAPOT",
-        text: "ข้อใดเป็นข้อมูลเชิงปริมาณ",
+        text: "ข้อมูล (Data) คืออะไร",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "จังหวัด", nextId: "lose" },
-            { text: "ศาสนา", nextId: "lose" },
-            { text: "จำนวนพี่น้อง", nextId: "random" },
-            { text: "เพศ", nextId: "lose" },
+            { text: "ข้อมูลที่ผ่านการวิเคราะห์แล้ว", nextId: "lose" },
+            { text: "ผลสรุปจากข้อมูล", nextId: "lose" },
+            { text: "ข้อเท็จจริงที่รวบรวมมา อาจเป็นตัวเลข ข้อความ หรือสัญลักษณ์", nextId: "random" },
+            { text: "รายงานผลการวิจัย", nextId: "lose" },
         ]
     },
 
     "c24": {
         name: "Mr.EAKAPOT",
-        text: "การแจกแจงข้อมูลช่วยเรื่องใด",
+        text: "สารสนเทศ (Information) คืออะไร",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "ทำให้ข้อมูลอ่านง่าย", nextId: "random" },
-            { text: "ทำให้ข้อมูลมีจำนวนลดลง", nextId: "lose" },
-            { text: "ทำให้ข้อมูลมีความน่าเชื่อถือมากขึ้น", nextId: "lose" },
-            { text: "ทำให้ข้อมูลไม่มีความคลาดเคลื่อน", nextId: "lose" },
+            { text: "ข้อมูลที่ผ่านการประมวลผล วิเคราะห์ หรือสรุปแล้ว", nextId: "random" },
+            { text: "ข้อมูลดิบที่ยังไม่ผ่านการประมวลผล", nextId: "lose" },
+            { text: "ข้อมูลที่เก็บจากแบบสอบถามเท่านั้น", nextId: "lose" },
+            { text: "ข้อมูลที่เป็นตัวเลขเสมอ", nextId: "lose" },
         ]
     },
 
     "c25": {
         name: "Mr.EAKAPOT",
-        text: "ข้อใดเป็นตัวอย่างข้อมูลไม่ต่อเนื่อง",
+        text: "ประชากร (Population) คืออะไร",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "น้ำหนัก", nextId: "lose" },
-            { text: "ส่วนสูง", nextId: "lose" },
-            { text: "จำนวนหนังสือ", nextId: "random" },
-            { text: "อุณหภูมิ", nextId: "lose" },
+            { text: "กลุ่มตัวอย่างที่เลือกมา", nextId: "lose" },
+            { text: "บุคคลที่ตอบแบบสอบถาม", nextId: "lose" },
+            { text: "กลุ่มของหน่วยทั้งหมดที่สนใจศึกษา", nextId: "random" },
+            { text: "ข้อมูลที่รวบรวมได้", nextId: "lose" },
         ]
     },
 
     "c26": {
         name: "Mr.EAKAPOT",
-        text: "ข้อมูลทุติยภูมิคืออะไร",
+        text: "ตัวอย่าง (Sample) คืออะไร",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "ข้อมูลที่เก็บเอง", nextId: "lose" },
-            { text: "ข้อมูลที่คิดขึ้น", nextId: "random" },
-            { text: "ข้อมูลที่ได้มาจากการคาดเดา", nextId: "lose" },
-            { text: "ข้อมูลที่ไม่สามารถนำมาประมวลผลได้", nextId: "lose" },
+            { text: "ข้อมูลทั้งหมดที่เก็บได้", nextId: "lose" },
+            { text: "กลุ่มย่อยของประชากรที่ใช้แทนประชากรทั้งหมด", nextId: "random" },
+            { text: "กลุ่มประชากรทั้งหมด", nextId: "lose" },
+            { text: "ผลสรุปทางสถิติ", nextId: "lose" },
         ]
     },
 
     "c27": {
         name: "Mr.EAKAPOT",
-        text: "ข้อใดเป็นข้อมูลเชิงคุณภาพ",
+        text: "ข้อมูลทุติยภูมิ (Secondary Data) คืออะไร",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "เบอร์รองเท้า", nextId: "lose" },
-            { text: "รายได้", nextId: "lose" },
-            { text: "กรุ๊ปเลือด", nextId: "random" },
-            { text: "อายุ", nextId: "lose" },
+            { text: "ข้อมูลที่ผู้วิจัยเก็บเอง", nextId: "lose" },
+            { text: "ข้อมูลที่เก็บจากการทดลองเท่านั้น", nextId: "lose" },
+            { text: "ข้อมูลที่มีคนเก็บไว้แล้ว เช่น หนังสือหรือรายงาน", nextId: "random" },
+            { text: "ข้อมูลที่ไม่มีแหล่งอ้างอิง", nextId: "lose" },
         ]
     },
 
     "c28": {
         name: "Mr.EAKAPOT",
-        text: "การใช้แบบสอบถามเป็นการเก็บข้อมูลแบบใด",
+        text: "ข้อมูลอนุกรมเวลา (Time Series Data) คืออะไร",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "การทดลอง", nextId: "lose" },
-            { text: "การสำรวจ", nextId: "random" },
-            { text: "การสังเกต", nextId: "lose" },
-            { text: "การคำนวณ", nextId: "lose" },
+            { text: "ข้อมูลที่เก็บในช่วงเวลาเดียวกัน", nextId: "lose" },
+            { text: "ข้อมูลที่เก็บตามลำดับเวลาอย่างต่อเนื่อง", nextId: "random" },
+            { text: "ข้อมูลเชิงคุณภาพ", nextId: "lose" },
+            { text: "ข้อมูลที่ไม่มีเวลาเกี่ยวข้อง", nextId: "lose" },
         ]
     },
 
     "c29": {
         name: "Mr.EAKAPOT",
-        text: "ข้อมูลที่เป็นข้อความจัดเป็นข้อมูลแบบใด",
+        text: "ข้อมูลตัดขวาง (Cross-Sectional Data) คืออะไร",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "เชิงปริมาณ", nextId: "lose" },
-            { text: "เชิงคุณภาพ", nextId: "random" },
-            { text: "เชิงต่อเนื่อง", nextId: "lose" },
-            { text: "เชิงคำนวณ", nextId: "lose" },
+            { text: "ข้อมูลที่เก็บต่อเนื่องหลายปี", nextId: "lose" },
+            { text: "ข้อมูลหลายหน่วย ณ ช่วงเวลาเดียวกัน", nextId: "random" },
+            { text: "ข้อมูลที่เก็บตามลำดับเวลา", nextId: "lose" },
+            { text: "ข้อมูลจากแหล่งทุติยภูมิ", nextId: "lose" },
         ]
     },
 
     "c30": {
         name: "Mr.EAKAPOT",
-        text: "ข้อใดคือตัวอย่างข้อมูลต่อเนื่อง",
+        text: "ข้อมูลเชิงปริมาณ (Quantitative Data) คืออะไร",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "จำนวนรถ", nextId: "lose" },
-            { text: "จำนวนคน", nextId: "lose" },
-            { text: "ส่วนสูง", nextId: "random" },
-            { text: "จำนวนปากกา", nextId: "lose" },
+            { text: "ข้อมูลที่จัดเป็นประเภท", nextId: "lose" },
+            { text: "ข้อมูลความคิดเห็น", nextId: "lose" },
+            { text: "ข้อมูลที่เป็นตัวเลขและคำนวณได้", nextId: "random" },
+            { text: "ข้อมูลสีและรูปร่าง", nextId: "lose" },
         ]
     },
 
     "c31": {
         name: "Mr.EAKAPOT",
-        text: "สถิติศาสตร์มีประโยชน์ต่อใคร",
+        text: "ข้อมูลเชิงคุณภาพใช้ระดับการวัดใด",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "นักเรียนเท่านั้น", nextId: "lose" },
-            { text: "ครูเท่านั้น", nextId: "lose" },
-            { text: "ทุกอาชีพ", nextId: "random" },
-            { text: "แพทย์เท่านั้น", nextId: "lose" },
+            { text: "อันตรภาคและอัตราส่วน", nextId: "lose" },
+            { text: "ทศนิยมและเปอร์เซ็นต์", nextId: "lose" },
+            { text: "นามบัญญัติและอันดับบัญญัติ", nextId: "random" },
+            { text: "ค่าเฉลี่ยและมัธยฐาน", nextId: "lose" },
         ]
     },
 
     "c32": {
         name: "Mr.EAKAPOT",
-        text: "ข้อมูลที่ถูกต้องควรมีลักษณะอย่างไร",
+        text: "มาตรานามบัญญัติ (Nominal Scale) คืออะไร",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "คลุมเครือ", nextId: "lose" },
-            { text: "น่าเชื่อถือ", nextId: "random" },
-            { text: "ไม่ครบถ้วน", nextId: "lose" },
-            { text: "ซ้ำซ้อน", nextId: "lose" },
+            { text: "การเรียงลำดับข้อมูล", nextId: "lose" },
+            { text: "การแบ่งกลุ่มข้อมูลโดยไม่มีลำดับ", nextId: "random" },
+            { text: "การวัดด้วยตัวเลข", nextId: "lose" },
+            { text: "การคำนวณค่าเฉลี่ย", nextId: "lose" },
         ]
     },
 
     "c33": {
         name: "Mr.EAKAPOT",
-        text: "ข้อใดเป็นข้อมูลจากการทดลอง",
+        text: "มาตราอันดับบัญญัติ (Ordinal Scale) คืออะไร",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "ผลการปลูกพืช", nextId: "random" },
-            { text: "สีเสื้อ", nextId: "lose" },
-            { text: "จังหวัดเกิด", nextId: "lose" },
-            { text: "ชื่อเล่น", nextId: "lose" },
+            { text: "ข้อมูลที่สามารถเรียงลำดับได้", nextId: "random" },
+            { text: "ข้อมูลที่จัดกลุ่มอย่างเดียว", nextId: "lose" },
+            { text: "ข้อมูลที่มีศูนย์แท้", nextId: "lose" },
+            { text: "ข้อมูลที่เป็นตัวเลขเท่านั้น", nextId: "lose" },
         ]
     },
 
     "c34": {
         name: "Mr.EAKAPOT",
-        text: "การวิเคราะห์ข้อมูลมีจุดประสงค์ใด",
+        text: "ขั้นตอนแรกของสถิติศาสตร์คืออะไร",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "หาข้อสรุป", nextId: "random" },
-            { text: "เพิ่มข้อมูล", nextId: "lose" },
-            { text: "ลบข้อมูล", nextId: "lose" },
-            { text: "ซ่อนข้อมูล", nextId: "lose" },
+            { text: "การเก็บรวบรวมข้อมูล", nextId: "random" },
+            { text: "การนำเสนอข้อมูล", nextId: "lose" },
+            { text: "การวิเคราะห์ข้อมูล", nextId: "lose" },
+            { text: "การสรุปผล", nextId: "lose" },
         ]
     },
 
     "c35": {
         name: "Mr.EAKAPOT",
-        text: "“จำนวนสมาชิกในครอบครัว” เป็นข้อมูลประเภทใด",
+        text: "ขั้นตอนที่สองของสถิติศาสตร์คืออะไร",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "เชิงคุณภาพ", nextId: "lose" },
-            { text: "เชิงปริมาณ", nextId: "random" },
-            { text: "เชิงภาษา", nextId: "lose" },
-            { text: "เชิงสัญลักษณ์", nextId: "lose" },
+            { text: "การเก็บข้อมูล", nextId: "lose" },
+            { text: "การนำเสนอข้อมูล", nextId: "random" },
+            { text: "การวิเคราะห์ข้อมูล", nextId: "lose" },
+            { text: "การแปลผล", nextId: "lose" },
         ]
     },
 
     "c36": {
         name: "Mr.EAKAPOT",
-        text: "ข้อใดเป็นข้อมูลเชิงคุณภาพ",
+        text: "ขั้นตอนที่สามของสถิติศาสตร์คืออะไร",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "สถานภาพสมรส", nextId: "random" },
-            { text: "น้ำหนัก", nextId: "lose" },
-            { text: "ส่วนสูง", nextId: "lose" },
-            { text: "อายุ", nextId: "lose" },
+            { text: "การวิเคราะห์ข้อมูล", nextId: "random" },
+            { text: "การเก็บข้อมูล", nextId: "lose" },
+            { text: "การนำเสนอข้อมูล", nextId: "lose" },
+            { text: "การสำรวจข้อมูล", nextId: "lose" },
         ]
     },
 
     "c37": {
         name: "Mr.EAKAPOT",
-        text: "การสรุปผลข้อมูลช่วยอะไร",
+        text: "การนำเสนอข้อมูล (Presentation) คืออะไร",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "เข้าใจข้อมูลได้ง่าย", nextId: "random" },
-            { text: "ทำให้ข้อมูลหาย", nextId: "lose" },
-            { text: "ทำให้ข้อมูลผิด", nextId: "lose" },
-            { text: "ลดข้อมูลทั้งหมด", nextId: "lose" },
+            { text: "การแสดงข้อมูลให้อ่านง่าย", nextId: "random" },
+            { text: "การเก็บข้อมูล", nextId: "lose" },
+            { text: "การคำนวณข้อมูล", nextId: "lose" },
+            { text: "การตรวจสอบข้อมูล", nextId: "lose" },
         ]
     },
 
     "c38": {
         name: "Mr.EAKAPOT",
-        text: "ข้อใดไม่ใช่ตัวอย่างข้อมูล",
+        text: "การแจกแจงข้อมูล (Distribution) คืออะไร",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "คะแนนสอบ", nextId: "lose" },
-            { text: "จำนวนเงิน", nextId: "lose" },
-            { text: "ชื่อโรงเรียน", nextId: "lose" },
-            { text: "โต๊ะเรียน", nextId: "random" },
+            { text: "การเก็บข้อมูล", nextId: "lose" },
+            { text: "การนำเสนอข้อมูล", nextId: "lose" },
+            { text: "การสรุปข้อมูล", nextId: "lose" },
+            { text: "รูปแบบการกระจายของข้อมูล", nextId: "random" },
         ]
     },
 
     "c39": {
         name: "Mr.EAKAPOT",
-        text: "การเก็บข้อมูลต้องคำนึงถึงอะไร",
+        text: "แผนภูมิแท่ง (Bar Chart) ใช้เพื่ออะไร",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "ความถูกต้อง", nextId: "random" },
-            { text: "ความสวยงาม", nextId: "lose" },
-            { text: "ความรวดเร็วอย่างเดียว", nextId: "lose" },
-            { text: "จำนวนสี", nextId: "lose" },
+            { text: "เปรียบเทียบข้อมูลแต่ละกลุ่ม", nextId: "random" },
+            { text: "แสดงการเปลี่ยนแปลงตามเวลา", nextId: "lose" },
+            { text: "หาค่าเฉลี่ย", nextId: "lose" },
+            { text: "หาค่ามัธยฐาน", nextId: "lose" },
         ]
     },
 
     "c40": {
         name: "Mr.EAKAPOT",
-        text: "ข้อมูลที่ได้จากการสัมภาษณ์เป็นข้อมูลแบบใด",
+        text: "กราฟเส้น (Line Graph) ใช้เพื่ออะไร",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "ปฐมภูมิ", nextId: "random" },
-            { text: "ทุติยภูมิ", nextId: "lose" },
-            { text: "ต่อเนื่อง", nextId: "lose" },
-            { text: "ไม่ต่อเนื่อง", nextId: "lose" },
+            { text: "แสดงแนวโน้มของข้อมูลตามเวลา", nextId: "random" },
+            { text: "เปรียบเทียบหมวดหมู่", nextId: "lose" },
+            { text: "แสดงสัดส่วน", nextId: "lose" },
+            { text: "จัดกลุ่มข้อมูล", nextId: "lose" },
         ]
     },
 
     "c41": {
         name: "Mr.EAKAPOT",
-        text: "ข้อใดเป็นข้อมูลเชิงปริมาณ",
+        text: "ค่าเฉลี่ย (Mean) คืออะไร",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "สีรถ", nextId: "lose" },
-            { text: "ยี่ห้อโทรศัพท์", nextId: "lose" },
-            { text: "ความสูงของต้นไม้", nextId: "random" },
-            { text: "อาชีพ", nextId: "lose" },
+            { text: "ค่ากลางของข้อมูลเมื่อเรียงลำดับ", nextId: "lose" },
+            { text: "ค่าที่พบมากที่สุด", nextId: "lose" },
+            { text: "ผลรวมข้อมูลทั้งหมดหารด้วยจำนวนข้อมูล", nextId: "random" },
+            { text: "ผลต่างค่าสูงสุดและต่ำสุด", nextId: "lose" },
         ]
     },
 
     "c42": {
         name: "Mr.EAKAPOT",
-        text: "สถิติศาสตร์เกี่ยวข้องกับการทำงานขั้นใด",
+        text: "มัธยฐาน (Median) คืออะไร",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "รวบรวมข้อมูล", nextId: "lose" },
-            { text: "วิเคราะห์ข้อมูล", nextId: "lose" },
-            { text: "แปลความหมายข้อมูล", nextId: "lose" },
-            { text: "ถูกทุกข้อ", nextId: "random" },
+            { text: "ค่าที่พบมากที่สุด", nextId: "lose" },
+            { text: "ค่าเฉลี่ยของข้อมูล", nextId: "lose" },
+            { text: "ผลต่างระหว่างค่าสูงสุดและต่ำสุด", nextId: "lose" },
+            { text: "ค่ากลางเมื่อเรียงข้อมูลจากน้อยไปมาก", nextId: "random" },
         ]
     },
 
     "c43": {
         name: "Mr.EAKAPOT",
-        text: "“อุณหภูมิวันนี้” เป็นข้อมูลประเภทใด",
+        text: "พิสัย (Range) คืออะไร",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "เชิงปริมาณ", nextId: "random" },
-            { text: "เชิงคุณภาพ", nextId: "lose" },
-            { text: "เชิงภาษา", nextId: "lose" },
-            { text: "เชิงภาพ", nextId: "lose" },
+            { text: "ผลต่างระหว่างค่าสูงสุดกับค่าต่ำสุด", nextId: "random" },
+            { text: "ค่าเฉลี่ยของข้อมูล", nextId: "lose" },
+            { text: "ค่ากลางของข้อมูล", nextId: "lose" },
+            { text: "ค่าที่พบมากที่สุด", nextId: "lose" },
         ]
     },
 
     "c44": {
         name: "Mr.EAKAPOT",
-        text: "ข้อใดเป็นข้อมูลไม่ต่อเนื่อง",
+        text: "เดไซล์ (Decile) คืออะไร",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "ความสูง", nextId: "lose" },
-            { text: "จำนวนสัตว์เลี้ยง", nextId: "random" },
-            { text: "น้ำหนัก", nextId: "lose" },
-            { text: "เวลา", nextId: "lose" },
+            { text: "แบ่งข้อมูลเป็น 2 ส่วน", nextId: "lose" },
+            { text: " แบ่งข้อมูลเป็น 10 ส่วนเท่า ๆ กัน", nextId: "random" },
+            { text: "แบ่งข้อมูลเป็น 4 ส่วน", nextId: "lose" },
+            { text: "แบ่งข้อมูลเป็น 100 ส่วน", nextId: "lose" },
         ]
     },
 
     "c45": {
         name: "Mr.EAKAPOT",
-        text: "การใช้สถิติช่วยในด้านใด",
+        text: "ควอร์ไทล์ที่ 1 (Q1) คืออะไร",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "การศึกษา", nextId: "lose" },
-            { text: "ธุรกิจ", nextId: "lose" },
-            { text: "การแพทย์", nextId: "lose" },
-            { text: "ถูกทุกข้อ", nextId: "random" },
+            { text: "จุดที่มีข้อมูลต่ำกว่า 75%", nextId: "lose" },
+            { text: "จุดที่มีข้อมูลต่ำกว่า 50%", nextId: "lose" },
+            { text: "จุดที่มีข้อมูลต่ำกว่า 100%", nextId: "lose" },
+            { text: "จุดที่มีข้อมูลต่ำกว่า 25%", nextId: "random" },
         ]
     },
 
     "c46": {
         name: "Mr.EAKAPOT",
-        text: "ข้อมูลที่มีความน่าเชื่อถือควรเป็นอย่างไร",
+        text: "ควอร์ไทล์ที่ 3 (Q3) คืออะไร",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "มีแหล่งที่มา", nextId: "random" },
-            { text: "ไม่มีหลักฐาน", nextId: "lose" },
-            { text: "ไม่ชัดเจน", nextId: "lose" },
-            { text: "เปลี่ยนแปลงตลอด", nextId: "lose" },
+            { text: "จุดที่มีข้อมูลต่ำกว่า 75%", nextId: "random" },
+            { text: "จุดที่มีข้อมูลต่ำกว่า 25%", nextId: "lose" },
+            { text: "จุดที่มีข้อมูลต่ำกว่า 50%", nextId: "lose" },
+            { text: "จุดที่มีข้อมูลต่ำกว่า 100%", nextId: "lose" },
         ]
     },
 
     "c47": {
         name: "Mr.EAKAPOT",
-        text: "ข้อใดเป็นตัวอย่างข้อมูลเชิงคุณภาพ",
+        text: "เพราะเหตุใดตัวอย่าง (Sample) จึงใช้แทนประชากร (Population) ได้",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "คะแนนเฉลี่ย", nextId: "lose" },
-            { text: "สีที่ชอบ", nextId: "random" },
-            { text: "ส่วนสูง", nextId: "lose" },
-            { text: "อายุ", nextId: "lose" },
+            { text: "เพราะมีจำนวนมากกว่า", nextId: "lose" },
+            { text: "เพราะเป็นส่วนหนึ่งที่แทนประชากรได้ ช่วยประหยัดเวลาและค่าใช้จ่าย", nextId: "random" },
+            { text: "เพราะเก็บข้อมูลง่ายกว่าเสมอ", nextId: "lose" },
+            { text: "เพราะมีข้อมูลครบทุกคน", nextId: "lose" },
         ]
     },
 
     "c48": {
         name: "Mr.EAKAPOT",
-        text: "ข้อใดคือหน้าที่ของสถิติศาสตร์",
+        text: "เพราะเหตุใดอัตราส่วนบัญญัติ (Ratio Scale) จึงเปรียบเทียบเป็นเท่ากันได้",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "วิเคราะห์ข้อมูล", nextId: "lose" },
-            { text: "ทำนายข้อมูล", nextId: "lose" },
-            { text: "สรุปผลข้อมูล", nextId: "lose" },
-            { text: "ถูกทุกข้อ", nextId: "random" },
+            { text: "เพราะไม่มีศูนย์แท้", nextId: "lose" },
+            { text: "เพราะเรียงลำดับได้เท่านั้น", nextId: "lose" },
+            { text: "เพราะแบ่งเป็นกลุ่มได้", nextId: "lose" },
+            { text: "เพราะมีศูนย์แท้ จึงเปรียบเทียบเป็นกี่เท่าได้", nextId: "random" },
         ]
     },
 
     "c49": {
         name: "Mr.EAKAPOT",
-        text: "การเก็บข้อมูลจำนวนมากควรใช้อะไรช่วย",
+        text: "เพราะเหตุใดนามบัญญัติ (Nominal Scale) จึงไม่สามารถเรียงลำดับได้",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "เครื่องมือทางสถิติ", nextId: "random" },
-            { text: "การคาดเดา", nextId: "lose" },
-            { text: "การวาดรูป", nextId: "lose" },
-            { text: "การร้องเพลง", nextId: "lose" },
+            { text: "เพราะไม่มีลำดับของข้อมูล", nextId: "random" },
+            { text: "เพราะเป็นข้อมูลเชิงปริมาณ", nextId: "lose" },
+            { text: "เพราะมีศูนย์แท้", nextId: "lose" },
+            { text: "เพราะคำนวณไม่ได้", nextId: "lose" },
         ]
     },
 
     "c50": {
         name: "Mr.EAKAPOT",
-        text: "ข้อใดกล่าวถูกต้องเกี่ยวกับข้อมูล",
+        text: "เพราะเหตุใดพารามิเตอร์ (Parameter) จึงหายากกว่าสถิติ (Statistic)",
         sprite: "image/creator.png",
         position: "left",
         speaking: true,
         typeSpeed: 40,
         choices: [
-            { text: "ข้อมูลไม่มีประโยชน์", nextId: "lose" },
-            { text: "ข้อมูลใช้ในการวิเคราะห์", nextId: "random" },
-            { text: "ข้อมูลใช้เฉพาะในโรงเรียน", nextId: "lose" },
-            { text: "ข้อมูลไม่จำเป็น", nextId: "lose" },
+            { text: "เพราะใช้ข้อมูลจากตัวอย่าง", nextId: "lose" },
+            { text: "เพราะใช้ข้อมูลจากประชากรทั้งหมด", nextId: "random" },
+            { text: "เพราะเป็นข้อมูลเชิงคุณภาพ", nextId: "lose" },
+            { text: "เพราะเป็นข้อมูลทุติยภูมิ", nextId: "lose" },
         ]
     },
 
